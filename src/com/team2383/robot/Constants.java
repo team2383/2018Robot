@@ -39,10 +39,10 @@ public class Constants {
 	public static final int kRightFollowerCTalonID = 8;
 	
 	
-	public static double kDriveWheelDiameter = 3.95;
-	public static double kDriveWheelCircumference = kDriveWheelDiameter * Math.PI;
-	public static double kDriveEncoderScalar = 20.0/42.0;
-	public static double kDriveInchesPerDegree = kDriveWheelCircumference / 360.0;
+	public static double kDriveWheelDiameterInch = 3.95;
+	public static double kDriveWheelCircumferenceInch = kDriveWheelDiameterInch * Math.PI;
+	public static double kDriveEncoderRatio = 1.0/1.0;
+	public static double kDriveInchesPerDegree = kDriveWheelCircumferenceInch / 360.0;
 	public static double kDriveFeetPerDegree = kDriveInchesPerDegree / 12.0;
 
 	public static double kDriveTurnTolerance = 1.0;

@@ -12,6 +12,9 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import jaci.pathfinder.followers.DistanceFollower;
+import jaci.pathfinder.followers.EncoderFollower;
+import jaci.pathfinder.modifiers.TankModifier;
 
 public class Drivetrain extends Subsystem {
 	private final WPI_TalonSRX leftMaster;
@@ -205,17 +208,12 @@ public class Drivetrain extends Subsystem {
 		rightMaster.setSelectedSensorPosition(0, 0, 0);
 	}
 
-
-
-	public double getRotations() {
-		double rotations;
-		try {
-			rotations = (leftMaster.getSelectedSensorPosition(0) + rightMaster.getSelectedSensorPosition(0)) / 2.0;
-		} catch (Throwable e) {
-			System.out.println("Failed to get encoder rotations of drivetrain");
-			rotations = 0;
-		}
-		return rotations * Constants.kDriveEncoderScalar;
+	public double getLeftRotations() {
+		return leftMaster.getSelectedSensorPosition(0) * Constants.kDriveEncoderRatio;
+	}
+	
+	public double getRightRotations() {
+		return rightMaster.getSelectedSensorPosition(0) * Constants.kDriveEncoderRatio;
 	}
 
 	public double getVelocity() {
@@ -226,9 +224,8 @@ public class Drivetrain extends Subsystem {
 			System.out.println("Failed to get encoder speed of drivetrain");
 			rotations = 0;
 		}
-		return rotations * Constants.kDriveEncoderScalar;
+		return rotations * Constants.kDriveEncoderRatio;
 	}
-	
 	
 	public double getError(){
 		double error;
@@ -241,13 +238,17 @@ public class Drivetrain extends Subsystem {
 		return error;
 	}
 
-	public double getInches() {
-		return getRotations() * Constants.kDriveWheelCircumference;
+	public double getLeftInches() {
+		return getLeftRotations() * Constants.kDriveWheelCircumferenceInch;
+	}
+	
+	public double getRightInches() {
+		return getRightRotations() * Constants.kDriveWheelCircumferenceInch;
 	}
 
 	// Feet per Seconds
 	public double getSpeed() {
-		return getVelocity() * Constants.kDriveWheelCircumference / 12.0 / 60.0;
+		return getVelocity() * Constants.kDriveWheelCircumferenceInch / 12.0 / 60.0;
 	}
 
 	@Override
@@ -268,4 +269,34 @@ public class Drivetrain extends Subsystem {
 	public void disableBrake() {
 		setBrake(false);
 	}
+	
+	public int getLeftPosition(){
+		return leftMaster.getSelectedSensorPosition(0);
+	}
+	
+	public int getRightPosition(){
+		return rightMaster.getSelectedSensorPosition(0);
+	}
+	
+	// handles all of the constant stuff for any trajectory
+	public DistanceFollower[] initMotionProfiling(TankModifier modifier){
+		DistanceFollower leftModifier = new DistanceFollower(modifier.getLeftTrajectory());
+		DistanceFollower rightModifier = new DistanceFollower(modifier.getRightTrajectory());
+		
+		
+		leftModifier.configurePIDVA(1.0, 0.0, 0.0, 1 / 2, 0);
+		rightModifier.configurePIDVA(1.0, 0.0, 0.0, 1 / 2, 0);  // 2 is "max" velocity, just for testing
+		
+		
+		DistanceFollower[] Modifiers = new DistanceFollower[2];
+		Modifiers[0] = leftModifier;
+		Modifiers[1] = rightModifier;
+		
+		return Modifiers;
+	}
+	
+	public void setLeftMaster(double setpoint){
+		leftMaster.set(setpoint);
+	}
+	
 }
