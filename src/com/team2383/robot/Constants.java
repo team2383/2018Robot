@@ -28,6 +28,8 @@ public class Constants {
 	/*
 	 * Drive Constants
 	 */
+	public static final int kDriveEncoderTicks = 4096;
+	
 	public static final int kLeftMasterTalonID = 1;
 	public static final int kLeftFollowerATalonID = 2;
 	public static final int kLeftFollowerBTalonID = 3;
@@ -39,7 +41,7 @@ public class Constants {
 	public static final int kRightFollowerCTalonID = 8;
 	
 	
-	public static double kDriveWheelDiameterInch = 3.95;
+	public static double kDriveWheelDiameterInch = 4.0;
 	public static double kDriveWheelCircumferenceInch = kDriveWheelDiameterInch * Math.PI;
 	public static double kDriveEncoderRatio = 1.0/1.0;
 	public static double kDriveInchesPerDegree = kDriveWheelCircumferenceInch / 360.0;

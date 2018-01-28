@@ -67,27 +67,11 @@ public class OI {
 	
 	
 	// All-in-one
-	public static Gamepad advancedOperator = new Gamepad(4);
+	public static Gamepad driver = new Gamepad(0);
 	
-	public static DoubleSupplier throttle = () -> deadband.applyAsDouble(advancedOperator.getLeftY());
-	public static DoubleSupplier turn = () -> deadband.applyAsDouble(advancedOperator.getRightX());
+	public static DoubleSupplier throttle = () -> deadband.applyAsDouble(driver.getLeftY());
+	public static DoubleSupplier turn = () -> deadband.applyAsDouble(driver.getRightX());
 	
-	public static Button climb = new JoystickButton(advancedOperator, 3);
-	public static Button leftTrigger = advancedOperator.getLeftTriggerClick();
-	public static Button rightTrigger = advancedOperator.getRightTriggerClick();
-	
-	public static Button leftBumper = advancedOperator.getLeftShoulder();
-	public static Button rightBumper = advancedOperator.getRightShoulder();
-	
-	public static Button precisionDrive = advancedOperator.getLeftStickClick();
-	
-	
-
-
-	
-	public OI() {		
-		leftBumper.whileHeld(new SetState<Intake.State>(intake, Intake.State.UNFEED, Intake.State.STOPPED));
-		rightBumper.whileHeld(new SetState<Intake.State>(intake, Intake.State.FEED, Intake.State.STOPPED));
-		
+	public OI() {
 	}
 }

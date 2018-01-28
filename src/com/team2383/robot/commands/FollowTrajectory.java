@@ -1,10 +1,9 @@
 package com.team2383.robot.commands;
 
-import static com.team2383.robot.HAL.drivetrain;
-
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.followers.DistanceFollower;
@@ -21,17 +20,20 @@ public class FollowTrajectory extends Command {
 	public FollowTrajectory(Trajectory leftTrajectory, Trajectory rightTrajectory) {
 		super("Follow Trajectory");
 		requires(drivetrain);
+
 		leftFollower = new DistanceFollower(leftTrajectory);
 		rightFollower = new DistanceFollower(rightTrajectory);
 		
-		leftFollower.configurePIDVA(1.0, 0.0, 0.0, 1 / 2, 0);
-		rightFollower.configurePIDVA(1.0, 0.0, 0.0, 1 / 2, 0);
-		
-		navX.reset();
+		leftFollower.configurePIDVA(1.0, 0.0, 0.0, 1 / 10.0, 0);
+		rightFollower.configurePIDVA(1.0, 0.0, 0.0, 1 / 10.0, 0);
 	}
 
 	@Override
 	protected void initialize() {
+		leftFollower.reset();
+		rightFollower.reset();
+		drivetrain.resetEncoders();
+		navX.reset();
 	}
 
 	@Override
@@ -40,17 +42,25 @@ public class FollowTrajectory extends Command {
 		double rightOutput = rightFollower.calculate(drivetrain.getRightFeet());
 		
 		double gyro_heading = navX.getYaw();    // Assuming the gyro is giving a value in degrees
-		double desired_heading = Pathfinder.r2d(leftModifier.getHeading());  // Should also be in degrees
+		double desired_heading = Pathfinder.r2d(-leftFollower.getHeading());  // Should also be in degrees, make sure its in phase
 
 		double angleDifference = Pathfinder.boundHalfDegrees(desired_heading - gyro_heading);
 		double turn = 0.8 * (-1.0/80.0) * angleDifference;
 		
-		drivetrain.tank(leftOutput + turn, rightOutput + turn);
+
+		SmartDashboard.putNumber("Left MP Output", leftOutput);
+		SmartDashboard.putNumber("Right MP Output", rightOutput);
+		SmartDashboard.putNumber("Heading Adj. Output", turn);
+		
+		SmartDashboard.putNumber("Left Encoder Feet", drivetrain.getLeftFeet());
+		SmartDashboard.putNumber("Right Encoder Feet", drivetrain.getRightFeet());
+		
+		drivetrain.tank(leftOutput + turn, rightOutput - turn);
 	}
 
 	@Override
 	protected boolean isFinished() {
-		return false;
+		return leftFollower.isFinished();
 	}
 
 	@Override
@@ -62,5 +72,4 @@ public class FollowTrajectory extends Command {
 	protected void interrupted() {
 		drivetrain.tank(0, 0);
 	}
-
 }

@@ -57,7 +57,11 @@ public class Drivetrain extends Subsystem {
 		//Left settings
 		leftMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
 		leftMaster.setSensorPhase(true);
-		leftMaster.setInverted(true);
+		leftMaster.setInverted(false);
+		leftFollowerA.setInverted(false);
+		leftFollowerB.setInverted(false);
+		leftFollowerC.setInverted(false);
+		
 		leftMaster.setNeutralMode(NeutralMode.Brake);
 		
 		//PID
@@ -85,8 +89,12 @@ public class Drivetrain extends Subsystem {
 		
 		//Right settings
 		rightMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
-		rightMaster.setSensorPhase(true);
-		rightMaster.setInverted(true);
+		rightMaster.setSensorPhase(false);
+		rightMaster.setInverted(false);
+		rightFollowerA.setInverted(false);
+		rightFollowerB.setInverted(false);
+		rightFollowerC.setInverted(false);
+		
 		rightMaster.setNeutralMode(NeutralMode.Brake);
 		
 		//PID
@@ -207,13 +215,22 @@ public class Drivetrain extends Subsystem {
 		leftMaster.setSelectedSensorPosition(0, 0, 0);
 		rightMaster.setSelectedSensorPosition(0, 0, 0);
 	}
+	
+
+	public int getLeftTicks() {
+		return leftMaster.getSelectedSensorPosition(0);
+	}
+	
+	public int getRightTicks() {
+		return rightMaster.getSelectedSensorPosition(0);
+	}
 
 	public double getLeftRotations() {
-		return leftMaster.getSelectedSensorPosition(0) * Constants.kDriveEncoderRatio;
+		return (getLeftTicks() / 4096.0) * Constants.kDriveEncoderRatio;
 	}
 	
 	public double getRightRotations() {
-		return rightMaster.getSelectedSensorPosition(0) * Constants.kDriveEncoderRatio;
+		return (getRightTicks() / 4096.0) * Constants.kDriveEncoderRatio;
 	}
 
 	public double getVelocity() {
@@ -244,6 +261,14 @@ public class Drivetrain extends Subsystem {
 	
 	public double getRightInches() {
 		return getRightRotations() * Constants.kDriveWheelCircumferenceInch;
+	}
+	
+	public double getLeftFeet() {
+		return getLeftInches() / 12.0;
+	}
+	
+	public double getRightFeet() {
+		return getRightInches() / 12.0;
 	}
 
 	// Feet per Seconds
@@ -278,25 +303,7 @@ public class Drivetrain extends Subsystem {
 		return rightMaster.getSelectedSensorPosition(0);
 	}
 	
-	// handles all of the constant stuff for any trajectory
-	public DistanceFollower[] initMotionProfiling(TankModifier modifier){
-		DistanceFollower leftModifier = new DistanceFollower(modifier.getLeftTrajectory());
-		DistanceFollower rightModifier = new DistanceFollower(modifier.getRightTrajectory());
-		
-		
-		leftModifier.configurePIDVA(1.0, 0.0, 0.0, 1 / 2, 0);
-		rightModifier.configurePIDVA(1.0, 0.0, 0.0, 1 / 2, 0);  // 2 is "max" velocity, just for testing
-		
-		
-		DistanceFollower[] Modifiers = new DistanceFollower[2];
-		Modifiers[0] = leftModifier;
-		Modifiers[1] = rightModifier;
-		
-		return Modifiers;
-	}
-	
 	public void setLeftMaster(double setpoint){
 		leftMaster.set(setpoint);
 	}
-	
 }

@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.team2383.robot.Constants;
 import com.team2383.robot.HAL;
 import com.team2383.robot.OI;
+import com.team2383.robot.auto.TestAuto;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -24,8 +25,8 @@ import com.team2383.robot.OI;
  * project.
  */
 public class Robot extends TimedRobot {
-	Command m_autonomousCommand;
-	SendableChooser<Command> m_chooser = new SendableChooser<>();
+	Command autoCommand;
+	SendableChooser<Command> autoChooser = new SendableChooser<>();
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -36,6 +37,10 @@ public class Robot extends TimedRobot {
 		HAL hal = new HAL();
 		Constants constants = new Constants();
 		OI oi = new OI();
+		
+		autoChooser = new SendableChooser<Command>();
+		autoChooser.addObject("Test Motion Profiling Auto", new TestAuto());
+		SmartDashboard.putData("Auto Chooser", autoChooser);
 	}
 
 	/**
@@ -66,18 +71,13 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		m_autonomousCommand = m_chooser.getSelected();
+		autoCommand = autoChooser.getSelected();
+		
+		HAL.navX.reset();
 
-		/*
-		 * String autoSelected = SmartDashboard.getString("Auto Selector",
-		 * "Default"); switch(autoSelected) { case "My Auto": autonomousCommand
-		 * = new MyAutoCommand(); break; case "Default Auto": default:
-		 * autonomousCommand = new ExampleCommand(); break; }
-		 */
-
-		// schedule the autonomous command (example)
-		if (m_autonomousCommand != null) {
-			m_autonomousCommand.start();
+		autoCommand = (Command) autoChooser.getSelected();
+		if (autoCommand != null) {
+			autoCommand.start();
 		}
 	}
 
@@ -95,8 +95,8 @@ public class Robot extends TimedRobot {
 		// teleop starts running. If you want the autonomous to
 		// continue until interrupted by another command, remove
 		// this line or comment it out.
-		if (m_autonomousCommand != null) {
-			m_autonomousCommand.cancel();
+		if (autoCommand != null) {
+			autoCommand.cancel();
 		}
 	}
 

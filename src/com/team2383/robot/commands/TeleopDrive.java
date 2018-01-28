@@ -1,10 +1,15 @@
 package com.team2383.robot.commands;
 
 import static com.team2383.robot.HAL.drivetrain;
+import static com.team2383.robot.HAL.navX;
+
 
 import java.util.function.DoubleSupplier;
 
+import com.team2383.robot.OI;
+
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class TeleopDrive extends Command {
 	private final DoubleSupplier turn;
@@ -19,11 +24,18 @@ public class TeleopDrive extends Command {
 
 	@Override
 	protected void initialize() {
+		SmartDashboard.putBoolean("Reset Encoders?", false);
 	}
 
 	@Override
 	protected void execute() {
 		drivetrain.cheesyDrive(throttle.getAsDouble(), turn.getAsDouble());
+		SmartDashboard.putNumber("Left Encoder Feet", drivetrain.getLeftFeet());
+		SmartDashboard.putNumber("Right Encoder Feet", drivetrain.getRightFeet());
+		SmartDashboard.putNumber("Gyro Degrees", navX.getYaw());
+		if (OI.driver.getButtonStateA()) {
+			drivetrain.resetEncoders();
+		}
 	}
 
 	@Override
