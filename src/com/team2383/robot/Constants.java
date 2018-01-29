@@ -3,25 +3,25 @@ package com.team2383.robot;
 import java.util.LinkedList;
 
 public class Constants {
+
+	/*
+	 * Feeder and Shooter
+	 */
+	public static final int kLeftFeederTalonID = 9;
+	public static final int kLeftShooterTalonID = 10;
+	
+	public static final int kRightFeederTalonID = 11;
+	public static final int kRightShooterTalonID = 12;
+	
 	
 	/*
-	 * Fangs Constants
+	 * Lift Constants
 	 */
-	public static final int kFangsTalonID = 9;
-	public static final double fangsReverseLimit = 0;
-	public static final double fangsForwardLimit = 0;
-	
-	/*
-	 * Feeder Constants
-	 */
-	
-	public static final int kFeederTalonID = 10;
-	
+	public static final int kLiftTalonID = 13;
 	
 	/*
 	 * Climber Constants
 	 */
-	public static final int kClimberTalonID = 11;
 
 	
 

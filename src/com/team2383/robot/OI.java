@@ -13,6 +13,7 @@ import com.team2383.ninjaLib.SetState;
 import com.team2383.ninjaLib.Values;
 import com.team2383.ninjaLib.WPILambdas;
 import com.team2383.robot.subsystems.Intake;
+import com.team2383.robot.subsystems.Lift;
 import com.team2383.ninjaLib.SetState;
 
 import edu.wpi.first.wpilibj.Joystick;
@@ -24,6 +25,7 @@ import edu.wpi.first.wpilibj.command.Command;
 
 import static com.team2383.robot.HAL.drivetrain;
 import static com.team2383.robot.HAL.intake;
+import static com.team2383.robot.HAL.lift;
 
 
 
@@ -72,6 +74,20 @@ public class OI {
 	public static DoubleSupplier throttle = () -> deadband.applyAsDouble(driver.getLeftY());
 	public static DoubleSupplier turn = () -> deadband.applyAsDouble(driver.getRightX());
 	
+	public static Button leftBumper = driver.getLeftShoulder();
+	public static Button rightBumper = driver.getRightShoulder();
+	
+	//public static Button climbUp = new JoystickButton(advancedOperator,4);
+	public static Button climbUp = new DPadButton(driver, Direction.UP);
+	//public static Button climbDown = new JoystickButton(advancedOperator, 1);
+	public static Button climbDown = new DPadButton(driver, Direction.DOWN);
+	
 	public OI() {
+		
+		leftBumper.whileHeld(new SetState<Intake.State>(intake, Intake.State.UNFEED, Intake.State.STOPPED));
+		rightBumper.whileHeld(new SetState<Intake.State>(intake, Intake.State.FEED, Intake.State.STOPPED));
+		
+		climbUp.whileHeld(new SetState<Lift.State>(lift, Lift.State.UP, Lift.State.STOPPED));
+		climbDown.whileHeld(new SetState<Lift.State>(lift, Lift.State.DOWN, Lift.State.STOPPED));
 	}
 }
