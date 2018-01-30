@@ -72,10 +72,12 @@ public class OI {
 	public static Gamepad driver = new Gamepad(0);
 	
 	public static DoubleSupplier throttle = () -> deadband.applyAsDouble(driver.getLeftY());
-	public static DoubleSupplier turn = () -> deadband.applyAsDouble(driver.getRightX());
+	public static DoubleSupplier turn = () -> deadband.applyAsDouble(-driver.getRightX());
 	
 	public static Button leftBumper = driver.getLeftShoulder();
 	public static Button rightBumper = driver.getRightShoulder();
+	
+	public static Button rev = new JoystickButton(driver, 3);
 	
 	//public static Button climbUp = new JoystickButton(advancedOperator,4);
 	public static Button climbUp = new DPadButton(driver, Direction.UP);
@@ -86,6 +88,8 @@ public class OI {
 		
 		leftBumper.whileHeld(new SetState<Intake.State>(intake, Intake.State.UNFEED, Intake.State.STOPPED));
 		rightBumper.whileHeld(new SetState<Intake.State>(intake, Intake.State.FEED, Intake.State.STOPPED));
+		
+		rev.toggleWhenPressed(new SetState<Intake.State>(intake, Intake.State.REV, Intake.State.STOPPED));
 		
 		climbUp.whileHeld(new SetState<Lift.State>(lift, Lift.State.UP, Lift.State.STOPPED));
 		climbDown.whileHeld(new SetState<Lift.State>(lift, Lift.State.DOWN, Lift.State.STOPPED));

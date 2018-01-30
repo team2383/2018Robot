@@ -1,4 +1,4 @@
-package com.team2383.robot.auto;
+/*package com.team2383.robot.auto;
 
 import com.team2383.robot.commands.FollowTrajectory;
 
@@ -22,3 +22,4 @@ public class TestAuto extends CommandGroup {
 		addSequential(new FollowTrajectory(modifier.getLeftTrajectory(), modifier.getRightTrajectory()));
 	}
 }
+*/

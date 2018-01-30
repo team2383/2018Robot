@@ -17,7 +17,8 @@ public class Constants {
 	/*
 	 * Lift Constants
 	 */
-	public static final int kLiftTalonID = 13;
+	public static final int kLeftLiftTalonID = 13;
+	public static final int kRightLiftTalonID = 14;                                                                                      
 	
 	/*
 	 * Climber Constants

@@ -29,7 +29,7 @@ public class TeleopDrive extends Command {
 
 	@Override
 	protected void execute() {
-		drivetrain.cheesyDrive(throttle.getAsDouble(), turn.getAsDouble());
+		drivetrain.arcade(throttle.getAsDouble(), turn.getAsDouble());
 		SmartDashboard.putNumber("Left Encoder Feet", drivetrain.getLeftFeet());
 		SmartDashboard.putNumber("Right Encoder Feet", drivetrain.getRightFeet());
 		SmartDashboard.putNumber("Gyro Degrees", navX.getYaw());

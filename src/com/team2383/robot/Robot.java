@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.team2383.robot.Constants;
 import com.team2383.robot.HAL;
 import com.team2383.robot.OI;
-import com.team2383.robot.auto.TestAuto;
+//import com.team2383.robot.auto.TestAuto;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -39,7 +39,7 @@ public class Robot extends TimedRobot {
 		OI oi = new OI();
 		
 		autoChooser = new SendableChooser<Command>();
-		autoChooser.addObject("Test Motion Profiling Auto", new TestAuto());
+		//autoChooser.addObject("Test Motion Profiling Auto", new TestAuto());
 		SmartDashboard.putData("Auto Chooser", autoChooser);
 	}
 

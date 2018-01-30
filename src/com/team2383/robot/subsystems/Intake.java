@@ -7,10 +7,6 @@ import com.team2383.ninjaLib.SetState;
 import com.team2383.robot.Constants;
 import com.team2383.robot.subsystems.Intake.State;
 
-/*
- * This subsystem includes the conveyor streaming balls into the shooter
- */
-
 
 public class Intake extends SetState.StatefulSubsystem<Intake.State> {
 

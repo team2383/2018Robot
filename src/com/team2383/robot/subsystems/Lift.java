@@ -9,11 +9,20 @@ import com.team2383.robot.Constants;
 
 public class Lift extends SetState.StatefulSubsystem<Lift.State> {
 
-		private TalonSRX lift = new TalonSRX(Constants.kLiftTalonID);
+		private TalonSRX leftLift = new TalonSRX(Constants.kLeftLiftTalonID);
+		private TalonSRX rightLift = new TalonSRX(Constants.kRightLiftTalonID);
 		private State state = State.STOPPED;
 		
 		public Lift(){
-			lift.setNeutralMode(NeutralMode.Brake);
+			leftLift.setNeutralMode(NeutralMode.Brake);
+			rightLift.setNeutralMode(NeutralMode.Brake);
+			
+			
+			leftLift.configPeakOutputForward(0.7, 0);
+			leftLift.configPeakOutputReverse(-0.7, 0);
+			
+			rightLift.configPeakOutputForward(0.7, 0);
+			rightLift.configPeakOutputReverse(-0.7, 0);
 		}
 		
 		public enum State {
@@ -21,13 +30,16 @@ public class Lift extends SetState.StatefulSubsystem<Lift.State> {
 		}
 		
 		public void up(){
-			lift.set(ControlMode.PercentOutput, -0.4);
+			leftLift.set(ControlMode.PercentOutput, -0.4);
+			rightLift.set(ControlMode.PercentOutput, 0.4);
 		}
 		public void down(){
-			lift.set(ControlMode.PercentOutput, 0.4);
+			leftLift.set(ControlMode.PercentOutput, 0.4);
+			rightLift.set(ControlMode.PercentOutput, -0.4);
 		}
 		public void stop() {
-			lift.set(ControlMode.PercentOutput, 0);
+			leftLift.set(ControlMode.PercentOutput, 0);
+			rightLift.set(ControlMode.PercentOutput, 0);
 		}
 
 		@Override
