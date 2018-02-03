@@ -9,8 +9,8 @@ import com.team2383.robot.Constants;
 
 public class Lift extends SetState.StatefulSubsystem<Lift.State> {
 
-		private TalonSRX leftLift = new TalonSRX(Constants.kLeftLiftTalonID);
-		private TalonSRX rightLift = new TalonSRX(Constants.kRightLiftTalonID);
+		private TalonSRX leftLift = new TalonSRX(Constants.kLift_LeftTalonID);
+		private TalonSRX rightLift = new TalonSRX(Constants.kLift_RightTalonID);
 		private State state = State.STOPPED;
 		
 		public Lift(){

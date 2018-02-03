@@ -1,6 +1,6 @@
 package com.team2383.robot.commands;
 
-import static com.team2383.robot.HAL.drivetrain;
+import static com.team2383.robot.HAL.drive;
 import static com.team2383.robot.HAL.navX;
 
 
@@ -17,7 +17,7 @@ public class TeleopDrive extends Command {
 
 	public TeleopDrive(DoubleSupplier throttle, DoubleSupplier turn) {
 		super("Teleop Drive");
-		requires(drivetrain);
+		requires(drive);
 		this.throttle = throttle;
 		this.turn = turn;
 	}
@@ -29,12 +29,9 @@ public class TeleopDrive extends Command {
 
 	@Override
 	protected void execute() {
-		drivetrain.arcade(throttle.getAsDouble(), turn.getAsDouble());
-		SmartDashboard.putNumber("Left Encoder Feet", drivetrain.getLeftFeet());
-		SmartDashboard.putNumber("Right Encoder Feet", drivetrain.getRightFeet());
-		SmartDashboard.putNumber("Gyro Degrees", navX.getYaw());
+		drive.arcade(throttle.getAsDouble(), turn.getAsDouble());
 		if (OI.driver.getButtonStateA()) {
-			drivetrain.resetEncoders();
+			drive.resetEncoders();
 		}
 	}
 
@@ -45,11 +42,11 @@ public class TeleopDrive extends Command {
 
 	@Override
 	protected void end() {
-		drivetrain.tank(0, 0);
+		drive.tank(0, 0);
 	}
 
 	@Override
 	protected void interrupted() {
-		drivetrain.tank(0, 0);
+		drive.tank(0, 0);
 	}
 }

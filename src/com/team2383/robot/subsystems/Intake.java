@@ -10,11 +10,11 @@ import com.team2383.robot.subsystems.Intake.State;
 
 public class Intake extends SetState.StatefulSubsystem<Intake.State> {
 
-	private TalonSRX leftFeeder = new TalonSRX(Constants.kLeftFeederTalonID);
-	private TalonSRX rightFeeder = new TalonSRX(Constants.kRightFeederTalonID);
+	private TalonSRX leftFeeder = new TalonSRX(Constants.kIntake_LeftFeederTalonID);
+	private TalonSRX rightFeeder = new TalonSRX(Constants.kIntake_RightFeederTalonID);
 	
-	private TalonSRX leftShooter = new TalonSRX(Constants.kLeftShooterTalonID);
-	private TalonSRX rightShooter = new TalonSRX(Constants.kRightShooterTalonID);
+	private TalonSRX leftShooter = new TalonSRX(Constants.kIntake_LeftShooterTalonID);
+	private TalonSRX rightShooter = new TalonSRX(Constants.kIntake_RightShooterTalonID);
 	
 	private State state = State.STOPPED;
 	

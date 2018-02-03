@@ -15,7 +15,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.team2383.robot.Constants;
 import com.team2383.robot.HAL;
 import com.team2383.robot.OI;
-//import com.team2383.robot.auto.TestAuto;
+import com.team2383.robot.auto.TestAuto;
+import com.team2383.robot.commands.GeneralPeriodic;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -26,6 +27,7 @@ import com.team2383.robot.OI;
  */
 public class Robot extends TimedRobot {
 	Command autoCommand;
+	Command generalPeriodicCommand;
 	SendableChooser<Command> autoChooser = new SendableChooser<>();
 
 	/**
@@ -38,8 +40,10 @@ public class Robot extends TimedRobot {
 		Constants constants = new Constants();
 		OI oi = new OI();
 		
+		generalPeriodicCommand = new GeneralPeriodic();
+		
 		autoChooser = new SendableChooser<Command>();
-		//autoChooser.addObject("Test Motion Profiling Auto", new TestAuto());
+		autoChooser.addObject("Test Motion Profiling Auto", new TestAuto());
 		SmartDashboard.putData("Auto Chooser", autoChooser);
 	}
 
@@ -50,7 +54,9 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void disabledInit() {
-
+		if (!generalPeriodicCommand.isRunning()) {
+			generalPeriodicCommand.start();
+		}
 	}
 
 	@Override
@@ -71,10 +77,11 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		autoCommand = autoChooser.getSelected();
+		if (!generalPeriodicCommand.isRunning()) {
+			generalPeriodicCommand.start();
+		}
 		
-		HAL.navX.reset();
-
+		autoCommand = autoChooser.getSelected();
 		autoCommand = (Command) autoChooser.getSelected();
 		if (autoCommand != null) {
 			autoCommand.start();
@@ -91,6 +98,10 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void teleopInit() {
+		if (!generalPeriodicCommand.isRunning()) {
+			generalPeriodicCommand.start();
+		}
+		
 		// This makes sure that the autonomous stops running when
 		// teleop starts running. If you want the autonomous to
 		// continue until interrupted by another command, remove

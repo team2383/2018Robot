@@ -8,7 +8,7 @@ import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Waypoint;
 import jaci.pathfinder.modifiers.TankModifier;
 
-public class TestAuto extends CommandGroup {
+public class SetupTrackWidthAuto extends CommandGroup {
 	Waypoint[] points = new Waypoint[] {
 		    new Waypoint(0, -13, 0),      // Waypoint @ x=-4, y=-1, exit angle=-45 degrees
 		    new Waypoint(9, -13, 0)
@@ -18,7 +18,7 @@ public class TestAuto extends CommandGroup {
 	Trajectory trajectory = Pathfinder.generate(points, config);
 	TankModifier modifier = new TankModifier(trajectory).modify(2.365);
 
-	public TestAuto() {
+	public SetupTrackWidthAuto() {
 		addSequential(new FollowTrajectory(modifier.getLeftTrajectory(), modifier.getRightTrajectory()));
 	}
 }

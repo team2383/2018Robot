@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.buttons.Trigger;
 import edu.wpi.first.wpilibj.command.Command;
 
-import static com.team2383.robot.HAL.drivetrain;
+import static com.team2383.robot.HAL.drive;
 import static com.team2383.robot.HAL.intake;
 import static com.team2383.robot.HAL.lift;
 
