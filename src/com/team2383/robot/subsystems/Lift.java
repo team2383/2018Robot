@@ -3,65 +3,60 @@ package com.team2383.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.team2383.ninjaLib.MotionUtils;
 import com.team2383.ninjaLib.SetState;
-import com.team2383.robot.Constants;
+import com.team2383.robot.StaticConstants;
+
+import edu.wpi.first.wpilibj.command.Subsystem;
 
 
-public class Lift extends SetState.StatefulSubsystem<Lift.State> {
+public class Lift extends Subsystem {
 
-		private TalonSRX leftLift = new TalonSRX(Constants.kLift_LeftTalonID);
-		private TalonSRX rightLift = new TalonSRX(Constants.kLift_RightTalonID);
-		private State state = State.STOPPED;
-		
-		public Lift(){
-			leftLift.setNeutralMode(NeutralMode.Brake);
-			rightLift.setNeutralMode(NeutralMode.Brake);
+	
+		//calculated kV is somewhere around 0.27
+		//travel is 38.5 inches
+		//16tooth sprocket, diameter of 1.406"
+	
+		private static final double SPROCKET_CIRCUMFERENCE_IN = 1.406 * Math.PI;
+		private static final double MAX_TRAVEL_IN = 38.5;
+		private static final double MAX_TRAVEL_ROTATIONS = inchesToRotations(MAX_TRAVEL_IN);
+
+		private TalonSRX masterLift;
+		private TalonSRX followerLift;
+
+		public Lift() {
+			masterLift = new TalonSRX(StaticConstants.kLift_LeftTalonID);
+			followerLift = new TalonSRX(StaticConstants.kLift_RightTalonID);
 			
-			
-			leftLift.configPeakOutputForward(0.7, 0);
-			leftLift.configPeakOutputReverse(-0.7, 0);
-			
-			rightLift.configPeakOutputForward(0.7, 0);
-			rightLift.configPeakOutputReverse(-0.7, 0);
+			masterLift.set(ControlMode.Follower, masterLift.getDeviceID());
+			masterLift.config_kP(0, 0.2, 0);
+			masterLift.config_kI(0, 0, 0);
+			masterLift.config_kD(0, 0, 0);
+			masterLift.config_kF(0, 0.27, 0);
+			masterLift.config_IntegralZone(0, 0, 0);
 		}
 		
-		public enum State {
-			UP, DOWN, STOPPED
+		/**
+		 * Convert inches of height to rotations
+		 * @param position the position in inches
+		 * @return the position we are demanding from the lift talon
+		 */
+		private static double inchesToRotations(double position) {
+			return MotionUtils.distanceToRotations(position, SPROCKET_CIRCUMFERENCE_IN);
 		}
 		
-		public void up(){
-			leftLift.set(ControlMode.PercentOutput, -0.4);
-			rightLift.set(ControlMode.PercentOutput, 0.4);
+		/**
+		 * Set the position of the elevator
+		 * @param position the desired position in the elevator in inches
+		 */
+		public void setPosition(double position) {
+			position = Math.max(Math.min(position, MAX_TRAVEL_IN), 0);
+			masterLift.set(ControlMode.MotionMagic, inchesToRotations(position));
 		}
-		public void down(){
-			leftLift.set(ControlMode.PercentOutput, 0.4);
-			rightLift.set(ControlMode.PercentOutput, -0.4);
-		}
-		public void stop() {
-			leftLift.set(ControlMode.PercentOutput, 0);
-			rightLift.set(ControlMode.PercentOutput, 0);
-		}
-
-		@Override
-		public void setState(State state) {
-			switch (state) {
-				case UP:
-					up();
-					break;
-					
-				case DOWN:
-					down();
-					break;
 		
-				default:
-				case STOPPED:
-					stop();
-					break;
-			}
-		}
-
 		@Override
 		protected void initDefaultCommand() {
-			// TODO Auto-generated method stub
 		}
+		
+		
 }

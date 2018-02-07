@@ -104,6 +104,16 @@ public class PathFollower {
         if (segment < trajectory.length()) {
             Trajectory.Segment seg = trajectory.get(segment);
             double error = seg.position - distance_covered;
+            
+            /*
+             * pwm = P * error + D * ((error - prev_error) / dt - goal_velocity) + Kv * goal_velocity + Ka * goal_acceleration
+			 * This is close to a PD controller, but with some feed forward terms. The idea behind feed forwards is that if you have a pretty good idea
+			 * about how much power it will take to do something, go ahead and add it in. The control loop will take up the slop from there when you are wrong,
+			 * or someone bumped the bot. The D term is special in that you subtract off the goal velocity (should we do this). This falls out from the state feedback controllers.
+			 * Think about it this way. If you are at the goal, and moving at the right speed, you don't want to apply corrective power to decelerate the robot
+			 * (This is what D would do if you weren't trying to move but were moving and at the goal.)
+             */
+            
             double calculated_value =
                     kp * error +                                    // Proportional
                     kd * ((error - last_error) / seg.dt) +          // Derivative
@@ -127,7 +137,13 @@ public class PathFollower {
      * @return the current segment being operated on
      */
     public Trajectory.Segment getSegment() {
-        return trajectory.get(segment);
+    	Trajectory.Segment seg = new Trajectory.Segment(0, 0, 0, 0, 0, 0, 0, 0);
+    	try {
+    		seg = trajectory.get(segment);
+    	} catch (ArrayIndexOutOfBoundsException e){
+    		//lol bye
+    	}
+        return seg;
     }
 
     /**

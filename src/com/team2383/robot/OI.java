@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import static com.team2383.robot.HAL.drive;
 import static com.team2383.robot.HAL.intake;
 import static com.team2383.robot.HAL.lift;
+import static com.team2383.robot.HAL.prefs;
 
 
 
@@ -58,21 +59,17 @@ public class OI {
 	// number it is.
 
 	/* Sticks functions */
-
-	private static DoubleUnaryOperator inputExpo = (x) -> {
-		return Constants.inputExpo * Math.pow(x, 3) + (1 - Constants.inputExpo) * x;
-	};
 	
 	private static DoubleUnaryOperator deadband = (x) -> {
-		return Math.abs(x) > Constants.inputDeadband ? x : 0;
+		return Math.abs(x) > prefs.getDouble("inputDeadband", 0.05) ? x : 0;
 	};
 	
 	
 	// All-in-one
 	public static Gamepad driver = new Gamepad(0);
 	
-	public static DoubleSupplier throttle = () -> deadband.applyAsDouble(driver.getLeftY());
-	public static DoubleSupplier turn = () -> deadband.applyAsDouble(-driver.getRightX());
+	public static DoubleSupplier throttle = () -> (-driver.getLeftY());
+	public static DoubleSupplier turn = () -> (driver.getRightX());
 	
 	public static Button leftBumper = driver.getLeftShoulder();
 	public static Button rightBumper = driver.getRightShoulder();

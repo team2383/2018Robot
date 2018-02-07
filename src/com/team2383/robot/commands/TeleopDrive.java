@@ -10,16 +10,19 @@ import com.team2383.robot.OI;
 
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import jaci.pathfinder.Pathfinder;
 
 public class TeleopDrive extends Command {
 	private final DoubleSupplier turn;
 	private final DoubleSupplier throttle;
+	private boolean gyroHomeSet;
 
 	public TeleopDrive(DoubleSupplier throttle, DoubleSupplier turn) {
 		super("Teleop Drive");
 		requires(drive);
 		this.throttle = throttle;
 		this.turn = turn;
+		this.gyroHomeSet = false;
 	}
 
 	@Override
@@ -29,7 +32,30 @@ public class TeleopDrive extends Command {
 
 	@Override
 	protected void execute() {
-		drive.arcade(throttle.getAsDouble(), turn.getAsDouble());
+		double turnAdj = 0;
+		
+		/*
+
+		if (turn.getAsDouble() <= 0.05 && throttle.getAsDouble() > 0.3) {
+			if (!gyroHomeSet) {
+				navX.reset();
+				gyroHomeSet = true;
+			}
+			double gyro_heading = navX.getYaw();    // Assuming the gyro is giving a value in degrees
+			
+			double angleDifference = Pathfinder.boundHalfDegrees(-gyro_heading);
+			turnAdj = -0.05 * angleDifference;
+		} else {
+			gyroHomeSet = false;
+			turnAdj = 0;
+		}
+		
+		*/
+		
+		SmartDashboard.putNumber("Drive TurnAdj", turnAdj);
+		
+		drive.arcade(throttle.getAsDouble(), turn.getAsDouble()-turnAdj);
+		
 		if (OI.driver.getButtonStateA()) {
 			drive.resetEncoders();
 		}

@@ -1,5 +1,7 @@
 package com.team2383.robot.commands;
 
+import static com.team2383.robot.HAL.prefs;
+
 import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -7,30 +9,48 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory;
+import jaci.pathfinder.modifiers.TankModifier;
 
 import static com.team2383.robot.HAL.drive;
 import static com.team2383.robot.HAL.navX;
 
 import com.team2383.ninjaLib.PathFollower;
-import com.team2383.robot.Constants;
 
 public class FollowTrajectory extends Command implements Sendable  {
 	PathFollower leftFollower;
 	PathFollower rightFollower;
+	Trajectory trajectory;
+	TankModifier modifier;
+	double angleDifference;
 	
-	public FollowTrajectory(Trajectory leftTrajectory, Trajectory rightTrajectory) {
+	public FollowTrajectory(Trajectory trajectory) {
 		super("Follow Trajectory");
-		requires(drive);
 
-		leftFollower = new PathFollower(leftTrajectory);
-		rightFollower = new PathFollower(rightTrajectory);
+		this.modifier = new TankModifier(trajectory).modify(prefs.getDouble("trackwidth", 1.41));
+		this.trajectory = trajectory;
 		
-		leftFollower.configurePIDVA(Constants.kDrive_Motion_P, 0.0, Constants.kDrive_Motion_D, Constants.kDrive_Motion_V, Constants.kDrive_Motion_A);
-		rightFollower.configurePIDVA(Constants.kDrive_Motion_P, 0.0, Constants.kDrive_Motion_D, Constants.kDrive_Motion_V, Constants.kDrive_Motion_A);
+		requires(drive);
 	}
 
 	@Override
 	protected void initialize() {
+		modifier.modify(prefs.getDouble("trackwidth", 1.41));
+		
+		leftFollower = new PathFollower(modifier.getLeftTrajectory());
+		rightFollower = new PathFollower(modifier.getRightTrajectory());
+		
+		leftFollower.configurePIDVA(prefs.getDouble("kDrive_Motion_P", 1.0),
+									0.0,
+									prefs.getDouble("kDrive_Motion_D", 1.0),
+									prefs.getDouble("kDrive_Motion_V", 1.0),
+									prefs.getDouble("kDrive_Motion_A", 1.0));
+		rightFollower.configurePIDVA(prefs.getDouble("kDrive_Motion_P", 1.0),
+									0.0,
+									prefs.getDouble("kDrive_Motion_D", 1.0),
+									prefs.getDouble("kDrive_Motion_V", 1.0),
+									prefs.getDouble("kDrive_Motion_A", 1.0));
+		
+
 		leftFollower.reset();
 		rightFollower.reset();
 		drive.resetEncoders();
@@ -39,43 +59,47 @@ public class FollowTrajectory extends Command implements Sendable  {
 
 	@Override
 	protected void execute() {
+		SmartDashboard.putNumber("MP Target Left Position (ft)", leftFollower.getSegment().position);
+		SmartDashboard.putNumber("MP Target Left Velocity (ft-s)", leftFollower.getSegment().velocity);
+
+		SmartDashboard.putNumber("MP Target Right Position (ft)", rightFollower.getSegment().position);
+		SmartDashboard.putNumber("MP Target Right Velocity (ft-s)", rightFollower.getSegment().velocity);
+		
+		SmartDashboard.putNumber("MP Target Heading", leftFollower.getSegment().heading);
+		
 		double leftOutput = leftFollower.calculate(drive.getMotion().leftPosition);
 		double rightOutput = rightFollower.calculate(drive.getMotion().rightPosition);
 		
-		double gyro_heading = navX.getYaw();    // Assuming the gyro is giving a value in degrees
-		double desired_heading = Pathfinder.r2d(-leftFollower.getHeading());  // Should also be in degrees, make sure its in phase
+		double gyro_heading = navX.getAngle();    // Assuming the gyro is giving a value in degrees
+		double desired_heading = -Pathfinder.r2d(leftFollower.getHeading());  // Should also be in degrees, make sure its in phase
 
-		double angleDifference = Pathfinder.boundHalfDegrees(desired_heading - gyro_heading);
-		double turn = 0.8 * (-1.0/80.0) * angleDifference;
-
-		SmartDashboard.putNumber("MP Target Left Position (ft)", leftFollower.getSegment().position);
-		SmartDashboard.putNumber("MP Target Left Velocity (ft/s)", leftFollower.getSegment().velocity);
-
-		SmartDashboard.putNumber("MP Target Right Position (ft)", rightFollower.getSegment().position);
-		SmartDashboard.putNumber("MP Target Right Velocity (ft/s)", rightFollower.getSegment().velocity);
-		
-		SmartDashboard.putNumber("MP Target Heading", leftFollower.getSegment().heading);
+		angleDifference = Pathfinder.boundHalfDegrees(desired_heading - gyro_heading);
+		double turn = 1.0 * (-1.0/80.0) * angleDifference;
 		
 		SmartDashboard.putNumber("MP Left Output (%)", leftOutput);
 		SmartDashboard.putNumber("MP Right Output (%)", rightOutput);
 		SmartDashboard.putNumber("MP Heading Adj. Output (%)", turn);
-		
+	
 		drive.tank(leftOutput + turn, rightOutput - turn);
 	}
 
 	@Override
 	protected boolean isFinished() {
-		return leftFollower.isFinished() && rightFollower.isFinished();
+		return leftFollower.isFinished() && rightFollower.isFinished() && angleDifference <= 2.0;
 	}
 
 	@Override
 	protected void end() {
 		drive.tank(0, 0);
+		leftFollower.reset();
+		rightFollower.reset();
+		drive.resetEncoders();
+		navX.reset();
 	}
 
 	@Override
 	protected void interrupted() {
-		drive.tank(0, 0);
+		end();
 	}
 
 	@Override

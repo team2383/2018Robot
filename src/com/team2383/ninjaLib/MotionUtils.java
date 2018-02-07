@@ -1,6 +1,6 @@
 package com.team2383.ninjaLib;
 
-import com.team2383.robot.Constants;
+import com.team2383.robot.StaticConstants;
 
 /**
  * MotionUtils provides convenience functions to convert between various units.
@@ -32,14 +32,25 @@ public class MotionUtils {
 	}
 	
 	/**
+	 * Convert distance in real life units (feet or inches) to rotations
+	 * @param distance the distance traveled by the rotating object
+	 * @param circumference the circumference of the rotating object
+	 * @return sensor distance in the units of @param circumference
+	 */
+	public static double distanceToRotations(double distance, double circumference) {
+		return (distance / circumference);
+	}
+	
+	/**
 	 * Convert Native Sensor Units/Ticks to RPS
 	 * @param ticks velocity from sensor in native units (ticks per 100ms)
 	 * @param ticksPerRotation ticks for 1 rotation (4096 for a mag encoder)
+	 * @param period velocity sampling in period in seconds (should be set to 20ms in talon config, so this should be 0.02)
 	 * @param encoderRatio if the sensor is behind a gear reduction, this is necessary to provide an accurate value
 	 * @return sensor velocity in Rotations Per Second
 	 */
-	public static double ticksToRPS(double ticks, double ticksPerRotation, double encoderRatio) {
-		return ticks * (10.0/ticksPerRotation) * encoderRatio;
+	public static double ticksToRPS(double ticks, double ticksPerRotation, double period, double encoderRatio) {
+		return ticks * ((1/period)/ticksPerRotation) * encoderRatio;
 	}
 	
 	/**
@@ -49,7 +60,7 @@ public class MotionUtils {
 	 * @param encoderRatio if the sensor is behind a gear reduction, this is necessary to provide an accurate value
 	 * @return sensor velocity in Rotations Per Second
 	 */
-	public static double ticksToRPM(double ticks, double ticksPerRotation, double encoderRatio) {
-		return ticks * (600.0/ticksPerRotation) * encoderRatio;
+	public static double ticksToRPM(double ticks, double ticksPerRotation, double period, double encoderRatio) {
+		return ticksToRPS(ticks, ticksPerRotation, period, encoderRatio) * 60.0;
 	}
 }

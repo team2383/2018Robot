@@ -12,10 +12,10 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import com.team2383.robot.Constants;
 import com.team2383.robot.HAL;
 import com.team2383.robot.OI;
-import com.team2383.robot.auto.TestAuto;
+import com.team2383.robot.auto.CalculateTrackWidthAuto;
+import com.team2383.robot.auto.TestMotionProfile;
 import com.team2383.robot.commands.GeneralPeriodic;
 
 /**
@@ -36,15 +36,20 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void robotInit() {
+		@SuppressWarnings("unused")
 		HAL hal = new HAL();
-		Constants constants = new Constants();
+		@SuppressWarnings("unused")
 		OI oi = new OI();
 		
 		generalPeriodicCommand = new GeneralPeriodic();
 		
 		autoChooser = new SendableChooser<Command>();
-		autoChooser.addObject("Test Motion Profiling Auto", new TestAuto());
+		autoChooser.addObject("Test Motion Profiling Auto", new TestMotionProfile());
+		autoChooser.addObject("Calc Trackwidth", new CalculateTrackWidthAuto());
 		SmartDashboard.putData("Auto Chooser", autoChooser);
+		
+		this.setPeriod(0.02);
+		
 	}
 
 	/**
@@ -117,6 +122,10 @@ public class Robot extends TimedRobot {
 	@Override
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
+		
+		if (autoCommand != null) {
+			autoCommand.cancel();
+		}
 	}
 
 	/**

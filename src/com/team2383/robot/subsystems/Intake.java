@@ -1,20 +1,22 @@
 package com.team2383.robot.subsystems;
 
+import static com.team2383.robot.HAL.prefs;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.team2383.ninjaLib.SetState;
-import com.team2383.robot.Constants;
+import com.team2383.robot.StaticConstants;
 import com.team2383.robot.subsystems.Intake.State;
 
 
 public class Intake extends SetState.StatefulSubsystem<Intake.State> {
 
-	private TalonSRX leftFeeder = new TalonSRX(Constants.kIntake_LeftFeederTalonID);
-	private TalonSRX rightFeeder = new TalonSRX(Constants.kIntake_RightFeederTalonID);
+	private TalonSRX leftFeeder = new TalonSRX(prefs.getInt("kIntake_LeftFeederTalonID", 9));
+	private TalonSRX leftShooter = new TalonSRX(prefs.getInt("kIntake_LeftShooterTalonID", 10));
 	
-	private TalonSRX leftShooter = new TalonSRX(Constants.kIntake_LeftShooterTalonID);
-	private TalonSRX rightShooter = new TalonSRX(Constants.kIntake_RightShooterTalonID);
+	private TalonSRX rightFeeder = new TalonSRX(prefs.getInt("kIntake_RightFeederTalonID", 11));
+	private TalonSRX rightShooter = new TalonSRX(prefs.getInt("kIntake_RightShooterTalonID", 12));
 	
 	private State state = State.STOPPED;
 	

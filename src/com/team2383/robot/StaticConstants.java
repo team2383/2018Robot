@@ -2,7 +2,7 @@ package com.team2383.robot;
 
 import java.util.LinkedList;
 
-public class Constants {
+public class StaticConstants {
 
 	/*
 	 * Feeder and Shooter
@@ -73,6 +73,11 @@ public class Constants {
 	public static double kDrive_Heading_D = 0.03;			// %/(degree/s)
 	public static double kDrive_Heading_F = 0;				// %/(degree/s) max turn speed
 	
+	
+	/*
+	 * General Constants
+	 */
+
 	public static double kPidSetpointWait = 0.15;
 	
 	public static double inputExpo = 0.32;
