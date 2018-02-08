@@ -22,6 +22,7 @@ public class Lift extends Subsystem {
 		private static final double SPROCKET_CIRCUMFERENCE_IN = 1.406 * Math.PI;
 		private static final double MAX_TRAVEL_IN = 38.5;
 		private static final double MAX_TRAVEL_ROTATIONS = inchesToRotations(MAX_TRAVEL_IN);
+		private static final double MAX_TRAVEL_TICKS = MAX_TRAVEL_ROTATIONS * 4096;
 
 		private TalonSRX masterLift;
 		private TalonSRX followerLift;
@@ -37,6 +38,8 @@ public class Lift extends Subsystem {
 			masterLift.config_kD(0, 0, 0);
 			masterLift.config_kF(0, 0.27, 0);
 			masterLift.config_IntegralZone(0, 0, 0);
+			masterLift.configForwardSoftLimitEnable(true, 0);
+			masterLift.configForwardSoftLimitThreshold((int) MAX_TRAVEL_ROTATIONS * 4096, 0);
 		}
 		
 		/**
