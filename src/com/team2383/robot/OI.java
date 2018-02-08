@@ -12,6 +12,7 @@ import com.team2383.ninjaLib.OnChangeButton;
 import com.team2383.ninjaLib.SetState;
 import com.team2383.ninjaLib.Values;
 import com.team2383.ninjaLib.WPILambdas;
+import com.team2383.robot.commands.TeleopLiftMotionMagic;
 import com.team2383.robot.subsystems.Intake;
 import com.team2383.robot.subsystems.Lift;
 import com.team2383.ninjaLib.SetState;
@@ -71,15 +72,18 @@ public class OI {
 	public static DoubleSupplier throttle = () -> (-driver.getLeftY());
 	public static DoubleSupplier turn = () -> (driver.getRightX());
 	
+	public static DoubleSupplier liftSpeed = () -> {
+		double lt = driver.getLeftTrigger();
+		double rt = driver.getRightTrigger();
+		double speed = (lt >= rt) ? lt : rt;
+		return speed;
+	};
+	
 	public static Button leftBumper = driver.getLeftShoulder();
 	public static Button rightBumper = driver.getRightShoulder();
+	public static Button liftMotionMagic = driver.getButtonX();
 	
 	public static Button rev = new JoystickButton(driver, 3);
-	
-	//public static Button climbUp = new JoystickButton(advancedOperator,4);
-	public static Button climbUp = new DPadButton(driver, Direction.UP);
-	//public static Button climbDown = new JoystickButton(advancedOperator, 1);
-	public static Button climbDown = new DPadButton(driver, Direction.DOWN);
 	
 	public OI() {
 		
@@ -88,7 +92,6 @@ public class OI {
 		
 		rev.toggleWhenPressed(new SetState<Intake.State>(intake, Intake.State.REV, Intake.State.STOPPED));
 		
-		climbUp.whileHeld(new SetState<Lift.State>(lift, Lift.State.UP, Lift.State.STOPPED));
-		climbDown.whileHeld(new SetState<Lift.State>(lift, Lift.State.DOWN, Lift.State.STOPPED));
+		liftMotionMagic.whileHeld(new TeleopLiftMotionMagic(liftSpeed));
 	}
 }

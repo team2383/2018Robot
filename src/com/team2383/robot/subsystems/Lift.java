@@ -5,7 +5,9 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.team2383.ninjaLib.MotionUtils;
 import com.team2383.ninjaLib.SetState;
+import com.team2383.robot.OI;
 import com.team2383.robot.StaticConstants;
+import com.team2383.robot.commands.TeleopLiftOpenLoop;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
 
@@ -23,6 +25,7 @@ public class Lift extends Subsystem {
 
 		private TalonSRX masterLift;
 		private TalonSRX followerLift;
+		private double position;
 
 		public Lift() {
 			masterLift = new TalonSRX(StaticConstants.kLift_LeftTalonID);
@@ -46,17 +49,32 @@ public class Lift extends Subsystem {
 		}
 		
 		/**
+		 * raise or lower the lift by @param change inches.
+		 * @param change amount to change the position by
+		 */
+		public void changePosition(double change) {
+			setPosition(position += change);
+		}
+		
+		/**
 		 * Set the position of the elevator
 		 * @param position the desired position in the elevator in inches
 		 */
 		public void setPosition(double position) {
-			position = Math.max(Math.min(position, MAX_TRAVEL_IN), 0);
+			this.position = Math.max(Math.min(position, MAX_TRAVEL_IN), 0);
 			masterLift.set(ControlMode.MotionMagic, inchesToRotations(position));
+		}
+		
+		public void setOutput(double output) {
+			masterLift.set(ControlMode.PercentOutput, output);
+		}
+		
+		public void stop() {
+			masterLift.set(ControlMode.PercentOutput, 0);
 		}
 		
 		@Override
 		protected void initDefaultCommand() {
-		}
-		
-		
+			this.setDefaultCommand(new TeleopLiftOpenLoop(OI.liftSpeed));
+		}		
 }
