@@ -7,6 +7,7 @@
 
 package com.team2383.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -30,6 +31,30 @@ public class Robot extends TimedRobot {
 	Command generalPeriodicCommand;
 	SendableChooser<Command> autoChooser = new SendableChooser<>();
 
+	/*
+	 * So wpilib is trying to shoot us in the foot as usual
+	 * lets make sure exceptions crash the program so broken code doesn't bork us on the field
+	 * 
+	 * Keep an eye on wpilib updates for when they come up with a better solution for this.
+	 * (non-Javadoc)
+	 * @see edu.wpi.first.wpilibj.IterativeRobotBase#loopFunc()
+	 */
+	@Override
+	protected void loopFunc()
+	{
+	    	try
+	    	{
+	    		// calls user code
+			super.loopFunc();
+	    	} // catch all the things
+	    	catch(Throwable throwable)
+	    	{
+	    		DriverStation.reportError("Unhandled exception: " + throwable.toString(),
+	    		          throwable.getStackTrace());
+	    		System.exit(1); // kill the program so it can restart
+		}
+	}
+	
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
@@ -122,10 +147,6 @@ public class Robot extends TimedRobot {
 	@Override
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
-		
-		if (autoCommand != null) {
-			autoCommand.cancel();
-		}
 	}
 
 	/**

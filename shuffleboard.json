@@ -57,7 +57,7 @@
           "12,4": {
             "size": [
               6,
-              1
+              2
             ],
             "content": {
               "_type": "Text View",
@@ -276,15 +276,114 @@
               "_title": "Auto Chooser"
             }
           },
-          "5,1": {
+          "5,4": {
+            "size": [
+              5,
+              2
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Drive Right Position (ft)",
+              "_title": "Drive Right Position (ft)"
+            }
+          },
+          "6,11": {
+            "size": [
+              10,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Rotations: ",
+              "_title": "SmartDashboard/Rotations: "
+            }
+          },
+          "4,1": {
+            "size": [
+              5,
+              2
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Position: ",
+              "_title": "Position: "
+            }
+          },
+          "9,9": {
+            "size": [
+              6,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Position: ",
+              "_title": "/SmartDashboard/Position: "
+            }
+          },
+          "0,12": {
+            "size": [
+              5,
+              2
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/desired Position: ",
+              "_title": "desired Position: "
+            }
+          },
+          "10,7": {
             "size": [
               1,
               1
             ],
             "content": {
               "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Drive Right Position (ft)",
-              "_title": "Drive Right Position (ft)"
+              "_source0": "network_table:///SmartDashboard/actual Position: ",
+              "_title": "actual Position: "
+            }
+          },
+          "6,13": {
+            "size": [
+              7,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/actual Position: ",
+              "_title": "/SmartDashboard/actual Position: "
+            }
+          },
+          "11,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Left Encoder Feet",
+              "_title": "Left Encoder Feet"
+            }
+          },
+          "12,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Right Encoder Feet",
+              "_title": "Right Encoder Feet"
+            }
+          },
+          "13,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Gyro Degrees",
+              "_title": "Gyro Degrees"
             }
           }
         }
@@ -450,7 +549,6 @@
             ],
             "content": {
               "_type": "List Layout",
-              "_source0": "network_table:///LiveWindow/Ungrouped",
               "_title": "Ungrouped",
               "_children": [
                 {
@@ -477,7 +575,6 @@
             ],
             "content": {
               "_type": "List Layout",
-              "_source0": "network_table:///LiveWindow/Intake",
               "_title": "Intake",
               "_children": []
             }
@@ -489,7 +586,6 @@
             ],
             "content": {
               "_type": "List Layout",
-              "_source0": "network_table:///LiveWindow/Lift",
               "_title": "Lift",
               "_children": []
             }
@@ -501,9 +597,34 @@
             ],
             "content": {
               "_type": "List Layout",
-              "_source0": "network_table:///LiveWindow/Drivetrain",
               "_title": "Drivetrain",
               "_children": []
+            }
+          },
+          "8,4": {
+            "size": [
+              2,
+              4
+            ],
+            "content": {
+              "_type": "List Layout",
+              "_title": "Ungrouped",
+              "_children": [
+                {
+                  "_type": "PDP",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/PowerDistributionPanel[0]",
+                  "_title": "PowerDistributionPanel[0]",
+                  "showIndicatorText": true
+                },
+                {
+                  "_type": "Differential Drivebase",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/DifferentialDrive[1]",
+                  "_title": "DifferentialDrive[1]",
+                  "numberOfWheels": 4,
+                  "wheelDiameter": 80.0,
+                  "showVectors": true
+                }
+              ]
             }
           }
         }
@@ -721,16 +842,11 @@
             ],
             "content": {
               "_type": "Graph",
-              "_source0": "network_table:///SmartDashboard/Drive Left Velocity (ft-s)",
-              "_source1": "network_table:///SmartDashboard/MP Target Heading",
-              "_source2": "network_table:///SmartDashboard/MP Left Output (%)",
-              "_source3": "network_table:///SmartDashboard/MP Target Left Velocity (ft-s)",
-              "_title": "Graph (4 sources)",
-              "Visible time": 5.0,
-              "SmartDashboard/Drive Left Velocity (ft-s) visible": true,
-              "SmartDashboard/MP Left Output (%) visible": false,
-              "SmartDashboard/MP Target Heading visible": false,
-              "SmartDashboard/MP Target Left Velocity (ft-s) visible": true
+              "_source0": "network_table:///SmartDashboard/MP Target Heading",
+              "_source1": "network_table:///SmartDashboard/MP Left Output (%)",
+              "_source2": "network_table:///SmartDashboard/MP Target Left Velocity (ft-s)",
+              "_title": "Graph (3 sources)",
+              "Visible time": 5.0
             }
           },
           "4,3": {
@@ -740,14 +856,10 @@
             ],
             "content": {
               "_type": "Graph",
-              "_source0": "network_table:///SmartDashboard/Drive Right Velocity (ft-s)",
-              "_source1": "network_table:///SmartDashboard/MP Target Left Velocity (ft-s)",
-              "_source2": "network_table:///SmartDashboard/MP Target Right Velocity (ft-s)",
-              "_title": "Graph (3 sources)",
-              "Visible time": 5.0,
-              "SmartDashboard/Drive Right Velocity (ft-s) visible": true,
-              "SmartDashboard/MP Target Left Velocity (ft-s) visible": false,
-              "SmartDashboard/MP Target Right Velocity (ft-s) visible": true
+              "_source0": "network_table:///SmartDashboard/MP Target Left Velocity (ft-s)",
+              "_source1": "network_table:///SmartDashboard/MP Target Right Velocity (ft-s)",
+              "_title": "Graph (2 sources)",
+              "Visible time": 5.0
             }
           },
           "0,0": {
@@ -757,14 +869,10 @@
             ],
             "content": {
               "_type": "Graph",
-              "_source0": "network_table:///SmartDashboard/Drive Left Position (ft)",
-              "_source1": "network_table:///SmartDashboard/MP Right Output (%)",
-              "_source2": "network_table:///SmartDashboard/MP Target Left Position (ft)",
-              "_title": "Graph (3 sources)",
-              "Visible time": 15.0,
-              "SmartDashboard/Drive Left Position (ft) visible": true,
-              "SmartDashboard/MP Right Output (%) visible": false,
-              "SmartDashboard/MP Target Left Position (ft) visible": true
+              "_source0": "network_table:///SmartDashboard/MP Right Output (%)",
+              "_source1": "network_table:///SmartDashboard/MP Target Left Position (ft)",
+              "_title": "Graph (2 sources)",
+              "Visible time": 15.0
             }
           },
           "8,4": {
@@ -776,8 +884,7 @@
               "_type": "Graph",
               "_source0": "network_table:///SmartDashboard/MP Heading Adj. Output (%)",
               "_title": "SmartDashboard/MP Heading Adj. Output (%)",
-              "Visible time": 15.0,
-              "SmartDashboard/MP Heading Adj. Output (%) visible": true
+              "Visible time": 15.0
             }
           },
           "3,0": {
@@ -787,12 +894,9 @@
             ],
             "content": {
               "_type": "Graph",
-              "_source0": "network_table:///SmartDashboard/Drive Right Position (ft)",
-              "_source1": "network_table:///SmartDashboard/MP Target Right Position (ft)",
-              "_title": "Graph (2 sources)",
-              "Visible time": 15.0,
-              "SmartDashboard/Drive Right Position (ft) visible": true,
-              "SmartDashboard/MP Target Right Position (ft) visible": true
+              "_source0": "network_table:///SmartDashboard/MP Target Right Position (ft)",
+              "_title": "/SmartDashboard/MP Target Right Position (ft)",
+              "Visible time": 15.0
             }
           }
         }

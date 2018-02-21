@@ -13,7 +13,9 @@ import com.team2383.ninjaLib.SetState;
 import com.team2383.ninjaLib.Values;
 import com.team2383.ninjaLib.WPILambdas;
 import com.team2383.robot.commands.TeleopLiftMotionMagic;
+import com.team2383.robot.commands.TeleopLiftOpenLoop;
 import com.team2383.robot.subsystems.Intake;
+import com.team2383.robot.subsystems.IntakePivot;
 import com.team2383.robot.subsystems.Lift;
 import com.team2383.ninjaLib.SetState;
 
@@ -26,6 +28,7 @@ import edu.wpi.first.wpilibj.command.Command;
 
 import static com.team2383.robot.HAL.drive;
 import static com.team2383.robot.HAL.intake;
+import static com.team2383.robot.HAL.intakePivot;
 import static com.team2383.robot.HAL.lift;
 import static com.team2383.robot.HAL.prefs;
 
@@ -68,30 +71,31 @@ public class OI {
 	
 	// All-in-one
 	public static Gamepad driver = new Gamepad(0);
+	public static Joystick operator = new Joystick(2);
 	
 	public static DoubleSupplier throttle = () -> (-driver.getLeftY());
 	public static DoubleSupplier turn = () -> (driver.getRightX());
 	
-	public static DoubleSupplier liftSpeed = () -> {
-		double lt = driver.getLeftTrigger();
-		double rt = driver.getRightTrigger();
-		double speed = (lt >= rt) ? lt : rt;
-		return speed;
-	};
+	public static DoubleSupplier liftSpeed = () -> (operator.getY());
 	
-	public static Button leftBumper = driver.getLeftShoulder();
-	public static Button rightBumper = driver.getRightShoulder();
-	public static Button liftMotionMagic = driver.getButtonX();
+	public static Button unfeed = driver.getLeftShoulder();
+	public static Button feed = driver.getRightShoulder();
+	public static Button clamp = driver.getButtonX();
+	
+	public static Button liftMotionMagicCoarse = new JoystickButton(operator, 1);
+	public static Button liftMotionMagicFine = new JoystickButton(operator, 2);
+	public static Button liftManual = new JoystickButton(operator, 5);
 	
 	public static Button rev = new JoystickButton(driver, 3);
 	
 	public OI() {
+		unfeed.whileHeld(new SetState<Intake.State>(intake, Intake.State.UNFEED, Intake.State.STOPPED));
+		feed.whileHeld(new SetState<Intake.State>(intake, Intake.State.FEED, Intake.State.STOPPED));
+		clamp.toggleWhenActive(new SetState<IntakePivot.State>(intakePivot, IntakePivot.State.UP, IntakePivot.State.DOWN));
 		
-		leftBumper.whileHeld(new SetState<Intake.State>(intake, Intake.State.UNFEED, Intake.State.STOPPED));
-		rightBumper.whileHeld(new SetState<Intake.State>(intake, Intake.State.FEED, Intake.State.STOPPED));
 		
-		rev.toggleWhenPressed(new SetState<Intake.State>(intake, Intake.State.REV, Intake.State.STOPPED));
-		
-		liftMotionMagic.whileHeld(new TeleopLiftMotionMagic(liftSpeed));
+		liftManual.whileHeld(new TeleopLiftOpenLoop(liftSpeed));
+		liftMotionMagicCoarse.whileHeld(new TeleopLiftMotionMagic(liftSpeed));
+		liftMotionMagicFine.whileHeld(new TeleopLiftMotionMagic(liftSpeed));
 	}
 }

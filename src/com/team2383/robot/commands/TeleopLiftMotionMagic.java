@@ -6,6 +6,7 @@ import static com.team2383.robot.HAL.prefs;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  *
@@ -24,15 +25,19 @@ public class TeleopLiftMotionMagic extends Command {
     protected void initialize() {
     	lastTime = 0;
     	maxLiftRate = prefs.getDouble("kLift_maxRate", 10);
+    	lift.setPosition(lift.getCurrentPosition());
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
     	maxLiftRate = prefs.getDouble("kLift_maxRate", 10);
-    	double dt = timeSinceInitialized() - lastTime;
-    	double liftChange = speed.getAsDouble() * maxLiftRate;
-    	liftChange /= dt; //scale lift rate to the delta time
+    	double time = timeSinceInitialized();
+    	double dt = time - lastTime;
     	
+    	double liftChange = speed.getAsDouble() * maxLiftRate;
+    	liftChange *= dt; //scale lift rate to the delta time
+    	
+    	lastTime = time;
     	lift.changePosition(liftChange);
     }
 

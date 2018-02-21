@@ -13,6 +13,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
@@ -24,16 +25,16 @@ import edu.wpi.first.wpilibj.Sendable;
 
 public class Drive extends Subsystem {
 	private final WPI_TalonSRX leftMaster;
-	private final TalonSRX leftFollowerA;
-	private final TalonSRX leftFollowerB;
-	private final TalonSRX leftFollowerC;
+	private final VictorSPX leftFollowerA;
+	private final VictorSPX leftFollowerB;
+	private final VictorSPX leftFollowerC;
 
 	private final WPI_TalonSRX rightMaster;
-	private final TalonSRX rightFollowerA;
-	private final TalonSRX rightFollowerB;
-	private final TalonSRX rightFollowerC;
+	private final VictorSPX rightFollowerA;
+	private final VictorSPX rightFollowerB;
+	private final VictorSPX rightFollowerC;
 	
-	private final PowerDistributionPanel pdp;
+	//private final PowerDistributionPanel pdp;
 	
 	private final DifferentialDrive drive;
 	
@@ -147,9 +148,9 @@ public class Drive extends Subsystem {
 
 		//init left talons
 		leftMaster = new WPI_TalonSRX(prefs.getInt("kDrive_LeftMasterTalonID", 1));
-		leftFollowerA = new TalonSRX(prefs.getInt("kDrive_LeftFollowerATalonID", 2));
-		leftFollowerB = new TalonSRX(prefs.getInt("kDrive_LeftFollowerBTalonID", 3));
-		leftFollowerC = new TalonSRX(prefs.getInt("kDrive_LeftFollowerCTalonID", 4));
+		leftFollowerA = new VictorSPX(prefs.getInt("kDrive_LeftFollowerATalonID", 2));
+		leftFollowerB = new VictorSPX(prefs.getInt("kDrive_LeftFollowerBTalonID", 3));
+		leftFollowerC = new VictorSPX(prefs.getInt("kDrive_LeftFollowerCTalonID", 4));
 
 		//setup followers
 		int leftMasterID = leftMaster.getDeviceID();
@@ -189,9 +190,9 @@ public class Drive extends Subsystem {
 		
 		//init right talons
 		rightMaster = new WPI_TalonSRX(prefs.getInt("kDrive_RightMasterTalonID", 5));
-		rightFollowerA = new TalonSRX(prefs.getInt("kDrive_RightFollowerATalonID", 6));
-		rightFollowerB = new TalonSRX(prefs.getInt("kDrive_RightFollowerBTalonID", 7));
-		rightFollowerC = new TalonSRX(prefs.getInt("kDrive_RightFollowerCTalonID", 8));
+		rightFollowerA = new VictorSPX(prefs.getInt("kDrive_RightFollowerATalonID", 6));
+		rightFollowerB = new VictorSPX(prefs.getInt("kDrive_RightFollowerBTalonID", 7));
+		rightFollowerC = new VictorSPX(prefs.getInt("kDrive_RightFollowerCTalonID", 8));
 		
 		//setup followers
 		int rightMasterID = rightMaster.getDeviceID();
@@ -226,9 +227,6 @@ public class Drive extends Subsystem {
 		rightMaster.configOpenloopRamp(0, 0);
 		
 		rightMaster.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_20Ms, 0);
-		
-		//PDP
-		pdp = new PowerDistributionPanel();
 		
 		/*
 		 * init differential drive

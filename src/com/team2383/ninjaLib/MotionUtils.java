@@ -45,7 +45,7 @@ public class MotionUtils {
 	 * Convert Native Sensor Units/Ticks to RPS
 	 * @param ticks velocity from sensor in native units (ticks per 100ms)
 	 * @param ticksPerRotation ticks for 1 rotation (4096 for a mag encoder)
-	 * @param period velocity sampling in period in seconds (should be set to 20ms in talon config, so this should be 0.02)
+	 * @param period velocity sampling in period in seconds (should always be .1)
 	 * @param encoderRatio if the sensor is behind a gear reduction, this is necessary to provide an accurate value
 	 * @return sensor velocity in Rotations Per Second
 	 */
