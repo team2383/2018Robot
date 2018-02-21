@@ -8,8 +8,10 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.wpilibj.PWMVictorSPX;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import jaci.pathfinder.followers.DistanceFollower;
@@ -18,14 +20,14 @@ import jaci.pathfinder.modifiers.TankModifier;
 
 public class Drivetrain extends Subsystem {
 	private final WPI_TalonSRX leftMaster;
-	private final TalonSRX leftFollowerA;
-	private final TalonSRX leftFollowerB;
-	private final TalonSRX leftFollowerC;
+	private final VictorSPX leftFollowerA;
+	private final VictorSPX leftFollowerB;
+	private final VictorSPX leftFollowerC;
 
 	private final WPI_TalonSRX rightMaster;
-	private final TalonSRX rightFollowerA;
-	private final TalonSRX rightFollowerB;
-	private final TalonSRX rightFollowerC;
+	private final VictorSPX rightFollowerA;
+	private final VictorSPX rightFollowerB;
+	private final VictorSPX rightFollowerC;
 	
 	private final DifferentialDrive drive;
 	
@@ -44,23 +46,23 @@ public class Drivetrain extends Subsystem {
 
 		//init left talons
 		leftMaster = new WPI_TalonSRX(Constants.kLeftMasterTalonID);
-		leftFollowerA = new TalonSRX(Constants.kLeftFollowerATalonID);
-		leftFollowerB = new TalonSRX(Constants.kLeftFollowerBTalonID);
-		leftFollowerC = new TalonSRX(Constants.kLeftFollowerCTalonID);
+		leftFollowerA = new VictorSPX(Constants.kLeftFollowerATalonID);
+		leftFollowerB = new VictorSPX(Constants.kLeftFollowerBTalonID);
+		leftFollowerC = new VictorSPX(Constants.kLeftFollowerCTalonID);
 
 		//setup followers
 		int leftMasterID = leftMaster.getDeviceID();
-		leftFollowerA.set(ControlMode.Follower, leftMasterID);
-		leftFollowerB.set(ControlMode.Follower, leftMasterID);
-		leftFollowerC.set(ControlMode.Follower, leftMasterID);
+		leftFollowerA.follow(leftMaster);
+		leftFollowerB.follow(leftMaster);
+		leftFollowerC.follow(leftMaster);
 		
 		//Left settings
 		leftMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
-		leftMaster.setSensorPhase(true);
-		leftMaster.setInverted(false);
+		leftMaster.setSensorPhase(false);
+		leftMaster.setInverted(true);
 		leftFollowerA.setInverted(false);
 		leftFollowerB.setInverted(false);
-		leftFollowerC.setInverted(false);
+		leftFollowerC.setInverted(true);
 		
 		leftMaster.setNeutralMode(NeutralMode.Brake);
 		
@@ -77,23 +79,23 @@ public class Drivetrain extends Subsystem {
 		
 		//init right talons
 		rightMaster = new WPI_TalonSRX(Constants.kRightMasterTalonID);
-		rightFollowerA = new TalonSRX(Constants.kRightFollowerATalonID);
-		rightFollowerB = new TalonSRX(Constants.kRightFollowerBTalonID);
-		rightFollowerC = new TalonSRX(Constants.kRightFollowerCTalonID);
+		rightFollowerA = new VictorSPX(Constants.kRightFollowerATalonID);
+		rightFollowerB = new VictorSPX(Constants.kRightFollowerBTalonID);
+		rightFollowerC = new VictorSPX(Constants.kRightFollowerCTalonID);
 		
 		//setup followers
 		int rightMasterID = rightMaster.getDeviceID();
-		rightFollowerA.set(ControlMode.Follower, rightMasterID);
-		rightFollowerB.set(ControlMode.Follower, rightMasterID);
-		rightFollowerC.set(ControlMode.Follower, rightMasterID);
+		rightFollowerA.follow(rightMaster);
+		rightFollowerB.follow(rightMaster);
+		rightFollowerC.follow(rightMaster);
 		
 		//Right settings
 		rightMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
 		rightMaster.setSensorPhase(false);
 		rightMaster.setInverted(false);
-		rightFollowerA.setInverted(false);
+		rightFollowerA.setInverted(true);
 		rightFollowerB.setInverted(false);
-		rightFollowerC.setInverted(false);
+		rightFollowerC.setInverted(true);
 		
 		rightMaster.setNeutralMode(NeutralMode.Brake);
 		

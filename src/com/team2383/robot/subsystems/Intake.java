@@ -3,18 +3,22 @@ package com.team2383.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.team2383.ninjaLib.SetState;
 import com.team2383.robot.Constants;
 import com.team2383.robot.subsystems.Intake.State;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+
 
 public class Intake extends SetState.StatefulSubsystem<Intake.State> {
 
-	private TalonSRX leftFeeder = new TalonSRX(Constants.kLeftFeederTalonID);
-	private TalonSRX rightFeeder = new TalonSRX(Constants.kRightFeederTalonID);
+	private VictorSPX leftFeeder = new VictorSPX(Constants.kLeftFeederTalonID);
+	private VictorSPX rightFeeder = new VictorSPX(Constants.kRightFeederTalonID);
 	
 	private TalonSRX leftShooter = new TalonSRX(Constants.kLeftShooterTalonID);
 	private TalonSRX rightShooter = new TalonSRX(Constants.kRightShooterTalonID);
+	
 	
 	private State state = State.STOPPED;
 	
@@ -27,11 +31,11 @@ public class Intake extends SetState.StatefulSubsystem<Intake.State> {
 		leftFeeder.setNeutralMode(NeutralMode.Brake);
 		rightFeeder.setNeutralMode(NeutralMode.Brake);
 		
-		leftFeeder.configPeakOutputForward(0.7, 0);
-		leftFeeder.configPeakOutputReverse(-0.7, 0);
+		leftFeeder.configPeakOutputForward(1.0, 0);
+		leftFeeder.configPeakOutputReverse(-1.0, 0);
 		
-		rightFeeder.configPeakOutputForward(0.7, 0);
-		rightFeeder.configPeakOutputReverse(-0.7, 0);
+		rightFeeder.configPeakOutputForward(1.0 ,0);
+		rightFeeder.configPeakOutputReverse(-1.0, 0);
 		
 		
 		/*
@@ -49,36 +53,25 @@ public class Intake extends SetState.StatefulSubsystem<Intake.State> {
 	}
 	
 	public enum State {
-		FEED, UNFEED, REV, STOPPED
+		FEED, UNFEED, STOPPED	
 	}
 	
 	public void feed(){
-		leftFeeder.set(ControlMode.PercentOutput, 1.0);
-		rightFeeder.set(ControlMode.PercentOutput, 1.0);
+		leftFeeder.set(ControlMode.PercentOutput, 0.8);
+		rightFeeder.set(ControlMode.PercentOutput, 0.8);
 		
-		leftShooter.set(ControlMode.PercentOutput, 1.0);
-		rightShooter.set(ControlMode.PercentOutput, 1.0);
 	}
 	
 	public void unfeed(){
-		leftFeeder.set(ControlMode.PercentOutput, -1.0);
-		rightFeeder.set(ControlMode.PercentOutput, -1.0);
-		
-		leftShooter.set(ControlMode.PercentOutput, -1.0);
-		rightShooter.set(ControlMode.PercentOutput, -1.0);
+		leftFeeder.set(ControlMode.PercentOutput, -0.7);
+		rightFeeder.set(ControlMode.PercentOutput, -0.7);
 	}
 	
-	public void shoot(){
-		leftShooter.set(ControlMode.PercentOutput, 1.0);
-		rightShooter.set(ControlMode.PercentOutput, 1.0);
-	}
 	
 	public void stop() {
 		leftFeeder.set(ControlMode.PercentOutput, 0);
 		rightFeeder.set(ControlMode.PercentOutput, 0);
 		
-		leftShooter.set(ControlMode.PercentOutput, 0);
-		rightShooter.set(ControlMode.PercentOutput, 0);
 	}
 
 	@Override
@@ -91,10 +84,6 @@ public class Intake extends SetState.StatefulSubsystem<Intake.State> {
 			case UNFEED:
 				unfeed();
 				break;
-			case REV:
-				shoot();
-				break;
-				
 			default:
 			case STOPPED:
 				stop();

@@ -13,6 +13,9 @@ public class Constants {
 	public static final int kRightFeederTalonID = 11;
 	public static final int kRightShooterTalonID = 12;
 	
+	public static final int kIntakePivotUp = 6;
+	public static final int kIntakePivotDown = 7;
+	
 	
 	/*
 	 * Lift Constants
@@ -23,7 +26,12 @@ public class Constants {
 	/*
 	 * Climber Constants
 	 */
-
+	public static final int kClimberLeftIn = 0;
+	public static final int kClimberLeftOut = 1;
+	public static final int kClimberPinLeft = 2;
+	public static final int kClimberRightIn = 3;
+	public static final int kClimberRightOut = 4;
+	public static final int kClimberPinRight = 5;
 	
 
 	/*

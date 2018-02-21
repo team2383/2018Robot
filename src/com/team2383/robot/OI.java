@@ -12,7 +12,11 @@ import com.team2383.ninjaLib.OnChangeButton;
 import com.team2383.ninjaLib.SetState;
 import com.team2383.ninjaLib.Values;
 import com.team2383.ninjaLib.WPILambdas;
+import com.team2383.robot.commands.MoveLift;
+import com.team2383.robot.subsystems.Climber;
+import com.team2383.robot.subsystems.ClimberPin;
 import com.team2383.robot.subsystems.Intake;
+import com.team2383.robot.subsystems.IntakePivot;
 import com.team2383.robot.subsystems.Lift;
 import com.team2383.ninjaLib.SetState;
 
@@ -26,6 +30,10 @@ import edu.wpi.first.wpilibj.command.Command;
 import static com.team2383.robot.HAL.drivetrain;
 import static com.team2383.robot.HAL.intake;
 import static com.team2383.robot.HAL.lift;
+import static com.team2383.robot.HAL.intakePivot;
+import static com.team2383.robot.HAL.climberPin;
+import static com.team2383.robot.HAL.climber;
+
 
 
 
@@ -36,18 +44,24 @@ import static com.team2383.robot.HAL.lift;
 
 /*
  * OI Controls:
+ * 	
+ * 	Driver Controls:
+ * 	(Left Stick Y) --> Throttle	
+ * 	(Right Stick X) --> Turn
  * 
- *  Advanced Operator Controls: 
- *  Left Trigger: Fangs Down
- *  Right Trigger: Fangs Up
- *  
- *  Left Trigger: Feed Out
- *	Right Trigger: Feed In
- *
- *	X: Climb
- *
- *	Left Stick Y : Forwards/Backwards
- *	Right Stick X : Left/Right 
+ * 	Left Button --> Unfeed
+ * 	Right Button --> Feed
+ * 
+ * 	X --> Clamp/Unclamp Intake
+ * 
+ * 
+ * 	Operator Controls:
+ * 	Button 2 --> Actuate Climber Pin
+ * 	Button 3 (while Held) + Y Axis --> Move Lift Up/Down
+ * 	Button 4 --> Actuate Climber
+ * 
+ * 	TODO Preset Buttons for various Lift Stages, Toggle Button for Intake Speed
+ * 
  */
 @SuppressWarnings("unused")
 public class OI {
@@ -70,6 +84,7 @@ public class OI {
 	
 	// All-in-one
 	public static Gamepad driver = new Gamepad(0);
+	public static Joystick operator = new Joystick(2);
 	
 	public static DoubleSupplier throttle = () -> deadband.applyAsDouble(driver.getLeftY());
 	public static DoubleSupplier turn = () -> deadband.applyAsDouble(-driver.getRightX());
@@ -77,21 +92,37 @@ public class OI {
 	public static Button leftBumper = driver.getLeftShoulder();
 	public static Button rightBumper = driver.getRightShoulder();
 	
-	public static Button rev = new JoystickButton(driver, 3);
+	
+	public static Button moveLift = new JoystickButton(operator,3);
+	
+	public static DoubleSupplier liftStick = () -> deadband.applyAsDouble(-operator.getRawAxis(1));
 	
 	//public static Button climbUp = new JoystickButton(advancedOperator,4);
-	public static Button climbUp = new DPadButton(driver, Direction.UP);
+	public static Button liftUp = new DPadButton(operator, Direction.UP);
 	//public static Button climbDown = new JoystickButton(advancedOperator, 1);
-	public static Button climbDown = new DPadButton(driver, Direction.DOWN);
+	public static Button liftDown = new DPadButton(operator, Direction.DOWN);
+	
+	public static Button actuatePivot = new JoystickButton(driver,3);
+	
+	public static Button actuateclimberPin = new JoystickButton(operator, 2);
+	
+	public static Button actuateClimber = new JoystickButton(operator,4);
 	
 	public OI() {
 		
 		leftBumper.whileHeld(new SetState<Intake.State>(intake, Intake.State.UNFEED, Intake.State.STOPPED));
 		rightBumper.whileHeld(new SetState<Intake.State>(intake, Intake.State.FEED, Intake.State.STOPPED));
 		
-		rev.toggleWhenPressed(new SetState<Intake.State>(intake, Intake.State.REV, Intake.State.STOPPED));
 		
-		climbUp.whileHeld(new SetState<Lift.State>(lift, Lift.State.UP, Lift.State.STOPPED));
-		climbDown.whileHeld(new SetState<Lift.State>(lift, Lift.State.DOWN, Lift.State.STOPPED));
+		//liftUp.whileHeld(new SetState<Lift.State>(lift, Lift.State.UP, Lift.State.STOPPED));
+		//liftDown.whileHeld(new SetState<Lift.State>(lift, Lift.State.DOWN, Lift.State.STOPPED));
+		
+		moveLift.whileHeld(new MoveLift(OI.liftStick));
+		
+		actuatePivot.toggleWhenActive(new SetState<IntakePivot.State>(intakePivot, IntakePivot.State.UP, IntakePivot.State.DOWN));
+		actuateclimberPin.toggleWhenActive(new SetState<ClimberPin.State>(climberPin, ClimberPin.State.RETRACTED, ClimberPin.State.EXTENDED));
+		actuateClimber.toggleWhenActive(new SetState<Climber.State>(climber, Climber.State.EXTENDED, Climber.State.RETRACTED));
+
+		
 	}
 }

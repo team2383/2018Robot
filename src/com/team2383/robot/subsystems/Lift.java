@@ -3,6 +3,7 @@ package com.team2383.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.team2383.ninjaLib.SetState;
 import com.team2383.robot.Constants;
 
@@ -10,7 +11,7 @@ import com.team2383.robot.Constants;
 public class Lift extends SetState.StatefulSubsystem<Lift.State> {
 
 		private TalonSRX leftLift = new TalonSRX(Constants.kLeftLiftTalonID);
-		private TalonSRX rightLift = new TalonSRX(Constants.kRightLiftTalonID);
+		private VictorSPX rightLift = new VictorSPX(Constants.kRightLiftTalonID);
 		private State state = State.STOPPED;
 		
 		public Lift(){
@@ -30,16 +31,21 @@ public class Lift extends SetState.StatefulSubsystem<Lift.State> {
 		}
 		
 		public void up(){
-			leftLift.set(ControlMode.PercentOutput, -0.4);
-			rightLift.set(ControlMode.PercentOutput, 0.4);
+			leftLift.set(ControlMode.PercentOutput, -0.5);
+			rightLift.set(ControlMode.PercentOutput, 0.5);
 		}
 		public void down(){
-			leftLift.set(ControlMode.PercentOutput, 0.4);
-			rightLift.set(ControlMode.PercentOutput, -0.4);
+			leftLift.set(ControlMode.PercentOutput, 0.5);
+			rightLift.set(ControlMode.PercentOutput, -0.5);
 		}
 		public void stop() {
 			leftLift.set(ControlMode.PercentOutput, 0);
 			rightLift.set(ControlMode.PercentOutput, 0);
+		}
+		
+		public void moveAtSpeed(double speed){
+			leftLift.set(ControlMode.PercentOutput, speed);
+			rightLift.set(ControlMode.PercentOutput, -speed);
 		}
 
 		@Override
