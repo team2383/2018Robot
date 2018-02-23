@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.team2383.robot.HAL;
 import com.team2383.robot.OI;
 import com.team2383.robot.auto.CalculateTrackWidthAuto;
+import com.team2383.robot.auto.SwitchAuto;
 import com.team2383.robot.auto.TestMotionProfile;
 import com.team2383.robot.commands.GeneralPeriodic;
 
@@ -71,6 +72,7 @@ public class Robot extends TimedRobot {
 		autoChooser = new SendableChooser<Command>();
 		autoChooser.addObject("Test Motion Profiling Auto", new TestMotionProfile());
 		autoChooser.addObject("Calc Trackwidth", new CalculateTrackWidthAuto());
+		autoChooser.addObject("Switch Auto", new SwitchAuto());
 		SmartDashboard.putData("Auto Chooser", autoChooser);
 		
 		this.setPeriod(0.02);

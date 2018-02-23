@@ -33,6 +33,22 @@ public class Lift extends Subsystem {
 		private TalonSRX masterLift;
 		private VictorSPX followerLift;
 		private double position;
+		
+		public static enum Preset {
+			BOTTOM(0),
+			SWITCH(20),
+			TRAVEL(10),
+			SCALE_LOW(30),
+			SCALE_MID(35),
+			SCALE_HIGH(39),
+			TOP(MAX_TRAVEL_IN);
+			
+			public double position;
+			
+			private Preset(double position) {
+				this.position = position;
+			}
+		}
 
 		public Lift() {
 			masterLift = new TalonSRX(StaticConstants.kLift_LeftTalonID);
@@ -93,6 +109,14 @@ public class Lift extends Subsystem {
 		}
 		
 		/**
+		 * Set the position of the elevator to a preset
+		 * @param preset the desired preset
+		 */
+		public void setPreset(Preset preset) {
+			setPosition(preset.position);
+		}
+		
+		/**
 		 * Set the position of the elevator
 		 * @param position the desired position in the elevator in inches
 		 */
@@ -102,6 +126,10 @@ public class Lift extends Subsystem {
 			masterLift.configMotionAcceleration(prefs.getInt("Lift MM Accel", 8000), 0);
 			masterLift.configMotionCruiseVelocity(prefs.getInt("Lift MM Cruise Velocity", 4200), 0);
 			masterLift.set(ControlMode.MotionMagic, inchesToRotations(position)*4096.0);
+		}
+		
+		public boolean atTarget() {
+			return rotationsToInches(masterLift.getClosedLoopError(0)/4096.0) < prefs.getDouble("kLift_tolerance", 1.0);
 		}
 		
 		public void setOutput(double output) {

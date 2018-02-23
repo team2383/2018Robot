@@ -2,6 +2,8 @@ package com.team2383.robot.commands;
 
 import static com.team2383.robot.HAL.prefs;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -19,21 +21,27 @@ import com.team2383.ninjaLib.PathFollower;
 public class FollowTrajectory extends Command implements Sendable  {
 	PathFollower leftFollower;
 	PathFollower rightFollower;
+	Supplier<Trajectory> trajectorySupplier;
 	Trajectory trajectory;
 	TankModifier modifier;
 	double angleDifference;
 	
-	public FollowTrajectory(Trajectory trajectory) {
+	public FollowTrajectory(Supplier<Trajectory> trajectorySupplier) {
 		super("Follow Trajectory");
 
-		this.modifier = new TankModifier(trajectory).modify(prefs.getDouble("trackwidth", 1.41));
-		this.trajectory = trajectory;
+		this.trajectorySupplier = trajectorySupplier;
 		
 		requires(drive);
+	}
+	
+	public FollowTrajectory(Trajectory trajectory) {
+		this(() -> trajectory);
 	}
 
 	@Override
 	protected void initialize() {
+		this.trajectory = trajectorySupplier.get();
+		this.modifier = new TankModifier(trajectory).modify(prefs.getDouble("trackwidth", 1.41));
 		modifier.modify(prefs.getDouble("trackwidth", 1.41));
 		
 		leftFollower = new PathFollower(modifier.getLeftTrajectory());

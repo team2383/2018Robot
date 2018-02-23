@@ -153,17 +153,16 @@ public class Drive extends Subsystem {
 		leftFollowerC = new VictorSPX(prefs.getInt("kDrive_LeftFollowerCTalonID", 4));
 
 		//setup followers
-		int leftMasterID = leftMaster.getDeviceID();
-		leftFollowerA.set(ControlMode.Follower, leftMasterID);
-		leftFollowerB.set(ControlMode.Follower, leftMasterID);
-		leftFollowerC.set(ControlMode.Follower, leftMasterID);
+		leftFollowerA.follow(leftMaster);
+		leftFollowerB.follow(leftMaster);
+		leftFollowerC.follow(leftMaster);
 		
 		//Left settings
 		leftMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
 		leftMaster.setSensorPhase(false);
 		leftMaster.setInverted(false);
-		leftFollowerA.setInverted(false);
-		leftFollowerB.setInverted(false);
+		leftFollowerA.setInverted(true);
+		leftFollowerB.setInverted(true);
 		leftFollowerC.setInverted(false);
 		
 		leftMaster.setNeutralMode(NeutralMode.Brake);
@@ -195,17 +194,16 @@ public class Drive extends Subsystem {
 		rightFollowerC = new VictorSPX(prefs.getInt("kDrive_RightFollowerCTalonID", 8));
 		
 		//setup followers
-		int rightMasterID = rightMaster.getDeviceID();
-		rightFollowerA.set(ControlMode.Follower, rightMasterID);
-		rightFollowerB.set(ControlMode.Follower, rightMasterID);
-		rightFollowerC.set(ControlMode.Follower, rightMasterID);
+		rightFollowerA.follow(rightMaster);
+		rightFollowerB.follow(rightMaster);
+		rightFollowerC.follow(rightMaster);
 		
 		//Right settings
 		rightMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
 		rightMaster.setSensorPhase(true);
-		rightMaster.setInverted(false);
+		rightMaster.setInverted(true);
 		rightFollowerA.setInverted(false);
-		rightFollowerB.setInverted(false);
+		rightFollowerB.setInverted(true);
 		rightFollowerC.setInverted(false);
 
 		rightMaster.setNeutralMode(NeutralMode.Brake);

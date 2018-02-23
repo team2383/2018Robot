@@ -21,6 +21,7 @@ public class WPILambdas {
 			protected void execute() {
 				if (!set) {
 					execute.run();
+					set = true;
 				}
 			}
 
