@@ -14,7 +14,7 @@ public class IntakePivot extends com.team2383.ninjaLib.SetState.StatefulSubsyste
 	
 		
 		
-	public IntakePivot() {
+	public IntakePivot(boolean isPracticeBot) {
 		setState(State.UP);
 	}
 

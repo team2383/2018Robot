@@ -12,6 +12,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
+import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
@@ -25,14 +26,14 @@ import edu.wpi.first.wpilibj.Sendable;
 
 public class Drive extends Subsystem {
 	private final WPI_TalonSRX leftMaster;
-	private final VictorSPX leftFollowerA;
-	private final VictorSPX leftFollowerB;
-	private final VictorSPX leftFollowerC;
+	private final BaseMotorController leftFollowerA;
+	private final BaseMotorController leftFollowerB;
+	private final BaseMotorController leftFollowerC;
 
 	private final WPI_TalonSRX rightMaster;
-	private final VictorSPX rightFollowerA;
-	private final VictorSPX rightFollowerB;
-	private final VictorSPX rightFollowerC;
+	private final BaseMotorController rightFollowerA;
+	private final BaseMotorController rightFollowerB;
+	private final BaseMotorController rightFollowerC;
 	
 	//private final PowerDistributionPanel pdp;
 	
@@ -139,7 +140,7 @@ public class Drive extends Subsystem {
 		}
 	}
 
-	public Drive() {
+	public Drive(boolean isPracticeBot) {
 		super("Drivetrain");
 		
 		/*
@@ -148,9 +149,15 @@ public class Drive extends Subsystem {
 
 		//init left talons
 		leftMaster = new WPI_TalonSRX(prefs.getInt("kDrive_LeftMasterTalonID", 1));
-		leftFollowerA = new VictorSPX(prefs.getInt("kDrive_LeftFollowerATalonID", 2));
-		leftFollowerB = new VictorSPX(prefs.getInt("kDrive_LeftFollowerBTalonID", 3));
-		leftFollowerC = new VictorSPX(prefs.getInt("kDrive_LeftFollowerCTalonID", 4));
+		if (isPracticeBot) {
+			leftFollowerA = new TalonSRX(prefs.getInt("kDrive_LeftFollowerATalonID", 2));
+			leftFollowerB = new TalonSRX(prefs.getInt("kDrive_LeftFollowerBTalonID", 3));
+			leftFollowerC = new TalonSRX(prefs.getInt("kDrive_LeftFollowerCTalonID", 4));
+		} else {
+			leftFollowerA = new VictorSPX(prefs.getInt("kDrive_LeftFollowerATalonID", 2));
+			leftFollowerB = new VictorSPX(prefs.getInt("kDrive_LeftFollowerBTalonID", 3));
+			leftFollowerC = new VictorSPX(prefs.getInt("kDrive_LeftFollowerCTalonID", 4));
+		}
 
 		//setup followers
 		leftFollowerA.follow(leftMaster);
@@ -160,10 +167,10 @@ public class Drive extends Subsystem {
 		//Left settings
 		leftMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
 		leftMaster.setSensorPhase(false);
-		leftMaster.setInverted(false);
-		leftFollowerA.setInverted(true);
-		leftFollowerB.setInverted(true);
-		leftFollowerC.setInverted(false);
+		leftMaster.setInverted(prefs.getBoolean("kDrive_InvertLeftMaster", false));
+		leftFollowerA.setInverted(prefs.getBoolean("kDrive_InvertLeftA", false));
+		leftFollowerB.setInverted(prefs.getBoolean("kDrive_InvertLeftB", false));
+		leftFollowerC.setInverted(prefs.getBoolean("kDrive_InvertLeftC", false));
 		
 		leftMaster.setNeutralMode(NeutralMode.Brake);
 		
@@ -189,9 +196,15 @@ public class Drive extends Subsystem {
 		
 		//init right talons
 		rightMaster = new WPI_TalonSRX(prefs.getInt("kDrive_RightMasterTalonID", 5));
-		rightFollowerA = new VictorSPX(prefs.getInt("kDrive_RightFollowerATalonID", 6));
-		rightFollowerB = new VictorSPX(prefs.getInt("kDrive_RightFollowerBTalonID", 7));
-		rightFollowerC = new VictorSPX(prefs.getInt("kDrive_RightFollowerCTalonID", 8));
+		if(isPracticeBot) {
+			rightFollowerA = new TalonSRX(prefs.getInt("kDrive_RightFollowerATalonID", 6));
+			rightFollowerB = new TalonSRX(prefs.getInt("kDrive_RightFollowerBTalonID", 7));
+			rightFollowerC = new TalonSRX(prefs.getInt("kDrive_RightFollowerCTalonID", 8));
+		} else {
+			rightFollowerA = new VictorSPX(prefs.getInt("kDrive_RightFollowerATalonID", 6));
+			rightFollowerB = new VictorSPX(prefs.getInt("kDrive_RightFollowerBTalonID", 7));
+			rightFollowerC = new VictorSPX(prefs.getInt("kDrive_RightFollowerCTalonID", 8));
+		}
 		
 		//setup followers
 		rightFollowerA.follow(rightMaster);
@@ -201,10 +214,10 @@ public class Drive extends Subsystem {
 		//Right settings
 		rightMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
 		rightMaster.setSensorPhase(true);
-		rightMaster.setInverted(true);
-		rightFollowerA.setInverted(false);
-		rightFollowerB.setInverted(true);
-		rightFollowerC.setInverted(false);
+		rightMaster.setInverted(prefs.getBoolean("kDrive_InvertRightMaster", false));
+		rightFollowerA.setInverted(prefs.getBoolean("kDrive_InvertRightA", false));
+		rightFollowerB.setInverted(prefs.getBoolean("kDrive_InvertRightB", false));
+		rightFollowerC.setInverted(prefs.getBoolean("kDrive_InvertRightC", false));
 
 		rightMaster.setNeutralMode(NeutralMode.Brake);
 		

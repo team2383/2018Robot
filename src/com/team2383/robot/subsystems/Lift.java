@@ -6,12 +6,12 @@ import com.ctre.phoenix.ParamEnum;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.team2383.ninjaLib.MotionUtils;
 import com.team2383.ninjaLib.SetState;
 import com.team2383.robot.OI;
-import com.team2383.robot.StaticConstants;
 import com.team2383.robot.commands.TeleopLiftOpenLoop;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
@@ -31,7 +31,7 @@ public class Lift extends Subsystem {
 		private static final double MAX_TRAVEL_TICKS = MAX_TRAVEL_ROTATIONS * 4096;
 
 		private TalonSRX masterLift;
-		private VictorSPX followerLift;
+		private BaseMotorController followerLift;
 		private double position;
 		
 		public static enum Preset {
@@ -50,9 +50,14 @@ public class Lift extends Subsystem {
 			}
 		}
 
-		public Lift() {
-			masterLift = new TalonSRX(StaticConstants.kLift_LeftTalonID);
-			followerLift = new VictorSPX(StaticConstants.kLift_RightTalonID);
+		public Lift(boolean isPracticeBot) {
+			masterLift = new TalonSRX(prefs.getInt("kLift_LeftTalonID", 13));
+			
+			if (isPracticeBot) {
+				followerLift = new TalonSRX(prefs.getInt("kLift_RightTalonID", 14));
+			} else {
+				followerLift = new VictorSPX(prefs.getInt("kLift_RightTalonID", 14));
+			}
 			
 			masterLift.set(ControlMode.Follower, masterLift.getDeviceID());
 			masterLift.config_kP(0, 0.2, 10);
@@ -69,12 +74,13 @@ public class Lift extends Subsystem {
 			masterLift.configMotionCruiseVelocity(prefs.getInt("Lift MM Cruise Velocity", 6000), 10);
 			
 			masterLift.setSensorPhase(false);
-			masterLift.setInverted(true);
 			
 			masterLift.setNeutralMode(NeutralMode.Brake);
 			followerLift.setNeutralMode(NeutralMode.Brake);
 			
-			followerLift.setInverted(false);
+
+			masterLift.setInverted(prefs.getBoolean("kLift_InvertMaster", true));
+			followerLift.setInverted(prefs.getBoolean("kLift_InvertFollower", false));
 			followerLift.follow(masterLift);
 		}
 		

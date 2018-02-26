@@ -862,10 +862,7 @@
               "_source1": "network_table:///SmartDashboard/MP Target Heading",
               "_source2": "network_table:///SmartDashboard/MP Left Output (%)",
               "_title": "Graph (3 sources)",
-              "Visible time": 5.0,
-              "SmartDashboard/MP Left Output (%) visible": true,
-              "SmartDashboard/MP Target Heading visible": true,
-              "SmartDashboard/MP Target Left Velocity (ft-s) visible": true
+              "Visible time": 5.0
             }
           },
           "4,3": {
@@ -878,9 +875,7 @@
               "_source0": "network_table:///SmartDashboard/MP Target Left Velocity (ft-s)",
               "_source1": "network_table:///SmartDashboard/MP Target Right Velocity (ft-s)",
               "_title": "Graph (2 sources)",
-              "Visible time": 5.0,
-              "SmartDashboard/MP Target Left Velocity (ft-s) visible": true,
-              "SmartDashboard/MP Target Right Velocity (ft-s) visible": true
+              "Visible time": 5.0
             }
           },
           "0,0": {
@@ -893,9 +888,7 @@
               "_source0": "network_table:///SmartDashboard/MP Target Left Position (ft)",
               "_source1": "network_table:///SmartDashboard/MP Right Output (%)",
               "_title": "Graph (2 sources)",
-              "Visible time": 15.0,
-              "SmartDashboard/MP Right Output (%) visible": true,
-              "SmartDashboard/MP Target Left Position (ft) visible": true
+              "Visible time": 15.0
             }
           },
           "8,4": {
@@ -907,8 +900,7 @@
               "_type": "Graph",
               "_source0": "network_table:///SmartDashboard/MP Heading Adj. Output (%)",
               "_title": "SmartDashboard/MP Heading Adj. Output (%)",
-              "Visible time": 15.0,
-              "SmartDashboard/MP Heading Adj. Output (%) visible": true
+              "Visible time": 15.0
             }
           },
           "3,0": {
@@ -920,8 +912,7 @@
               "_type": "Graph",
               "_source0": "network_table:///SmartDashboard/MP Target Right Position (ft)",
               "_title": "SmartDashboard/MP Target Right Position (ft)",
-              "Visible time": 15.0,
-              "SmartDashboard/MP Target Right Position (ft) visible": true
+              "Visible time": 15.0
             }
           }
         }
