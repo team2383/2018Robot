@@ -12,6 +12,7 @@ import com.team2383.ninjaLib.OnChangeButton;
 import com.team2383.ninjaLib.SetState;
 import com.team2383.ninjaLib.Values;
 import com.team2383.ninjaLib.WPILambdas;
+import com.team2383.robot.commands.LiftPreset;
 import com.team2383.robot.commands.TeleopLiftMotionMagic;
 import com.team2383.robot.commands.TeleopLiftOpenLoop;
 import com.team2383.robot.subsystems.Intake;
@@ -86,6 +87,11 @@ public class OI {
 	public static Button liftMotionMagicFine = new JoystickButton(operator, 2);
 	public static Button liftManual = new JoystickButton(operator, 5);
 	
+	public static Button liftPresetBottom = new JoystickButton(operator, 11);
+	public static Button liftPresetSwitch = new JoystickButton(operator, 9);
+	public static Button liftPresetScaleMid = new JoystickButton(operator, 7);
+	public static Button liftPresetScaleHigh = new JoystickButton(operator, 8);
+	
 	public static Button rev = new JoystickButton(driver, 3);
 	
 	public OI() {
@@ -93,9 +99,13 @@ public class OI {
 		feed.whileHeld(new SetState<Intake.State>(intake, Intake.State.FEED, Intake.State.STOPPED));
 		clamp.toggleWhenActive(new SetState<IntakePivot.State>(intakePivot, IntakePivot.State.UP, IntakePivot.State.DOWN));
 		
-		
 		liftManual.whileHeld(new TeleopLiftOpenLoop(liftSpeed));
 		liftMotionMagicCoarse.whileHeld(new TeleopLiftMotionMagic(liftSpeed));
 		liftMotionMagicFine.whileHeld(new TeleopLiftMotionMagic(liftSpeed));
+		
+		liftPresetBottom.whenPressed(new LiftPreset(Lift.Preset.BOTTOM));
+		liftPresetSwitch.whenPressed(new LiftPreset(Lift.Preset.SWITCH));
+		liftPresetScaleMid.whenPressed(new LiftPreset(Lift.Preset.SCALE_MID));
+		liftPresetScaleHigh.whenPressed(new LiftPreset(Lift.Preset.SCALE_HIGH));
 	}
 }

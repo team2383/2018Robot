@@ -37,10 +37,8 @@ public class Lift extends Subsystem {
 		public static enum Preset {
 			BOTTOM(0),
 			SWITCH(20),
-			TRAVEL(10),
-			SCALE_LOW(30),
-			SCALE_MID(35),
-			SCALE_HIGH(39),
+			SCALE_MID(MAX_TRAVEL_IN-5),
+			SCALE_HIGH(MAX_TRAVEL_IN),
 			TOP(MAX_TRAVEL_IN);
 			
 			public double position;

@@ -49,14 +49,14 @@ public class FollowTrajectory extends Command implements Sendable  {
 		
 		leftFollower.configurePIDVA(prefs.getDouble("kDrive_Motion_P", 1.0),
 									0.0,
-									prefs.getDouble("kDrive_Motion_D", 1.0),
-									prefs.getDouble("kDrive_Motion_V", 1.0),
-									prefs.getDouble("kDrive_Motion_A", 1.0));
+									prefs.getDouble("kDrive_Motion_D", 0.0),
+									prefs.getDouble("kDrive_Motion_V", 1.0/14.0),
+									prefs.getDouble("kDrive_Motion_A", 1.0/10.0));
 		rightFollower.configurePIDVA(prefs.getDouble("kDrive_Motion_P", 1.0),
 									0.0,
-									prefs.getDouble("kDrive_Motion_D", 1.0),
-									prefs.getDouble("kDrive_Motion_V", 1.0),
-									prefs.getDouble("kDrive_Motion_A", 1.0));
+									prefs.getDouble("kDrive_Motion_D", 0.0),
+									prefs.getDouble("kDrive_Motion_V", 1.0/14.0),
+									prefs.getDouble("kDrive_Motion_A", 1.0/10.0));
 		
 
 		leftFollower.reset();
@@ -82,7 +82,8 @@ public class FollowTrajectory extends Command implements Sendable  {
 		double desired_heading = -Pathfinder.r2d(leftFollower.getHeading());  // Should also be in degrees, make sure its in phase
 
 		angleDifference = Pathfinder.boundHalfDegrees(desired_heading - gyro_heading);
-		double turn = 1.0 * (-1.0/80.0) * angleDifference;
+		
+		double turn = -1.0 * prefs.getDouble("kDrive_Motion_TurnP", 0.0125) * angleDifference;
 		
 		SmartDashboard.putNumber("MP Left Output (%)", leftOutput);
 		SmartDashboard.putNumber("MP Right Output (%)", rightOutput);

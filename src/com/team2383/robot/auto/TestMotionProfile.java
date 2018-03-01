@@ -28,7 +28,7 @@ public class TestMotionProfile extends CommandGroup {
 			0.02, 	//delta time
 			4.5,		//max velocity in ft/s for the motion profile
 			7,		//max acceleration in ft/s/s for the motion profile
-			120.0);	//max jerk in ft/s/s/s for the motion zprofile
+			120.0);	//max jerk in ft/s/s/s for the motion profile
 
 	Trajectory trajectory = Pathfinder.generate(points, config);
 
