@@ -2,6 +2,9 @@ package com.team2383.robot.subsystems;
 
 import static com.team2383.robot.HAL.prefs;
 
+import com.team2383.ninjaLib.SetState;
+import com.team2383.robot.subsystems.IntakePivot.State;
+
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
@@ -25,12 +28,12 @@ public class IntakePivot extends com.team2383.ninjaLib.SetState.StatefulSubsyste
 	@Override
 	public void setState(State state) {
 		switch (state) {
-			case UP:
+			case DOWN:
 				intakePivot.set(Value.kForward);
 				break;
-
+			
 			default:
-			case DOWN:
+			case UP:
 				intakePivot.set(Value.kReverse);
 				break;
 			}
@@ -38,7 +41,5 @@ public class IntakePivot extends com.team2383.ninjaLib.SetState.StatefulSubsyste
 
 	@Override
 	protected void initDefaultCommand() {
-		// TODO Auto-generated method stub
 	}
-
 }

@@ -60,6 +60,7 @@ public class FollowTrajectory extends Command implements Sendable  {
 		
 
 		leftFollower.reset();
+		
 		rightFollower.reset();
 		drive.resetEncoders();
 		navX.reset();
@@ -83,7 +84,7 @@ public class FollowTrajectory extends Command implements Sendable  {
 
 		angleDifference = Pathfinder.boundHalfDegrees(desired_heading - gyro_heading);
 		
-		double turn = -1.0 * prefs.getDouble("kDrive_Motion_TurnP", 0.0125) * angleDifference;
+		double turn = 1.0 * prefs.getDouble("kDrive_Motion_TurnP", 0.0125) * angleDifference;
 		
 		SmartDashboard.putNumber("MP Left Output (%)", leftOutput);
 		SmartDashboard.putNumber("MP Right Output (%)", rightOutput);
@@ -94,7 +95,7 @@ public class FollowTrajectory extends Command implements Sendable  {
 
 	@Override
 	protected boolean isFinished() {
-		return leftFollower.isFinished() && rightFollower.isFinished() && angleDifference <= 2.0;
+		return leftFollower.isFinished() && rightFollower.isFinished();
 	}
 
 	@Override

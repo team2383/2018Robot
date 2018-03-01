@@ -1,5 +1,6 @@
 package com.team2383.robot.subsystems;
 
+import static com.team2383.robot.HAL.intake;
 import static com.team2383.robot.HAL.prefs;
 
 import com.ctre.phoenix.ParamEnum;
@@ -9,10 +10,8 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.team2383.ninjaLib.MotionUtils;
-import com.team2383.ninjaLib.SetState;
 import com.team2383.robot.OI;
 import com.team2383.robot.StaticConstants;
-import com.team2383.robot.commands.TeleopLiftOpenLoop;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -36,10 +35,11 @@ public class Lift extends Subsystem {
 		
 		public static enum Preset {
 			BOTTOM(0),
-			SWITCH(20),
+			TRAVEL(2),
+			SWITCH(12),
 			SCALE_MID(MAX_TRAVEL_IN-5),
 			SCALE_HIGH(MAX_TRAVEL_IN),
-			TOP(MAX_TRAVEL_IN);
+			TOP(MAX_TRAVEL_IN), ;
 			
 			public double position;
 			
@@ -146,6 +146,5 @@ public class Lift extends Subsystem {
 		
 		@Override
 		protected void initDefaultCommand() {
-			//
 		}		
 }

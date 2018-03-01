@@ -288,7 +288,7 @@
               "_title": "Drive Right Position (ft)"
             }
           },
-          "6,11": {
+          "6,10": {
             "size": [
               10,
               1
@@ -321,7 +321,7 @@
               "_title": "/SmartDashboard/Position: "
             }
           },
-          "0,12": {
+          "0,10": {
             "size": [
               5,
               2
@@ -343,7 +343,7 @@
               "_title": "actual Position: "
             }
           },
-          "6,13": {
+          "6,11": {
             "size": [
               7,
               1
@@ -606,7 +606,7 @@
           "8,4": {
             "size": [
               2,
-              4
+              2
             ],
             "content": {
               "_type": "List Layout",

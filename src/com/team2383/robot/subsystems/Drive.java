@@ -200,7 +200,7 @@ public class Drive extends Subsystem {
 		
 		//Right settings
 		rightMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
-		rightMaster.setSensorPhase(true);
+		rightMaster.setSensorPhase(false);
 		rightMaster.setInverted(true);
 		rightFollowerA.setInverted(false);
 		rightFollowerB.setInverted(true);
