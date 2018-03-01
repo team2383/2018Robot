@@ -19,6 +19,8 @@ import com.team2383.robot.subsystems.IntakePivot;
 import com.team2383.robot.subsystems.Lift;
 import com.team2383.ninjaLib.SetState;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.MatchType;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.buttons.Button;
@@ -30,7 +32,6 @@ import static com.team2383.robot.HAL.drive;
 import static com.team2383.robot.HAL.intake;
 import static com.team2383.robot.HAL.intakePivot;
 import static com.team2383.robot.HAL.lift;
-import static com.team2383.robot.HAL.prefs;
 
 
 
@@ -65,34 +66,41 @@ public class OI {
 	/* Sticks functions */
 	
 	private static DoubleUnaryOperator deadband = (x) -> {
-		return Math.abs(x) > prefs.getDouble("inputDeadband", 0.05) ? x : 0;
+		return Math.abs(x) > Constants.inputDeadband ? x : 0;
 	};
 	
 	
 	// All-in-one
-	public static Gamepad driver = new Gamepad(0);
-	public static Joystick operator = new Joystick(2);
+	private static Gamepad driver = new Gamepad(0);
+	private static Joystick operator = new Joystick(2);
 	
 	public static DoubleSupplier throttle = () -> (-driver.getLeftY());
 	public static DoubleSupplier turn = () -> (driver.getRightX());
 	
 	public static DoubleSupplier liftSpeed = () -> (operator.getY());
 	
-	public static Button unfeed = driver.getLeftShoulder();
-	public static Button feed = driver.getRightShoulder();
-	public static Button clamp = driver.getButtonX();
+	public static Button unfeed;
+	public static Button feed;
+	public static Button clamp;
 	
-	public static Button liftMotionMagicCoarse = new JoystickButton(operator, 1);
-	public static Button liftMotionMagicFine = new JoystickButton(operator, 2);
-	public static Button liftManual = new JoystickButton(operator, 5);
+	public static Button liftMotionMagicCoarse;
+	public static Button liftMotionMagicFine;
+	public static Button liftManual;
 	
 	public static Button rev = new JoystickButton(driver, 3);
 	
 	public OI() {
-		unfeed.whileHeld(new SetState<Intake.State>(intake, Intake.State.UNFEED, Intake.State.STOPPED));
-		feed.whileHeld(new SetState<Intake.State>(intake, Intake.State.FEED, Intake.State.STOPPED));
-		clamp.toggleWhenActive(new SetState<IntakePivot.State>(intakePivot, IntakePivot.State.UP, IntakePivot.State.DOWN));
-		
+ 		unfeed = driver.getLeftShoulder();
+ 		feed = driver.getRightShoulder();
+ 		clamp = driver.getButtonX();
+ 		
+ 		unfeed.whileHeld(new SetState<Intake.State>(intake, Intake.State.UNFEED, Intake.State.STOPPED));
+ 		feed.whileHeld(new SetState<Intake.State>(intake, Intake.State.FEED, Intake.State.STOPPED));
+ 		clamp.toggleWhenActive(new SetState<IntakePivot.State>(intakePivot, IntakePivot.State.UP, IntakePivot.State.DOWN));
+	    
+ 		liftMotionMagicCoarse = new JoystickButton(operator, 1);
+	    liftMotionMagicFine = new JoystickButton(operator, 2);
+		liftManual = new JoystickButton(operator, 5);
 		
 		liftManual.whileHeld(new TeleopLiftOpenLoop(liftSpeed));
 		liftMotionMagicCoarse.whileHeld(new TeleopLiftMotionMagic(liftSpeed));

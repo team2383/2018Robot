@@ -1,7 +1,5 @@
 package com.team2383.robot.commands;
 
-import static com.team2383.robot.HAL.prefs;
-
 import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj.Sendable;
@@ -17,6 +15,7 @@ import static com.team2383.robot.HAL.drive;
 import static com.team2383.robot.HAL.navX;
 
 import com.team2383.ninjaLib.PathFollower;
+import com.team2383.robot.Constants;
 
 public class FollowTrajectory extends Command implements Sendable  {
 	PathFollower leftFollower;
@@ -41,22 +40,22 @@ public class FollowTrajectory extends Command implements Sendable  {
 	@Override
 	protected void initialize() {
 		this.trajectory = trajectorySupplier.get();
-		this.modifier = new TankModifier(trajectory).modify(prefs.getDouble("trackwidth", 1.41));
-		modifier.modify(prefs.getDouble("trackwidth", 1.41));
+		this.modifier = new TankModifier(trajectory).modify(Constants.kDrive_trackwidth);
+		modifier.modify(Constants.kDrive_trackwidth);
 		
 		leftFollower = new PathFollower(modifier.getLeftTrajectory());
 		rightFollower = new PathFollower(modifier.getRightTrajectory());
 		
-		leftFollower.configurePIDVA(prefs.getDouble("kDrive_Motion_P", 1.0),
+		leftFollower.configurePIDVA(Constants.kDrive_Motion_P,
 									0.0,
-									prefs.getDouble("kDrive_Motion_D", 1.0),
-									prefs.getDouble("kDrive_Motion_V", 1.0),
-									prefs.getDouble("kDrive_Motion_A", 1.0));
-		rightFollower.configurePIDVA(prefs.getDouble("kDrive_Motion_P", 1.0),
+									Constants.kDrive_Motion_D,
+									Constants.kDrive_Motion_V,
+									Constants.kDrive_Motion_A);
+		rightFollower.configurePIDVA(Constants.kDrive_Motion_P,
 									0.0,
-									prefs.getDouble("kDrive_Motion_D", 1.0),
-									prefs.getDouble("kDrive_Motion_V", 1.0),
-									prefs.getDouble("kDrive_Motion_A", 1.0));
+									Constants.kDrive_Motion_D,
+									Constants.kDrive_Motion_V,
+									Constants.kDrive_Motion_A);
 		
 
 		leftFollower.reset();

@@ -1,13 +1,13 @@
  package com.team2383.robot.subsystems;
 
 import static com.team2383.robot.HAL.navX;
-import static com.team2383.robot.HAL.prefs;
 
 import com.team2383.ninjaLib.MotionUtils;
 import com.team2383.ninjaLib.Values;
+import com.team2383.robot.Constants;
 import com.team2383.robot.OI;
 import com.team2383.robot.commands.TeleopDrive;
-
+import com.ctre.phoenix.ParamEnum;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -25,15 +25,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Sendable;
 
 public class Drive extends Subsystem {
-	private final WPI_TalonSRX leftMaster;
-	private final BaseMotorController leftFollowerA;
-	private final BaseMotorController leftFollowerB;
-	private final BaseMotorController leftFollowerC;
+	public final WPI_TalonSRX leftMaster;
+	public final BaseMotorController leftFollowerA;
+	public final BaseMotorController leftFollowerB;
+	public final BaseMotorController leftFollowerC;
 
-	private final WPI_TalonSRX rightMaster;
-	private final BaseMotorController rightFollowerA;
-	private final BaseMotorController rightFollowerB;
-	private final BaseMotorController rightFollowerC;
+	public final WPI_TalonSRX rightMaster;
+	public final BaseMotorController rightFollowerA;
+	public final BaseMotorController rightFollowerB;
+	public final BaseMotorController rightFollowerC;
 	
 	//private final PowerDistributionPanel pdp;
 	
@@ -92,9 +92,9 @@ public class Drive extends Subsystem {
 		public final double accumHeading;
 		
 		public Motion() {
-			double kEncoderRatio = prefs.getDouble("kDrive_EncoderRatio", 1.0);
-			double kEncoderTicks = prefs.getInt("kDrive_EncoderTicks", 4096);
-			double kWheelCircumference = prefs.getDouble("kDrive_WheelDiameterInch", 4.0)/12.0 * Math.PI;
+			double kEncoderRatio = Constants.kDrive_EncoderRatio;
+			double kEncoderTicks = Constants.kDrive_EncoderTicks;
+			double kWheelCircumference = Constants.kDrive_WheelDiameterInch/12.0 * Math.PI;
 			
 			leftPosition_Native = leftMaster.getSelectedSensorPosition(0) * kEncoderRatio;
 			leftPosition_Rotations = MotionUtils.ticksToRotations(leftPosition_Native, kEncoderTicks, kEncoderRatio);
@@ -148,100 +148,113 @@ public class Drive extends Subsystem {
 		 */
 
 		//init left talons
-		leftMaster = new WPI_TalonSRX(prefs.getInt("kDrive_LeftMasterTalonID", 1));
+		leftMaster = new WPI_TalonSRX(Constants.kDrive_LeftMasterTalonID);
 		if (isPracticeBot) {
-			leftFollowerA = new TalonSRX(prefs.getInt("kDrive_LeftFollowerATalonID", 2));
-			leftFollowerB = new TalonSRX(prefs.getInt("kDrive_LeftFollowerBTalonID", 3));
-			leftFollowerC = new TalonSRX(prefs.getInt("kDrive_LeftFollowerCTalonID", 4));
+			leftFollowerA = new TalonSRX(Constants.kDrive_LeftFollowerATalonID);
+			leftFollowerB = new TalonSRX(Constants.kDrive_LeftFollowerBTalonID);
+			leftFollowerC = new TalonSRX(Constants.kDrive_LeftFollowerCTalonID);
 		} else {
-			leftFollowerA = new VictorSPX(prefs.getInt("kDrive_LeftFollowerATalonID", 2));
-			leftFollowerB = new VictorSPX(prefs.getInt("kDrive_LeftFollowerBTalonID", 3));
-			leftFollowerC = new VictorSPX(prefs.getInt("kDrive_LeftFollowerCTalonID", 4));
+			leftFollowerA = new VictorSPX(Constants.kDrive_LeftFollowerATalonID);
+			leftFollowerB = new VictorSPX(Constants.kDrive_LeftFollowerBTalonID);
+			leftFollowerC = new VictorSPX(Constants.kDrive_LeftFollowerCTalonID);
 		}
 
 		//setup followers
-		leftFollowerA.follow(leftMaster);
-		leftFollowerB.follow(leftMaster);
-		leftFollowerC.follow(leftMaster);
+		leftFollowerA.set(ControlMode.Follower, Constants.kDrive_LeftMasterTalonID);
+		leftFollowerB.set(ControlMode.Follower, Constants.kDrive_LeftMasterTalonID);
+		leftFollowerC.set(ControlMode.Follower, Constants.kDrive_LeftMasterTalonID);
 		
 		//Left settings
 		leftMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
 		leftMaster.setSensorPhase(false);
-		leftMaster.setInverted(prefs.getBoolean("kDrive_InvertLeftMaster", false));
-		leftFollowerA.setInverted(prefs.getBoolean("kDrive_InvertLeftA", false));
-		leftFollowerB.setInverted(prefs.getBoolean("kDrive_InvertLeftB", false));
-		leftFollowerC.setInverted(prefs.getBoolean("kDrive_InvertLeftC", false));
+		leftMaster.setInverted(Constants.kDrive_InvertLeftMaster);
+		leftFollowerA.setInverted(Constants.kDrive_InvertLeftA);
+		leftFollowerB.setInverted(Constants.kDrive_InvertLeftB);
+		leftFollowerC.setInverted(Constants.kDrive_InvertLeftC);
 		
 		leftMaster.setNeutralMode(NeutralMode.Brake);
 		
 		//PID
-		leftMaster.config_kP(0, 0, 0);
-		leftMaster.config_kI(0, 0, 0);
-		leftMaster.config_kD(0, 0, 0);
-		leftMaster.config_kF(0, 0, 0);
-		leftMaster.config_IntegralZone(0, 0, 0);
+		leftMaster.config_kP(0, 0, 10);
+		leftMaster.config_kI(0, 0, 10);
+		leftMaster.config_kD(0, 0, 10);
+		leftMaster.config_kF(0, 0, 10);
+		leftMaster.config_IntegralZone(0, 0, 10);
 
 		//clear options
-		leftMaster.configForwardSoftLimitEnable(false, 0);
-		leftMaster.configReverseSoftLimitEnable(false, 0);
-		leftMaster.configContinuousCurrentLimit(0, 0);
-		leftMaster.configPeakOutputForward(0.8, 0);
-		leftMaster.configPeakOutputReverse(-0.8, 0);
-		leftMaster.configOpenloopRamp(0, 0);
-		leftMaster.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_20Ms, 0);
+		leftMaster.configForwardSoftLimitEnable(false, 10);
+		leftMaster.configReverseSoftLimitEnable(false, 10);
+
+		leftMaster.configSetParameter(ParamEnum.eContinuousCurrentLimitAmps, Constants.kDrive_continuousCurrentLimit, 0x00, 0x00, 10);
+		leftMaster.configSetParameter(ParamEnum.ePeakCurrentLimitAmps, Constants.kDrive_peakCurrentLimit, 0x00, 0x00, 10);
+		leftMaster.configSetParameter(ParamEnum.ePeakCurrentLimitMs, Constants.kDrive_peakCurrentTime_ms, 0x00, 0x00, 10);
+		leftMaster.enableCurrentLimit(true);
+		
+		leftMaster.configPeakOutputForward(0.8, 10);
+		leftMaster.configPeakOutputReverse(-0.8, 10);
+
+		leftMaster.configOpenloopRamp(0, 10);
+
+		leftMaster.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_20Ms, 10);
 		
 		/*
 		 * Right drive
 		 */
 		
 		//init right talons
-		rightMaster = new WPI_TalonSRX(prefs.getInt("kDrive_RightMasterTalonID", 5));
+		rightMaster = new WPI_TalonSRX(Constants.kDrive_RightMasterTalonID);
 		if(isPracticeBot) {
-			rightFollowerA = new TalonSRX(prefs.getInt("kDrive_RightFollowerATalonID", 6));
-			rightFollowerB = new TalonSRX(prefs.getInt("kDrive_RightFollowerBTalonID", 7));
-			rightFollowerC = new TalonSRX(prefs.getInt("kDrive_RightFollowerCTalonID", 8));
+			rightFollowerA = new TalonSRX(Constants.kDrive_RightFollowerATalonID);
+			rightFollowerB = new TalonSRX(Constants.kDrive_RightFollowerBTalonID);
+			rightFollowerC = new TalonSRX(Constants.kDrive_RightFollowerCTalonID);
 		} else {
-			rightFollowerA = new VictorSPX(prefs.getInt("kDrive_RightFollowerATalonID", 6));
-			rightFollowerB = new VictorSPX(prefs.getInt("kDrive_RightFollowerBTalonID", 7));
-			rightFollowerC = new VictorSPX(prefs.getInt("kDrive_RightFollowerCTalonID", 8));
+			rightFollowerA = new VictorSPX(Constants.kDrive_RightFollowerATalonID);
+			rightFollowerB = new VictorSPX(Constants.kDrive_RightFollowerBTalonID);
+			rightFollowerC = new VictorSPX(Constants.kDrive_RightFollowerCTalonID);
 		}
 		
 		//setup followers
-		rightFollowerA.follow(rightMaster);
-		rightFollowerB.follow(rightMaster);
-		rightFollowerC.follow(rightMaster);
+		rightFollowerA.set(ControlMode.Follower, Constants.kDrive_RightMasterTalonID);
+		rightFollowerB.set(ControlMode.Follower, Constants.kDrive_RightMasterTalonID);
+		rightFollowerC.set(ControlMode.Follower, Constants.kDrive_RightMasterTalonID);
 		
 		//Right settings
 		rightMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
-		rightMaster.setSensorPhase(true);
-		rightMaster.setInverted(prefs.getBoolean("kDrive_InvertRightMaster", false));
-		rightFollowerA.setInverted(prefs.getBoolean("kDrive_InvertRightA", false));
-		rightFollowerB.setInverted(prefs.getBoolean("kDrive_InvertRightB", false));
-		rightFollowerC.setInverted(prefs.getBoolean("kDrive_InvertRightC", false));
+		rightMaster.setSensorPhase(false);
+		rightMaster.setInverted(Constants.kDrive_InvertRightMaster);
+		rightFollowerA.setInverted(Constants.kDrive_InvertRightA);
+		rightFollowerB.setInverted(Constants.kDrive_InvertRightB);
+		rightFollowerC.setInverted(Constants.kDrive_InvertRightC);
 
 		rightMaster.setNeutralMode(NeutralMode.Brake);
 		
 		//PID
-		rightMaster.config_kP(0, 0, 0);
-		rightMaster.config_kI(0, 0, 0);
-		rightMaster.config_kD(0, 0, 0);
-		rightMaster.config_kF(0, 0, 0);
-		rightMaster.config_IntegralZone(0, 0, 0);
+		rightMaster.config_kP(0, 0, 10);
+		rightMaster.config_kI(0, 0, 10);
+		rightMaster.config_kD(0, 0, 10);
+		rightMaster.config_kF(0, 0, 10);
+		rightMaster.config_IntegralZone(0, 0, 10);
 		
 		//clear options
-		rightMaster.configForwardSoftLimitEnable(false, 0);
-		rightMaster.configReverseSoftLimitEnable(false, 0);
-		rightMaster.configContinuousCurrentLimit(0, 0);
-		rightMaster.configPeakOutputForward(0.8, 0);
-		rightMaster.configPeakOutputReverse(-0.8, 0);
-
-		rightMaster.configOpenloopRamp(0, 0);
+		rightMaster.configForwardSoftLimitEnable(false, 10);
+		rightMaster.configReverseSoftLimitEnable(false, 10);
 		
-		rightMaster.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_20Ms, 0);
+		leftMaster.configSetParameter(ParamEnum.eContinuousCurrentLimitAmps, Constants.kDrive_continuousCurrentLimit, 0x00, 0x00, 10);
+		leftMaster.configSetParameter(ParamEnum.ePeakCurrentLimitAmps, Constants.kDrive_peakCurrentLimit, 0x00, 0x00, 10);
+		leftMaster.configSetParameter(ParamEnum.ePeakCurrentLimitMs, Constants.kDrive_peakCurrentTime_ms, 0x00, 0x00, 10);
+		rightMaster.enableCurrentLimit(false);
+		
+		rightMaster.configPeakOutputForward(0.8, 10);
+		rightMaster.configPeakOutputReverse(-0.8, 10);
+
+		rightMaster.configOpenloopRamp(0, 10);
+		
+		rightMaster.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_20Ms, 10);
 		
 		/*
 		 * init differential drive
 		 */
+
 		drive = new DifferentialDrive(leftMaster, rightMaster);
 		drive.setSafetyEnabled(false);
 		

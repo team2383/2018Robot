@@ -55,10 +55,6 @@ public class TeleopDrive extends Command {
 		SmartDashboard.putNumber("Drive TurnAdj", turnAdj);
 		
 		drive.arcade(throttle.getAsDouble(), turn.getAsDouble()-turnAdj);
-		
-		if (OI.driver.getButtonStateA()) {
-			drive.resetEncoders();
-		}
 	}
 
 	@Override

@@ -1,5 +1,5 @@
 {
-  "dividerPosition": 0.24143145161290322,
+  "dividerPosition": 0.1748991935483871,
   "tabPane": [
     {
       "title": "Dashboard",
@@ -11,29 +11,64 @@
         "hgap": 16.0,
         "vgap": 16.0,
         "tiles": {
+          "3,5": {
+            "size": [
+              5,
+              1
+            ],
+            "content": {
+              "_type": "ComboBox Chooser",
+              "_source0": "network_table:///SmartDashboard/Auto Chooser",
+              "_title": "/SmartDashboard/Auto Chooser"
+            }
+          },
           "0,0": {
+            "size": [
+              2,
+              2
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/Reset Encoders?",
+              "_title": "Reset Encoders?",
+              "colorWhenTrue": "#7CFC00FF",
+              "colorWhenFalse": "#8B0000FF"
+            }
+          },
+          "2,0": {
             "size": [
               1,
               1
             ],
             "content": {
               "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Drive Avg Velocity (ft/s)",
-              "_title": "Drive Avg Velocity (ft/s)"
+              "_source0": "network_table:///SmartDashboard/Drive TurnAdj",
+              "_title": "Drive TurnAdj"
+            }
+          },
+          "11,5": {
+            "size": [
+              5,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Drive Right Position (ft)",
+              "_title": "/SmartDashboard/Drive Right Position (ft)"
+            }
+          },
+          "9,5": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Drive Left Position (ft)",
+              "_title": "/SmartDashboard/Drive Left Position (ft)"
             }
           },
           "3,0": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Drive Avg Position (rotations)",
-              "_title": "Drive Avg Position (rotations)"
-            }
-          },
-          "5,0": {
             "size": [
               1,
               1
@@ -44,6 +79,28 @@
               "_title": "Drive Bounded Heading (degrees)"
             }
           },
+          "4,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Drive Left Velocity (ft-s)",
+              "_title": "Drive Left Velocity (ft-s)"
+            }
+          },
+          "5,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Drive Right Velocity (ft-s)",
+              "_title": "Drive Right Velocity (ft-s)"
+            }
+          },
           "6,0": {
             "size": [
               1,
@@ -51,14 +108,14 @@
             ],
             "content": {
               "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Drive Left Velocity (ft/s)",
-              "_title": "Drive Left Velocity (ft/s)"
+              "_source0": "network_table:///SmartDashboard/Drive Avg Position (rotations)",
+              "_title": "Drive Avg Position (rotations)"
             }
           },
-          "12,4": {
+          "7,0": {
             "size": [
-              6,
-              2
+              1,
+              1
             ],
             "content": {
               "_type": "Text View",
@@ -73,21 +130,30 @@
             ],
             "content": {
               "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Drive Left Position (ft)",
-              "_title": "Drive Left Position (ft)"
+              "_source0": "network_table:///SmartDashboard/Drive Avg Velocity (ft-s)",
+              "_title": "Drive Avg Velocity (ft-s)"
             }
           },
           "9,0": {
             "size": [
-              2,
-              2
+              1,
+              1
             ],
             "content": {
-              "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/Reset Encoders?",
-              "_title": "Reset Encoders?",
-              "colorWhenTrue": "#7CFC00FF",
-              "colorWhenFalse": "#8B0000FF"
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/desired Position: ",
+              "_title": "desired Position: "
+            }
+          },
+          "10,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/actual Position: ",
+              "_title": "actual Position: "
             }
           },
           "11,0": {
@@ -97,8 +163,8 @@
             ],
             "content": {
               "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Drive TurnAdj",
-              "_title": "Drive TurnAdj"
+              "_source0": "network_table:///SmartDashboard/Rotations: ",
+              "_title": "Rotations: "
             }
           },
           "12,0": {
@@ -110,281 +176,6 @@
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/calculated trackwidth",
               "_title": "calculated trackwidth"
-            }
-          },
-          "12,5": {
-            "size": [
-              6,
-              4
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Drive Avg Position (rotations)",
-              "_title": "SmartDashboard/Drive Avg Position (rotations)"
-            }
-          },
-          "2,0": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/MP Target Left Position (ft)",
-              "_title": "MP Target Left Position (ft)"
-            }
-          },
-          "4,0": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/MP Target Left Velocity (ft/s)",
-              "_title": "MP Target Left Velocity (ft/s)"
-            }
-          },
-          "7,0": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/MP Target Right Position (ft)",
-              "_title": "MP Target Right Position (ft)"
-            }
-          },
-          "13,0": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/MP Target Right Velocity (ft/s)",
-              "_title": "MP Target Right Velocity (ft/s)"
-            }
-          },
-          "14,0": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/MP Target Heading",
-              "_title": "MP Target Heading"
-            }
-          },
-          "15,0": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/MP Left Output (%)",
-              "_title": "MP Left Output (%)"
-            }
-          },
-          "16,0": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/MP Right Output (%)",
-              "_title": "MP Right Output (%)"
-            }
-          },
-          "17,0": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/MP Heading Adj. Output (%)",
-              "_title": "MP Heading Adj. Output (%)"
-            }
-          },
-          "1,0": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Drive Avg Velocity (ft-s)",
-              "_title": "Drive Avg Velocity (ft-s)"
-            }
-          },
-          "0,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/MP Target Left Velocity (ft-s)",
-              "_title": "MP Target Left Velocity (ft-s)"
-            }
-          },
-          "1,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/MP Target Right Velocity (ft-s)",
-              "_title": "MP Target Right Velocity (ft-s)"
-            }
-          },
-          "2,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Drive Right Velocity (ft-s)",
-              "_title": "Drive Right Velocity (ft-s)"
-            }
-          },
-          "3,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Drive Left Velocity (ft-s)",
-              "_title": "Drive Left Velocity (ft-s)"
-            }
-          },
-          "1,6": {
-            "size": [
-              7,
-              4
-            ],
-            "content": {
-              "_type": "ComboBox Chooser",
-              "_source0": "network_table:///SmartDashboard/Auto Chooser",
-              "_title": "Auto Chooser"
-            }
-          },
-          "5,4": {
-            "size": [
-              5,
-              2
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Drive Right Position (ft)",
-              "_title": "Drive Right Position (ft)"
-            }
-          },
-          "6,11": {
-            "size": [
-              10,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Rotations: ",
-              "_title": "SmartDashboard/Rotations: "
-            }
-          },
-          "4,1": {
-            "size": [
-              5,
-              2
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Position: ",
-              "_title": "Position: "
-            }
-          },
-          "9,9": {
-            "size": [
-              6,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Position: ",
-              "_title": "/SmartDashboard/Position: "
-            }
-          },
-          "0,12": {
-            "size": [
-              5,
-              2
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/desired Position: ",
-              "_title": "desired Position: "
-            }
-          },
-          "10,7": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/actual Position: ",
-              "_title": "actual Position: "
-            }
-          },
-          "6,13": {
-            "size": [
-              7,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/actual Position: ",
-              "_title": "/SmartDashboard/actual Position: "
-            }
-          },
-          "11,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Left Encoder Feet",
-              "_title": "Left Encoder Feet"
-            }
-          },
-          "12,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Right Encoder Feet",
-              "_title": "Right Encoder Feet"
-            }
-          },
-          "13,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Gyro Degrees",
-              "_title": "Gyro Degrees"
             }
           }
         }
@@ -416,7 +207,7 @@
           },
           "3,0": {
             "size": [
-              2,
+              1,
               3
             ],
             "content": {
@@ -425,9 +216,9 @@
               "_children": []
             }
           },
-          "5,0": {
+          "4,0": {
             "size": [
-              2,
+              1,
               3
             ],
             "content": {
@@ -436,9 +227,9 @@
               "_children": []
             }
           },
-          "7,0": {
+          "5,0": {
             "size": [
-              2,
+              1,
               3
             ],
             "content": {
@@ -449,7 +240,7 @@
           },
           "0,2": {
             "size": [
-              3,
+              2,
               2
             ],
             "content": {
@@ -459,7 +250,7 @@
               "showIndicatorText": true
             }
           },
-          "9,0": {
+          "6,0": {
             "size": [
               1,
               3
@@ -485,9 +276,9 @@
               ]
             }
           },
-          "3,3": {
+          "2,3": {
             "size": [
-              2,
+              1,
               1
             ],
             "content": {
@@ -496,9 +287,9 @@
               "_children": []
             }
           },
-          "5,3": {
+          "3,3": {
             "size": [
-              2,
+              1,
               1
             ],
             "content": {
@@ -507,9 +298,9 @@
               "_children": []
             }
           },
-          "7,3": {
+          "4,3": {
             "size": [
-              2,
+              1,
               1
             ],
             "content": {
@@ -518,7 +309,7 @@
               "_children": []
             }
           },
-          "9,3": {
+          "5,3": {
             "size": [
               1,
               1
@@ -546,7 +337,7 @@
           },
           "0,4": {
             "size": [
-              2,
+              1,
               1
             ],
             "content": {
@@ -570,9 +361,9 @@
               ]
             }
           },
-          "2,4": {
+          "1,4": {
             "size": [
-              2,
+              1,
               1
             ],
             "content": {
@@ -581,9 +372,9 @@
               "_children": []
             }
           },
-          "4,4": {
+          "2,4": {
             "size": [
-              2,
+              1,
               1
             ],
             "content": {
@@ -592,9 +383,9 @@
               "_children": []
             }
           },
-          "6,4": {
+          "3,4": {
             "size": [
-              2,
+              1,
               1
             ],
             "content": {
@@ -603,10 +394,10 @@
               "_children": []
             }
           },
-          "8,4": {
+          "4,4": {
             "size": [
-              2,
-              4
+              1,
+              1
             ],
             "content": {
               "_type": "List Layout",
@@ -639,6 +430,75 @@
               "_source0": "network_table:///LiveWindow/Ungrouped/DoubleSolenoid[0,6]/Value",
               "_title": "Ungrouped/DoubleSolenoid[0,6]/Value"
             }
+          },
+          "7,0": {
+            "size": [
+              1,
+              4
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_source0": "network_table:///LiveWindow/Intake",
+              "_title": "Intake",
+              "_children": [
+                {
+                  "_type": "Subsystem Layout",
+                  "_source0": "network_table:///LiveWindow/IntakePivot",
+                  "_title": "LiveWindow/IntakePivot",
+                  "_children": []
+                }
+              ]
+            }
+          },
+          "8,0": {
+            "size": [
+              1,
+              4
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_source0": "network_table:///LiveWindow/Ungrouped",
+              "_title": "Ungrouped",
+              "_children": [
+                {
+                  "_type": "Differential Drivebase",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/DifferentialDrive[1]",
+                  "_title": "DifferentialDrive[1]",
+                  "numberOfWheels": 4,
+                  "wheelDiameter": 80.0,
+                  "showVectors": true
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/DoubleSolenoid[0,6]/Value",
+                  "_title": "DoubleSolenoid[0,6]/Value"
+                }
+              ]
+            }
+          },
+          "5,4": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_source0": "network_table:///LiveWindow/Lift",
+              "_title": "Lift",
+              "_children": []
+            }
+          },
+          "6,4": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_source0": "network_table:///LiveWindow/Drivetrain",
+              "_title": "Drivetrain",
+              "_children": []
+            }
           }
         }
       }
@@ -655,7 +515,7 @@
         "tiles": {
           "0,0": {
             "size": [
-              5,
+              4,
               4
             ],
             "content": {
@@ -665,7 +525,7 @@
               "searchBoxVisible": true
             }
           },
-          "6,2": {
+          "1,4": {
             "size": [
               1,
               1
@@ -689,9 +549,9 @@
         "hgap": 16.0,
         "vgap": 16.0,
         "tiles": {
-          "4,0": {
+          "2,0": {
             "size": [
-              4,
+              2,
               2
             ],
             "content": {
@@ -700,7 +560,7 @@
               "Visible time": 30.0
             }
           },
-          "8,0": {
+          "4,0": {
             "size": [
               2,
               3
@@ -712,9 +572,9 @@
               "Visible time": 30.0
             }
           },
-          "8,3": {
+          "2,3": {
             "size": [
-              2,
+              1,
               1
             ],
             "content": {
@@ -725,9 +585,9 @@
               "tickMarkRingVisible": true
             }
           },
-          "4,3": {
+          "1,3": {
             "size": [
-              4,
+              1,
               1
             ],
             "content": {
@@ -741,7 +601,7 @@
           },
           "0,3": {
             "size": [
-              4,
+              1,
               1
             ],
             "content": {
@@ -755,7 +615,7 @@
           },
           "0,0": {
             "size": [
-              4,
+              2,
               2
             ],
             "content": {
@@ -766,7 +626,7 @@
           },
           "0,2": {
             "size": [
-              2,
+              1,
               1
             ],
             "content": {
@@ -780,9 +640,9 @@
               "showText": true
             }
           },
-          "4,2": {
+          "1,2": {
             "size": [
-              2,
+              1,
               1
             ],
             "content": {
@@ -809,9 +669,9 @@
         "hgap": 16.0,
         "vgap": 16.0,
         "tiles": {
-          "6,0": {
+          "4,0": {
             "size": [
-              2,
+              1,
               2
             ],
             "content": {
@@ -823,9 +683,9 @@
               "valueVisible": true
             }
           },
-          "8,2": {
+          "4,2": {
             "size": [
-              2,
+              1,
               2
             ],
             "content": {
@@ -837,9 +697,9 @@
               "valueVisible": true
             }
           },
-          "8,0": {
+          "5,0": {
             "size": [
-              2,
+              1,
               2
             ],
             "content": {
@@ -853,8 +713,8 @@
           },
           "0,3": {
             "size": [
-              4,
-              3
+              2,
+              2
             ],
             "content": {
               "_type": "Graph",
@@ -865,10 +725,10 @@
               "Visible time": 5.0
             }
           },
-          "4,3": {
+          "2,3": {
             "size": [
-              4,
-              3
+              2,
+              2
             ],
             "content": {
               "_type": "Graph",
@@ -880,7 +740,7 @@
           },
           "0,0": {
             "size": [
-              3,
+              2,
               3
             ],
             "content": {
@@ -891,27 +751,27 @@
               "Visible time": 15.0
             }
           },
-          "8,4": {
+          "4,4": {
             "size": [
               2,
-              2
+              1
             ],
             "content": {
               "_type": "Graph",
               "_source0": "network_table:///SmartDashboard/MP Heading Adj. Output (%)",
-              "_title": "SmartDashboard/MP Heading Adj. Output (%)",
+              "_title": "/SmartDashboard/MP Heading Adj. Output (%)",
               "Visible time": 15.0
             }
           },
-          "3,0": {
+          "2,0": {
             "size": [
-              3,
+              2,
               3
             ],
             "content": {
               "_type": "Graph",
               "_source0": "network_table:///SmartDashboard/MP Target Right Position (ft)",
-              "_title": "SmartDashboard/MP Target Right Position (ft)",
+              "_title": "/SmartDashboard/MP Target Right Position (ft)",
               "Visible time": 15.0
             }
           }

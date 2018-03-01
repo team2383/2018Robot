@@ -1,13 +1,12 @@
 package com.team2383.robot.subsystems;
 
-import static com.team2383.robot.HAL.prefs;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.team2383.ninjaLib.SetState;
+import com.team2383.robot.Constants;
 
 
 public class Intake extends SetState.StatefulSubsystem<Intake.State> {
@@ -21,17 +20,17 @@ public class Intake extends SetState.StatefulSubsystem<Intake.State> {
 	public Intake(boolean isPracticeBot){
 		
 		if (isPracticeBot) {
-			leftFeeder = new TalonSRX(prefs.getInt("kIntake_LeftFeederTalonID", 9));
-			leftShooter = new TalonSRX(prefs.getInt("kIntake_LeftShooterTalonID", 10));
+			leftFeeder = new TalonSRX(Constants.kIntake_LeftFeederTalonID);
+			leftShooter = new TalonSRX(Constants.kIntake_LeftShooterTalonID);
 			
-			rightFeeder = new TalonSRX(prefs.getInt("kIntake_RightFeederTalonID", 11));
-			rightShooter = new TalonSRX(prefs.getInt("kIntake_RightShooterTalonID", 12));
+			rightFeeder = new TalonSRX(Constants.kIntake_RightFeederTalonID);
+			rightShooter = new TalonSRX(Constants.kIntake_RightShooterTalonID);
 		} else {
-			leftFeeder = new VictorSPX(prefs.getInt("kIntake_LeftFeederTalonID", 9));
-			leftShooter = new VictorSPX(prefs.getInt("kIntake_LeftShooterTalonID", 10));
+			leftFeeder = new VictorSPX(Constants.kIntake_LeftFeederTalonID);
+			leftShooter = new VictorSPX(Constants.kIntake_LeftShooterTalonID);
 			
-			rightFeeder = new VictorSPX(prefs.getInt("kIntake_RightFeederTalonID", 11));
-			rightShooter = new VictorSPX(prefs.getInt("kIntake_RightShooterTalonID", 12));
+			rightFeeder = new VictorSPX(Constants.kIntake_RightFeederTalonID);
+			rightShooter = new VictorSPX(Constants.kIntake_RightShooterTalonID);
 		}
 		
 		/*

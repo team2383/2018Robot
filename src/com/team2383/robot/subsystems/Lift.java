@@ -1,7 +1,5 @@
 package com.team2383.robot.subsystems;
 
-import static com.team2383.robot.HAL.prefs;
-
 import com.ctre.phoenix.ParamEnum;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -11,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.team2383.ninjaLib.MotionUtils;
 import com.team2383.ninjaLib.SetState;
+import com.team2383.robot.Constants;
 import com.team2383.robot.OI;
 import com.team2383.robot.commands.TeleopLiftOpenLoop;
 
@@ -51,12 +50,12 @@ public class Lift extends Subsystem {
 		}
 
 		public Lift(boolean isPracticeBot) {
-			masterLift = new TalonSRX(prefs.getInt("kLift_LeftTalonID", 13));
+			masterLift = new TalonSRX(Constants.kLift_LeftTalonID);
 			
 			if (isPracticeBot) {
-				followerLift = new TalonSRX(prefs.getInt("kLift_RightTalonID", 14));
+				followerLift = new TalonSRX(Constants.kLift_RightTalonID);
 			} else {
-				followerLift = new VictorSPX(prefs.getInt("kLift_RightTalonID", 14));
+				followerLift = new VictorSPX(Constants.kLift_RightTalonID);
 			}
 			
 			masterLift.set(ControlMode.Follower, masterLift.getDeviceID());
@@ -70,8 +69,8 @@ public class Lift extends Subsystem {
 			masterLift.configSetParameter(ParamEnum.eClearPositionOnLimitR, 1, 0, 0, 10);
 			masterLift.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
 			
-			masterLift.configMotionAcceleration(prefs.getInt("Lift MM Accel", 8000), 10);
-			masterLift.configMotionCruiseVelocity(prefs.getInt("Lift MM Cruise Velocity", 6000), 10);
+			masterLift.configMotionAcceleration(Constants.kLift_MM_Accel, 10);
+			masterLift.configMotionCruiseVelocity(Constants.kLift_MM_Cruise_Velocity, 10);
 			
 			masterLift.setSensorPhase(false);
 			
@@ -79,8 +78,8 @@ public class Lift extends Subsystem {
 			followerLift.setNeutralMode(NeutralMode.Brake);
 			
 
-			masterLift.setInverted(prefs.getBoolean("kLift_InvertMaster", true));
-			followerLift.setInverted(prefs.getBoolean("kLift_InvertFollower", false));
+			masterLift.setInverted(Constants.kLift_InvertMaster);
+			followerLift.setInverted(Constants.kLift_InvertFollower);
 			followerLift.follow(masterLift);
 		}
 		
@@ -129,13 +128,13 @@ public class Lift extends Subsystem {
 		public void setPosition(double position) {
 			this.position = Math.max(Math.min(position, MAX_TRAVEL_IN), 0);
 			
-			masterLift.configMotionAcceleration(prefs.getInt("Lift MM Accel", 8000), 0);
-			masterLift.configMotionCruiseVelocity(prefs.getInt("Lift MM Cruise Velocity", 4200), 0);
+			masterLift.configMotionAcceleration(Constants.kLift_MM_Accel, 0);
+			masterLift.configMotionCruiseVelocity(Constants.kLift_MM_Cruise_Velocity, 0);
 			masterLift.set(ControlMode.MotionMagic, inchesToRotations(position)*4096.0);
 		}
 		
 		public boolean atTarget() {
-			return rotationsToInches(masterLift.getClosedLoopError(0)/4096.0) < prefs.getDouble("kLift_tolerance", 1.0);
+			return rotationsToInches(masterLift.getClosedLoopError(0)/4096.0) < Constants.kLift_tolerance;
 		}
 		
 		public void setOutput(double output) {

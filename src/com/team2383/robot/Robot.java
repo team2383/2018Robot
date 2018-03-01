@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.team2383.robot.HAL;
 import com.team2383.robot.OI;
 import com.team2383.robot.auto.CalculateTrackWidthAuto;
+import com.team2383.robot.auto.PitMotorTestAuto;
 import com.team2383.robot.auto.SwitchAuto;
 import com.team2383.robot.auto.TestMotionProfile;
 import com.team2383.robot.commands.GeneralPeriodic;
@@ -29,6 +30,7 @@ import com.team2383.robot.commands.GeneralPeriodic;
  */
 public class Robot extends TimedRobot {
 	Command autoCommand;
+	Command pitMotorTestAuto;
 	Command generalPeriodicCommand;
 	SendableChooser<Command> autoChooser = new SendableChooser<>();
 
@@ -68,8 +70,11 @@ public class Robot extends TimedRobot {
 		OI oi = new OI();
 		
 		generalPeriodicCommand = new GeneralPeriodic();
+		pitMotorTestAuto = new PitMotorTestAuto();
 		
 		autoChooser = new SendableChooser<Command>();
+		autoChooser.addObject("PIT AUTO: Fix Motor Direction", pitMotorTestAuto);
+		
 		autoChooser.addObject("Test Motion Profiling Auto", new TestMotionProfile());
 		autoChooser.addObject("Calc Trackwidth", new CalculateTrackWidthAuto());
 		autoChooser.addObject("Switch Auto", new SwitchAuto());
@@ -89,6 +94,11 @@ public class Robot extends TimedRobot {
 		if (!generalPeriodicCommand.isRunning()) {
 			generalPeriodicCommand.start();
 		}
+		
+		/*
+		 * We want to restart the pit command, not continue it
+		 */
+		pitMotorTestAuto.cancel();
 	}
 
 	@Override

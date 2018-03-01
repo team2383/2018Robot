@@ -43,6 +43,33 @@ public class WPILambdas {
 			}
 		};
 	}
+	
+	public static Command runUntil(Runnable execute, double timeout) {
+		return new Command(timeout) {
+
+			@Override
+			protected void execute() {
+				execute.run();
+			}
+
+			@Override
+			protected boolean isFinished() {
+				return this.isTimedOut();
+			}
+
+			@Override
+			protected void initialize() {
+			}
+
+			@Override
+			protected void end() {
+			}
+
+			@Override
+			protected void interrupted() {
+			}
+		};
+	}
 
 	public static Command runForeverCommand(Runnable execute) {
 		return new Command() {

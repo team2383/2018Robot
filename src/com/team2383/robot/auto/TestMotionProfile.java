@@ -1,7 +1,5 @@
 package com.team2383.robot.auto;
 
-import static com.team2383.robot.HAL.prefs;
-
 import com.team2383.robot.commands.FollowTrajectory;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;

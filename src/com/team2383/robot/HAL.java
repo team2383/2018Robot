@@ -1,7 +1,6 @@
 package com.team2383.robot;
 
 import com.kauailabs.navx.frc.AHRS;
-import com.team2383.ninjaLib.Prefs;
 import com.team2383.robot.subsystems.Drive;
 import com.team2383.robot.subsystems.Intake;
 import com.team2383.robot.subsystems.IntakePivot;
@@ -11,11 +10,9 @@ import edu.wpi.first.wpilibj.SPI;
 
 public class HAL {
 
+	public static Constants constants = new Constants();
 	// preferences
-	
-	public static Prefs prefs = new Prefs();
-	
-	public static boolean isPracticeBot = prefs.getBoolean("isPracticeBot", false);
+	public static boolean isPracticeBot = Constants.isPracticeBot;
 	
 	// subsystems
 	public static AHRS navX = new AHRS(SPI.Port.kMXP);
