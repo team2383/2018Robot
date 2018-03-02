@@ -1,6 +1,10 @@
 package com.team2383.robot;
 
 import com.kauailabs.navx.frc.AHRS;
+import com.team2383.robot.subsystems.ClimberRight;
+import com.team2383.robot.subsystems.ClimberLatchLeft;
+import com.team2383.robot.subsystems.ClimberLatchRight;
+import com.team2383.robot.subsystems.ClimberLeft;
 import com.team2383.robot.subsystems.Drive;
 import com.team2383.robot.subsystems.Intake;
 import com.team2383.robot.subsystems.IntakePivot;
@@ -17,7 +21,14 @@ public class HAL {
 	// subsystems
 	public static AHRS navX = new AHRS(SPI.Port.kMXP);
 	public static Drive drive = new Drive();
+	
 	public static Intake intake = new Intake();
 	public static IntakePivot intakePivot = new IntakePivot();
+	
+	public static ClimberLeft climberLeft = new ClimberLeft();
+	public static ClimberRight climberRight = new ClimberRight();
+	public static ClimberLatchRight climberLatchRight = new ClimberLatchRight();
+	public static ClimberLatchLeft climberLatchLeft = new ClimberLatchLeft();
+
 	public static Lift lift = new Lift();
 }

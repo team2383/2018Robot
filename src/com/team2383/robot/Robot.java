@@ -8,6 +8,7 @@
 package com.team2383.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -30,6 +31,7 @@ import com.team2383.robot.commands.GeneralPeriodic;
 public class Robot extends TimedRobot {
 	Command autoCommand;
 	Command generalPeriodicCommand;
+	Solenoid pcm = new Solenoid(1,0); //turn on the second pcm
 	SendableChooser<Command> autoChooser = new SendableChooser<>();
 
 	/*

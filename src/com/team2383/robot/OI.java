@@ -15,6 +15,10 @@ import com.team2383.ninjaLib.WPILambdas;
 import com.team2383.robot.commands.LiftPreset;
 import com.team2383.robot.commands.TeleopLiftMotionMagic;
 import com.team2383.robot.commands.TeleopLiftOpenLoop;
+import com.team2383.robot.subsystems.ClimberRight;
+import com.team2383.robot.subsystems.ClimberLatchLeft;
+import com.team2383.robot.subsystems.ClimberLatchRight;
+import com.team2383.robot.subsystems.ClimberLeft;
 import com.team2383.robot.subsystems.Intake;
 import com.team2383.robot.subsystems.IntakePivot;
 import com.team2383.robot.subsystems.Lift;
@@ -30,6 +34,10 @@ import edu.wpi.first.wpilibj.command.Command;
 import static com.team2383.robot.HAL.drive;
 import static com.team2383.robot.HAL.intake;
 import static com.team2383.robot.HAL.intakePivot;
+import static com.team2383.robot.HAL.climberLeft;
+import static com.team2383.robot.HAL.climberRight;
+import static com.team2383.robot.HAL.climberLatchLeft;
+import static com.team2383.robot.HAL.climberLatchRight;
 import static com.team2383.robot.HAL.lift;
 import static com.team2383.robot.HAL.prefs;
 
@@ -85,7 +93,21 @@ public class OI {
 	
 	public static Button liftMotionMagicCoarse = new JoystickButton(operator, 1);
 	public static Button liftMotionMagicFine = new JoystickButton(operator, 2);
-	public static Button liftManual = new JoystickButton(operator, 5);
+	public static Button liftManual = new JoystickButton(operator, 3);
+	
+	public static Button climberLatchBtnLeft = new LambdaButton(() -> {
+		return driver.getButtonStateA() &&
+				driver.getDPadDown();
+	});
+	
+	public static Button climberLatchBtnRight = new LambdaButton(() -> {
+		return driver.getButtonStateA() &&
+				driver.getDPadUp();
+	});
+
+	public static Button climberDriverLeftBtn = new JoystickButton(operator, 5);
+	
+	public static Button climberDriverRightBtn = new JoystickButton(operator, 6);
 	
 	public static Button liftPresetBottom = new JoystickButton(operator, 11);
 	public static Button liftPresetSwitch = new JoystickButton(operator, 9);
@@ -107,5 +129,10 @@ public class OI {
 		liftPresetSwitch.whenPressed(new LiftPreset(Lift.Preset.SWITCH));
 		liftPresetScaleMid.whenPressed(new LiftPreset(Lift.Preset.SCALE_MID));
 		liftPresetScaleHigh.whenPressed(new LiftPreset(Lift.Preset.SCALE_HIGH));
+		
+		climberLatchBtnLeft.toggleWhenActive(new SetState<ClimberLatchLeft.State>(climberLatchLeft, ClimberLatchLeft.State.OPEN, ClimberLatchLeft.State.CLOSED));
+		climberLatchBtnRight.toggleWhenActive(new SetState<ClimberLatchRight.State>(climberLatchRight, ClimberLatchRight.State.OPEN, ClimberLatchRight.State.CLOSED));
+		climberDriverRightBtn.toggleWhenActive(new SetState<ClimberLeft.State>(climberLeft, ClimberLeft.State.EXTENDED, ClimberLeft.State.RETRACTED));
+		climberDriverLeftBtn.toggleWhenActive(new SetState<ClimberRight.State>(climberRight, ClimberRight.State.EXTENDED, ClimberRight.State.RETRACTED));
 	}
 }

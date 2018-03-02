@@ -61,6 +61,7 @@ public class Gamepad extends Joystick {
 		return getRawAxis(AXIS_SHOULDER_R);
 	}
 	
+
 	
 
 	/**
@@ -133,17 +134,20 @@ public class Gamepad extends Joystick {
 		return new JoystickButton(this, BUTTON_Y);
 	}
 
-	/**
-	 * DPad Left and Right only WPILIB cannot access the vertical axis of the
-	 * Logitech Game Controller Dpad
-	 */
-
-	public boolean getDPadLeft() {
-		return getPOV() == 270;
+	public boolean getDPadUp() {
+		return getPOV() == 0;
 	}
-
+	
 	public boolean getDPadRight() {
 		return getPOV() == 90;
+	}
+	
+	public boolean getDPadDown() {
+		return getPOV() == 180;
+	}
+	
+	public boolean getDPadLeft() {
+		return getPOV() == 270;
 	}
 
 	/**

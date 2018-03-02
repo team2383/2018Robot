@@ -64,11 +64,11 @@ public class Intake extends SetState.StatefulSubsystem<Intake.State> {
 	}
 	
 	public void unfeed(){
-		leftFeeder.set(ControlMode.PercentOutput, -1.0);
-		rightFeeder.set(ControlMode.PercentOutput, -1.0);
+		leftFeeder.set(ControlMode.PercentOutput, -0.5);
+		rightFeeder.set(ControlMode.PercentOutput, -0.5);
 		
-		leftShooter.set(ControlMode.PercentOutput, -1.0);
-		rightShooter.set(ControlMode.PercentOutput, -1.0);
+		leftShooter.set(ControlMode.PercentOutput, -0.5);
+		rightShooter.set(ControlMode.PercentOutput, -0.5);
 	}
 
 	public void stop() {

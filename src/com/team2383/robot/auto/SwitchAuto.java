@@ -39,19 +39,13 @@ public class SwitchAuto extends CommandGroup {
 			5.0); // max jerk in ft/s/s/s for the motion profile
 
 	Trajectory leftTrajectory = Pathfinder.generate(leftPoints, config);
-	Trajectory rightTrajectory = Pathfinder.generate(leftPoints, config);
+	Trajectory rightTrajectory = Pathfinder.generate(rightPoints, config);
 
 	public SwitchAuto() {
 		addSequential(WPILambdas.runOnceCommand(() -> lift.setPreset(Lift.Preset.SWITCH), true));
 		addSequential(new WaitForFMSInfo());
 		addSequential(new FollowTrajectory(() -> {
 			String positions = DriverStation.getInstance().getGameSpecificMessage();
-			
-			if (positions.charAt(0) == 'L') {
-				System.out.println("left");
-			} else {
-				System.out.println("right");
-			}
 
 			Trajectory t = (positions.charAt(0) == 'L') ? leftTrajectory : rightTrajectory;
 
