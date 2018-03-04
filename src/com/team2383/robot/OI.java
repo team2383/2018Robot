@@ -87,52 +87,42 @@ public class OI {
 	
 	public static DoubleSupplier liftSpeed = () -> (operator.getY());
 	
-	public static Button unfeed = driver.getLeftShoulder();
-	public static Button feed = driver.getRightShoulder();
-	public static Button clamp = driver.getButtonX();
-	
-	public static Button liftMotionMagicCoarse = new JoystickButton(operator, 1);
-	public static Button liftMotionMagicFine = new JoystickButton(operator, 2);
-	public static Button liftManual = new JoystickButton(operator, 3);
-	
-	public static Button climberLatchBtnLeft = new LambdaButton(() -> {
-		return driver.getButtonStateA() &&
-				driver.getDPadDown();
-	});
-	
-	public static Button climberLatchBtnRight = new LambdaButton(() -> {
-		return driver.getButtonStateA() &&
-				driver.getDPadUp();
-	});
+	public static Button unfeed = new DPadButton(operator, Direction.UP);
+	public static Button unfeedFast = new JoystickButton(operator, 1);
+	public static Button feed = new DPadButton(operator, Direction.DOWN);
+	public static Button clamp = new JoystickButton(operator, 5);
 
-	public static Button climberDriverLeftBtn = new JoystickButton(operator, 5);
-	
-	public static Button climberDriverRightBtn = new JoystickButton(operator, 6);
+	public static Button liftMotionMagic = new JoystickButton(operator, 2);
+	public static Button liftManual = new JoystickButton(operator, 3);
 	
 	public static Button liftPresetBottom = new JoystickButton(operator, 11);
 	public static Button liftPresetSwitch = new JoystickButton(operator, 9);
 	public static Button liftPresetScaleMid = new JoystickButton(operator, 7);
 	public static Button liftPresetScaleHigh = new JoystickButton(operator, 8);
+
+	public static Button allLiftPresets = new LambdaButton(() -> {
+		return operator.getRawButton(9) || operator.getRawButton(8) || operator.getRawButton(7) || operator.getRawButton(11);
+	});
+	
 	
 	public static Button rev = new JoystickButton(driver, 3);
 	
 	public OI() {
 		unfeed.whileHeld(new SetState<Intake.State>(intake, Intake.State.UNFEED, Intake.State.STOPPED));
+		unfeedFast.whileHeld(new SetState<Intake.State>(intake, Intake.State.UNFEEDFAST, Intake.State.STOPPED));
+
 		feed.whileHeld(new SetState<Intake.State>(intake, Intake.State.FEED, Intake.State.STOPPED));
+
 		clamp.toggleWhenActive(new SetState<IntakePivot.State>(intakePivot, IntakePivot.State.UP, IntakePivot.State.DOWN));
 		
 		liftManual.whileHeld(new TeleopLiftOpenLoop(liftSpeed));
-		liftMotionMagicCoarse.whileHeld(new TeleopLiftMotionMagic(liftSpeed));
-		liftMotionMagicFine.whileHeld(new TeleopLiftMotionMagic(liftSpeed));
+		liftMotionMagic.whileHeld(new TeleopLiftMotionMagic(liftSpeed));
 		
 		liftPresetBottom.whenPressed(new LiftPreset(Lift.Preset.BOTTOM));
-		liftPresetSwitch.whenPressed(new LiftPreset(Lift.Preset.SWITCH));
+		liftPresetSwitch.whenPressed(new LiftPreset(Lift.Preset.TELEOP_SWITCH));
 		liftPresetScaleMid.whenPressed(new LiftPreset(Lift.Preset.SCALE_MID));
 		liftPresetScaleHigh.whenPressed(new LiftPreset(Lift.Preset.SCALE_HIGH));
-		
-		climberLatchBtnLeft.toggleWhenActive(new SetState<ClimberLatchLeft.State>(climberLatchLeft, ClimberLatchLeft.State.OPEN, ClimberLatchLeft.State.CLOSED));
-		climberLatchBtnRight.toggleWhenActive(new SetState<ClimberLatchRight.State>(climberLatchRight, ClimberLatchRight.State.OPEN, ClimberLatchRight.State.CLOSED));
-		climberDriverRightBtn.toggleWhenActive(new SetState<ClimberLeft.State>(climberLeft, ClimberLeft.State.EXTENDED, ClimberLeft.State.RETRACTED));
-		climberDriverLeftBtn.toggleWhenActive(new SetState<ClimberRight.State>(climberRight, ClimberRight.State.EXTENDED, ClimberRight.State.RETRACTED));
+
+		allLiftPresets.whileHeld(new SetState<IntakePivot.State>(intakePivot, IntakePivot.State.UP));
 	}
 }

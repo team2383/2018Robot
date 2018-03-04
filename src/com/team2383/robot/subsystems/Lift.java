@@ -25,7 +25,7 @@ public class Lift extends Subsystem {
 		//16tooth sprocket, diameter of 1.406"
 	
 		private static final double SPROCKET_CIRCUMFERENCE_IN = 1.568 * Math.PI;
-		private static final double MAX_TRAVEL_IN = 39;
+		private static final double MAX_TRAVEL_IN = 38.7;
 		private static final double MAX_TRAVEL_ROTATIONS = inchesToRotations(MAX_TRAVEL_IN);
 		private static final double MAX_TRAVEL_TICKS = MAX_TRAVEL_ROTATIONS * 4096;
 
@@ -36,7 +36,8 @@ public class Lift extends Subsystem {
 		public static enum Preset {
 			BOTTOM(0),
 			TRAVEL(2),
-			SWITCH(12),
+			AUTO_SWITCH(12),
+			TELEOP_SWITCH(12),
 			SCALE_MID(MAX_TRAVEL_IN-5),
 			SCALE_HIGH(MAX_TRAVEL_IN),
 			TOP(MAX_TRAVEL_IN), ;
@@ -57,9 +58,15 @@ public class Lift extends Subsystem {
 			masterLift.config_kI(0, 0, 10);
 			masterLift.config_kD(0, 0.2, 10);
 			masterLift.config_kF(0, 0.27, 10);
+
+			/* max height gain schedule*/
+			masterLift.config_kP(1, 0.21, 10);
+			masterLift.config_kI(1, 0.001, 10);
+			masterLift.config_kD(1, 0.2, 10);
+			masterLift.config_kF(1, 0.28, 10);
 			masterLift.config_IntegralZone(0, 0, 10);
 			masterLift.configForwardSoftLimitEnable(true, 10);
-			masterLift.configForwardSoftLimitThreshold((int) MAX_TRAVEL_ROTATIONS * 4096, 10);
+			masterLift.configForwardSoftLimitThreshold(32000, 10);
 			masterLift.configSetParameter(ParamEnum.eClearPositionOnLimitR, 1, 0, 0, 10);
 			masterLift.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
 			
@@ -119,6 +126,7 @@ public class Lift extends Subsystem {
 		 * @param position the desired position in the elevator in inches
 		 */
 		public void setPosition(double position) {
+			masterLift.configForwardSoftLimitEnable(true, 2);
 			this.position = Math.max(Math.min(position, MAX_TRAVEL_IN), 0);
 			
 			masterLift.configMotionAcceleration(prefs.getInt("Lift MM Accel", 8000), 0);
@@ -131,6 +139,10 @@ public class Lift extends Subsystem {
 		}
 		
 		public void setOutput(double output) {
+			/**
+			 * REMOVE ASAP TODO
+			 */
+			masterLift.configForwardSoftLimitEnable(false, 2);
 			masterLift.set(ControlMode.PercentOutput, output);
 		}
 		
@@ -139,9 +151,16 @@ public class Lift extends Subsystem {
 		}
 		
 		public void periodic() {
-			SmartDashboard.putNumber("desired Position: ", position);
-			SmartDashboard.putNumber("actual Position: ", rotationsToInches(masterLift.getSelectedSensorPosition(0)/4096.0));
-;			SmartDashboard.putNumber("Rotations: ", masterLift.getSelectedSensorPosition(0)/4096.0);
+			/*
+			if (this.getCurrentPosition() > Preset.SCALE_MID.position) {
+				masterLift.selectProfileSlot(1, 0);
+			} else {
+				masterLift.selectProfileSlot(0, 0);
+			}*/
+			
+			SmartDashboard.putNumber("lift desired Position: ", position);
+			SmartDashboard.putNumber("lift actual Position: ", rotationsToInches(masterLift.getSelectedSensorPosition(0)/4096.0));
+;			SmartDashboard.putNumber("lift Rotations: ", masterLift.getSelectedSensorPosition(0)/4096.0);
 		}
 		
 		@Override

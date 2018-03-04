@@ -21,11 +21,11 @@ public class SetState<StateT extends Enum<StateT>> extends Command {
 	}
 
 	public SetState(StatefulSubsystem<StateT> subsystem, StateT state) {
-		this(subsystem, state, null);
+		this(subsystem, state, state);
 	}
 
 	public SetState(StatefulSubsystem<StateT> subsystem, StateT state, double timeout) {
-		this(subsystem, state, null, timeout);
+		this(subsystem, state, state, timeout);
 	}
 
 	public SetState(StatefulSubsystem<StateT> subsystem, StateT state, StateT endState) {

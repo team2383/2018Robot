@@ -19,17 +19,18 @@ import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Waypoint;
 
 /**
- *
+ * score in left switch if its on our side
  */
-public class SwitchAuto extends CommandGroup {
+public class LeftSwitchAuto extends CommandGroup {
 	Waypoint[] leftPoints = new Waypoint[] {
-			new Waypoint(0, 13.6, 0),
-			new Waypoint(8, 20, 0)
+			new Waypoint(0, 23, 0),
+			new Waypoint(7.5, 25, 0),
+			new Waypoint(14, 21, -90),
 			};
-
-	Waypoint[] rightPoints = new Waypoint[] {
-			new Waypoint(0, 13.6, 0),
-			new Waypoint(8, 7.2, 0)
+	
+	Waypoint[] baseline = new Waypoint[] {
+			new Waypoint(0, 23, 0),
+			new Waypoint(14, 23, 0)
 			};
 
 	Trajectory.Config config = new Trajectory.Config(Trajectory.FitMethod.HERMITE_CUBIC, Trajectory.Config.SAMPLES_HIGH,
@@ -39,20 +40,23 @@ public class SwitchAuto extends CommandGroup {
 			5.0); // max jerk in ft/s/s/s for the motion profile
 
 	Trajectory leftTrajectory = Pathfinder.generate(leftPoints, config);
-	Trajectory rightTrajectory = Pathfinder.generate(rightPoints, config);
+	Trajectory baseTrajectory = Pathfinder.generate(baseline, config);
 
-	public SwitchAuto() {
-		addSequential(WPILambdas.runOnceCommand(() -> lift.setPreset(Lift.Preset.SWITCH), true));
+	public LeftSwitchAuto() {
+		addSequential(WPILambdas.runOnceCommand(() -> lift.setPreset(Lift.Preset.AUTO_SWITCH), true));
 		addSequential(new WaitForFMSInfo());
 		addSequential(new FollowTrajectory(() -> {
 			String positions = DriverStation.getInstance().getGameSpecificMessage();
 
-			Trajectory t = (positions.charAt(0) == 'L') ? leftTrajectory : rightTrajectory;
+			/*
+			 * if its on our side, run left trajectory, otherwise run baseline
+			 */
+			Trajectory t = (positions.charAt(0) == 'L') ? leftTrajectory : baseTrajectory;
 
 			return t;
 		}));
 		addSequential(WPILambdas.createCommand(() -> {
-			lift.setPreset(Lift.Preset.SWITCH);
+			lift.setPreset(Lift.Preset.AUTO_SWITCH);
 			return lift.atTarget();
 		}));
 		addSequential(new SetState<Intake.State>(intake, Intake.State.UNFEED, Intake.State.STOPPED, 2.0));

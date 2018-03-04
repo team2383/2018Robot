@@ -52,7 +52,7 @@ public class Intake extends SetState.StatefulSubsystem<Intake.State> {
 	}
 	
 	public enum State {
-		FEED, UNFEED, STOPPED
+		FEED, UNFEED, UNFEEDFAST, STOPPED
 	}
 	
 	public void feed(){
@@ -69,6 +69,14 @@ public class Intake extends SetState.StatefulSubsystem<Intake.State> {
 		
 		leftShooter.set(ControlMode.PercentOutput, -0.5);
 		rightShooter.set(ControlMode.PercentOutput, -0.5);
+	}
+	
+	public void unfeedFast(){
+		leftFeeder.set(ControlMode.PercentOutput, -1.0);
+		rightFeeder.set(ControlMode.PercentOutput, -1.0);
+		
+		leftShooter.set(ControlMode.PercentOutput, -1.0);
+		rightShooter.set(ControlMode.PercentOutput, -1.0);
 	}
 
 	public void stop() {
@@ -88,6 +96,10 @@ public class Intake extends SetState.StatefulSubsystem<Intake.State> {
 				
 			case UNFEED:
 				unfeed();
+				break;
+				
+			case UNFEEDFAST:
+				unfeedFast();
 				break;
 				
 			default:

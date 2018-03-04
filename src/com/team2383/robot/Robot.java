@@ -7,17 +7,24 @@
 
 package com.team2383.robot;
 
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
+import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.team2383.robot.HAL;
 import com.team2383.robot.OI;
+import com.team2383.robot.auto.BaselineAuto;
 import com.team2383.robot.auto.CalculateTrackWidthAuto;
-import com.team2383.robot.auto.SwitchAuto;
+import com.team2383.robot.auto.CenterSwitchAuto;
+import com.team2383.robot.auto.LeftScaleAuto;
+import com.team2383.robot.auto.LeftSwitchAuto;
+import com.team2383.robot.auto.RightScaleAuto;
+import com.team2383.robot.auto.RightSwitchAuto;
 import com.team2383.robot.auto.TestMotionProfile;
 import com.team2383.robot.commands.GeneralPeriodic;
 
@@ -31,7 +38,7 @@ import com.team2383.robot.commands.GeneralPeriodic;
 public class Robot extends TimedRobot {
 	Command autoCommand;
 	Command generalPeriodicCommand;
-	Solenoid pcm = new Solenoid(1,0); //turn on the second pcm
+	Solenoid pcm = new Solenoid(1,6); //turn on the second pcm
 	SendableChooser<Command> autoChooser = new SendableChooser<>();
 
 	/*
@@ -69,12 +76,28 @@ public class Robot extends TimedRobot {
 		@SuppressWarnings("unused")
 		OI oi = new OI();
 		
+		CameraServer.getInstance().startAutomaticCapture();
+		
 		generalPeriodicCommand = new GeneralPeriodic();
 		
 		autoChooser = new SendableChooser<Command>();
+		autoChooser.addObject("Do Nothing", new InstantCommand());
+		
+		/*
+		autoChooser.addObject("Baseline Auto", new BaselineAuto());
+		autoChooser.addObject("Center Switch Auto", new CenterSwitchAuto());
+		autoChooser.addObject("Left Scale Auto", new LeftScaleAuto());
+		*/
+
+		/*
+		autoChooser.addObject("Left Switch Auto", new LeftSwitchAuto());
+		autoChooser.addObject("Right Switch Auto", new RightSwitchAuto());
+		
+		autoChooser.addObject("Left Scale Auto", new LeftScaleAuto());
+		autoChooser.addObject("Right Scale Auto", new RightScaleAuto());
+		*/
 		autoChooser.addObject("Test Motion Profiling Auto", new TestMotionProfile());
 		autoChooser.addObject("Calc Trackwidth", new CalculateTrackWidthAuto());
-		autoChooser.addObject("Switch Auto", new SwitchAuto());
 		SmartDashboard.putData("Auto Chooser", autoChooser);
 		
 		this.setPeriod(0.02);

@@ -41,8 +41,8 @@ public class FollowTrajectory extends Command implements Sendable  {
 	@Override
 	protected void initialize() {
 		this.trajectory = trajectorySupplier.get();
-		this.modifier = new TankModifier(trajectory).modify(prefs.getDouble("trackwidth", 1.41));
-		modifier.modify(prefs.getDouble("trackwidth", 1.41));
+		this.modifier = new TankModifier(trajectory).modify(prefs.getDouble("trackwidth", 2.72));
+		modifier.modify(prefs.getDouble("trackwidth", 2.72));
 		
 		leftFollower = new PathFollower(modifier.getLeftTrajectory());
 		rightFollower = new PathFollower(modifier.getRightTrajectory());
