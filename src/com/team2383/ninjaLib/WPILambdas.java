@@ -32,6 +32,36 @@ public class WPILambdas {
 
 			@Override
 			protected void initialize() {
+				set = false;
+			}
+
+			@Override
+			protected void end() {
+				set = false;
+			}
+
+			@Override
+			protected void interrupted() {
+				set = false;
+			}
+		};
+	}
+	
+	public static Command runUntil(Runnable execute, double timeout) {
+		return new Command(timeout) {
+
+			@Override
+			protected void execute() {
+				execute.run();
+			}
+
+			@Override
+			protected boolean isFinished() {
+				return this.isTimedOut();
+			}
+
+			@Override
+			protected void initialize() {
 			}
 
 			@Override

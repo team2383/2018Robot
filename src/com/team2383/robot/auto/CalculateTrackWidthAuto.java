@@ -25,7 +25,7 @@ public class CalculateTrackWidthAuto extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	drive.arcade(0, 0.6);
+    	drive.arcade(0, 0.5);
     	double totalTurns = Math.abs(navX.getAngle() / 360.0);
     	double distance = Math.abs(drive.getMotion().leftPosition) + Math.abs(drive.getMotion().rightPosition)/2.0;
     	double kDrive_trackwidth = 0;

@@ -1,34 +1,25 @@
 package com.team2383.robot;
 
 import com.kauailabs.navx.frc.AHRS;
-import com.team2383.robot.subsystems.ClimberRight;
-import com.team2383.robot.subsystems.ClimberLatchLeft;
-import com.team2383.robot.subsystems.ClimberLatchRight;
-import com.team2383.robot.subsystems.ClimberLeft;
 import com.team2383.robot.subsystems.Drive;
 import com.team2383.robot.subsystems.Intake;
-import com.team2383.robot.subsystems.IntakePivot;
 import com.team2383.robot.subsystems.Lift;
+import com.team2383.robot.subsystems.Wrist;
 
 import edu.wpi.first.wpilibj.SPI;
 
 public class HAL {
 
+	public static Constants constants = new Constants();
 	// preferences
-	
-	public static Prefs prefs = new Prefs();
+	public static boolean isPracticeBot = Constants.isPracticeBot;
 	
 	// subsystems
 	public static AHRS navX = new AHRS(SPI.Port.kMXP);
-	public static Drive drive = new Drive();
-	
-	public static Intake intake = new Intake();
-	public static IntakePivot intakePivot = new IntakePivot();
-	
-	public static ClimberLeft climberLeft = new ClimberLeft();
-	public static ClimberRight climberRight = new ClimberRight();
-	public static ClimberLatchRight climberLatchRight = new ClimberLatchRight();
-	public static ClimberLatchLeft climberLatchLeft = new ClimberLatchLeft();
 
-	public static Lift lift = new Lift();
+	public static Drive drive = new Drive(isPracticeBot);
+	public static Intake intake = new Intake(isPracticeBot);
+
+	public static Lift lift = new Lift(isPracticeBot);
+	public static Wrist wrist = new Wrist(isPracticeBot); //requires lift, so init after it
 }

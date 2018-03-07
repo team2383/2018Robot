@@ -2,15 +2,12 @@ package com.team2383.robot.auto;
 
 import static com.team2383.robot.HAL.lift;
 import static com.team2383.robot.HAL.intake;
-import static com.team2383.robot.HAL.intakePivot;
 
 import com.team2383.robot.commands.FollowTrajectory;
-import com.team2383.robot.commands.GyroTurn;
+import com.team2383.robot.commands.ProfiledTurn;
 import com.team2383.robot.commands.WaitForFMSInfo;
 import com.team2383.robot.subsystems.Intake;
-import com.team2383.robot.subsystems.IntakePivot;
 import com.team2383.robot.subsystems.Lift;
-import com.team2383.ninjaLib.SetState;
 import com.team2383.ninjaLib.WPILambdas;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -47,7 +44,6 @@ public class LeftScaleAuto extends CommandGroup {
 
 	public LeftScaleAuto() {
 		addSequential(WPILambdas.runOnceCommand(() -> lift.setPreset(Lift.Preset.AUTO_SWITCH), true));
-		addParallel(new SetState<IntakePivot.State>(intakePivot, IntakePivot.State.UP));
 		addSequential(new WaitForFMSInfo());
 		addSequential(new FollowTrajectory(() -> {
 			String positions = DriverStation.getInstance().getGameSpecificMessage();
@@ -59,7 +55,7 @@ public class LeftScaleAuto extends CommandGroup {
 
 			return t;
 		}));
-		addSequential(new ConditionalCommand(new GyroTurn(1.0, 90, 4.0, 1), new InstantCommand()) {
+		addSequential(new ConditionalCommand(new ProfiledTurn(90), new InstantCommand()) {
 			String positions = DriverStation.getInstance().getGameSpecificMessage();
 
 			@Override
@@ -73,6 +69,6 @@ public class LeftScaleAuto extends CommandGroup {
 			return lift.atTarget();
 		}));
 		addSequential(new WaitCommand(0.8));
-		addSequential(new SetState<Intake.State>(intake, Intake.State.UNFEED, Intake.State.STOPPED, 2.0));
+		addSequential(intake.setStateCommand(Intake.State.UNFEED, Intake.State.STOP, 2.0));
 	}
 }

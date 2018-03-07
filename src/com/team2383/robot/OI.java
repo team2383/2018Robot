@@ -9,37 +9,27 @@ import com.team2383.ninjaLib.DPadButton.Direction;
 import com.team2383.ninjaLib.Gamepad;
 import com.team2383.ninjaLib.LambdaButton;
 import com.team2383.ninjaLib.OnChangeButton;
-import com.team2383.ninjaLib.SetState;
 import com.team2383.ninjaLib.Values;
 import com.team2383.ninjaLib.WPILambdas;
 import com.team2383.robot.commands.LiftPreset;
 import com.team2383.robot.commands.TeleopLiftMotionMagic;
 import com.team2383.robot.commands.TeleopLiftOpenLoop;
-import com.team2383.robot.subsystems.ClimberRight;
-import com.team2383.robot.subsystems.ClimberLatchLeft;
-import com.team2383.robot.subsystems.ClimberLatchRight;
-import com.team2383.robot.subsystems.ClimberLeft;
 import com.team2383.robot.subsystems.Intake;
-import com.team2383.robot.subsystems.IntakePivot;
 import com.team2383.robot.subsystems.Lift;
-import com.team2383.ninjaLib.SetState;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import edu.wpi.first.wpilibj.buttons.NetworkButton;
 import edu.wpi.first.wpilibj.buttons.Trigger;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static com.team2383.robot.HAL.drive;
 import static com.team2383.robot.HAL.intake;
-import static com.team2383.robot.HAL.intakePivot;
-import static com.team2383.robot.HAL.climberLeft;
-import static com.team2383.robot.HAL.climberRight;
-import static com.team2383.robot.HAL.climberLatchLeft;
-import static com.team2383.robot.HAL.climberLatchRight;
 import static com.team2383.robot.HAL.lift;
-import static com.team2383.robot.HAL.prefs;
+import static com.team2383.robot.HAL.wrist;
 
 
 
@@ -74,7 +64,7 @@ public class OI {
 	/* Sticks functions */
 	
 	private static DoubleUnaryOperator deadband = (x) -> {
-		return Math.abs(x) > prefs.getDouble("inputDeadband", 0.05) ? x : 0;
+		return Math.abs(x) > Constants.inputDeadband ? x : 0;
 	};
 	
 	
@@ -104,16 +94,17 @@ public class OI {
 		return operator.getRawButton(9) || operator.getRawButton(8) || operator.getRawButton(7) || operator.getRawButton(11);
 	});
 	
+	public static Button updateMotorControllers = new NetworkButton("SmartDashboard", "Update Motor Controllers");
 	
 	public static Button rev = new JoystickButton(driver, 3);
 	
 	public OI() {
-		unfeed.whileHeld(new SetState<Intake.State>(intake, Intake.State.UNFEED, Intake.State.STOPPED));
-		unfeedFast.whileHeld(new SetState<Intake.State>(intake, Intake.State.UNFEEDFAST, Intake.State.STOPPED));
+		//init the button
+		SmartDashboard.putBoolean("Update Motor Controllers", false);
 
-		feed.whileHeld(new SetState<Intake.State>(intake, Intake.State.FEED, Intake.State.STOPPED));
-
-		clamp.toggleWhenActive(new SetState<IntakePivot.State>(intakePivot, IntakePivot.State.UP, IntakePivot.State.DOWN));
+		unfeed.whileHeld(intake.setStateCommand(Intake.State.UNFEED, Intake.State.STOP));
+		unfeedFast.whileHeld(intake.setStateCommand(Intake.State.UNFEED_FAST, Intake.State.STOP));
+		feed.whileHeld(intake.setStateCommand(Intake.State.FEED, Intake.State.STOP));
 		
 		liftManual.whileHeld(new TeleopLiftOpenLoop(liftSpeed));
 		liftMotionMagic.whileHeld(new TeleopLiftMotionMagic(liftSpeed));
@@ -122,7 +113,11 @@ public class OI {
 		liftPresetSwitch.whenPressed(new LiftPreset(Lift.Preset.TELEOP_SWITCH));
 		liftPresetScaleMid.whenPressed(new LiftPreset(Lift.Preset.SCALE_MID));
 		liftPresetScaleHigh.whenPressed(new LiftPreset(Lift.Preset.SCALE_HIGH));
-
-		allLiftPresets.whileHeld(new SetState<IntakePivot.State>(intakePivot, IntakePivot.State.UP));
+		
+		updateMotorControllers.whenReleased(WPILambdas.runOnceCommand(() -> {
+			lift.configMotorControllers(10);
+			wrist.configMotorControllers(10);
+			drive.configMotorControllers(10);
+			}, true));
 	}
 }

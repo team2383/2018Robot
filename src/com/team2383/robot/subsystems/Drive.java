@@ -1,48 +1,44 @@
  package com.team2383.robot.subsystems;
 
 import static com.team2383.robot.HAL.navX;
-import static com.team2383.robot.HAL.prefs;
 
 import com.team2383.ninjaLib.MotionUtils;
 import com.team2383.ninjaLib.Values;
+import com.team2383.robot.Constants;
 import com.team2383.robot.OI;
 import com.team2383.robot.commands.TeleopDrive;
-
+import com.ctre.phoenix.ParamEnum;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
+import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.MatchType;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Sendable;
+import edu.wpi.first.wpilibj.Timer;
 
 public class Drive extends Subsystem {
-	private final WPI_TalonSRX leftMaster;
-	private final VictorSPX leftFollowerA;
-	private final VictorSPX leftFollowerB;
-	private final VictorSPX leftFollowerC;
+	public final WPI_TalonSRX leftMaster;
+	public final BaseMotorController leftFollowerA;
+	public final BaseMotorController leftFollowerB;
+	public final BaseMotorController leftFollowerC;
 
-	private final WPI_TalonSRX rightMaster;
-	private final VictorSPX rightFollowerA;
-	private final VictorSPX rightFollowerB;
-	private final VictorSPX rightFollowerC;
-	
-	//private final PowerDistributionPanel pdp;
+	public final WPI_TalonSRX rightMaster;
+	public final BaseMotorController rightFollowerA;
+	public final BaseMotorController rightFollowerB;
+	public final BaseMotorController rightFollowerC;
 	
 	private final DifferentialDrive drive;
-	
-	//cheesyDrive vars
-	double oldWheel, quickStopAccumulator;
-	private final double throttleDeadband = 0.02;
-	private final double wheelDeadband = 0.02;
-	private final double turnSensitivity = 0.65;
 	
 	/**
 	 * The Motion class holds info about the current motion state of the drivetrain, like the
@@ -91,15 +87,15 @@ public class Drive extends Subsystem {
 		public final double accumHeading;
 		
 		public Motion() {
-			double kEncoderRatio = prefs.getDouble("kDrive_EncoderRatio", 1.0);
-			double kEncoderTicks = prefs.getInt("kDrive_EncoderTicks", 4096);
-			double kWheelCircumference = prefs.getDouble("kDrive_WheelDiameterInch", 4.0)/12.0 * Math.PI;
+			double kEncoderRatio = Constants.kDrive_EncoderRatio;
+			double kEncoderTicks = Constants.kDrive_EncoderTicks;
+			double kWheelCircumference = Constants.getWheelCircumference();
 			
 			leftPosition_Native = leftMaster.getSelectedSensorPosition(0) * kEncoderRatio;
 			leftPosition_Rotations = MotionUtils.ticksToRotations(leftPosition_Native, kEncoderTicks, kEncoderRatio);
 			leftPosition = MotionUtils.rotationsToDistance(leftPosition_Rotations, kWheelCircumference);
 			
-			rightPosition_Native = rightMaster.getSelectedSensorPosition(0) * kEncoderRatio;
+			rightPosition_Native = -rightMaster.getSelectedSensorPosition(0) * kEncoderRatio;
 			rightPosition_Rotations = MotionUtils.ticksToRotations(rightPosition_Native, kEncoderTicks, kEncoderRatio);
 			rightPosition = MotionUtils.rotationsToDistance(rightPosition_Rotations, kWheelCircumference);
 			
@@ -108,7 +104,7 @@ public class Drive extends Subsystem {
 			leftVelocity_RPS = MotionUtils.ticksToRPS(leftVelocity_Native, kEncoderTicks, 0.1, kEncoderRatio);
 			leftVelocity = MotionUtils.rotationsToDistance(leftVelocity_RPS, kWheelCircumference);
 			
-			rightVelocity_Native = rightMaster.getSelectedSensorVelocity(0) * kEncoderRatio;
+			rightVelocity_Native = -rightMaster.getSelectedSensorVelocity(0) * kEncoderRatio;
 			rightVelocity_RPM = MotionUtils.ticksToRPM(rightVelocity_Native, kEncoderTicks, 0.1, kEncoderRatio);
 			rightVelocity_RPS = MotionUtils.ticksToRPS(rightVelocity_Native, kEncoderTicks, 0.1, kEncoderRatio);
 			rightVelocity = MotionUtils.rotationsToDistance(rightVelocity_RPS, kWheelCircumference);
@@ -139,7 +135,7 @@ public class Drive extends Subsystem {
 		}
 	}
 
-	public Drive() {
+	public Drive(boolean isPracticeBot) {
 		super("Drivetrain");
 		
 		/*
@@ -147,92 +143,158 @@ public class Drive extends Subsystem {
 		 */
 
 		//init left talons
-		leftMaster = new WPI_TalonSRX(prefs.getInt("kDrive_LeftMasterTalonID", 1));
-		leftFollowerA = new VictorSPX(prefs.getInt("kDrive_LeftFollowerATalonID", 2));
-		leftFollowerB = new VictorSPX(prefs.getInt("kDrive_LeftFollowerBTalonID", 3));
-		leftFollowerC = new VictorSPX(prefs.getInt("kDrive_LeftFollowerCTalonID", 4));
+		leftMaster = new WPI_TalonSRX(Constants.kDrive_LeftMaster_ID);
+		if (isPracticeBot) {
+			leftFollowerA = new TalonSRX(Constants.kDrive_LeftFollowerA_ID);
+			leftFollowerB = new TalonSRX(Constants.kDrive_LeftFollowerB_ID);
+			leftFollowerC = new TalonSRX(Constants.kDrive_LeftFollowerC_ID);
+		} else {
+			leftFollowerA = new VictorSPX(Constants.kDrive_LeftFollowerA_ID);
+			leftFollowerB = new VictorSPX(Constants.kDrive_LeftFollowerB_ID);
+			leftFollowerC = new VictorSPX(Constants.kDrive_LeftFollowerC_ID);
+		}
 
 		//setup followers
-		leftFollowerA.follow(leftMaster);
-		leftFollowerB.follow(leftMaster);
-		leftFollowerC.follow(leftMaster);
+		leftFollowerA.set(ControlMode.Follower, Constants.kDrive_LeftMaster_ID);
+		leftFollowerB.set(ControlMode.Follower, Constants.kDrive_LeftMaster_ID);
+		leftFollowerC.set(ControlMode.Follower, Constants.kDrive_LeftMaster_ID);
 		
 		//Left settings
 		leftMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
-		leftMaster.setSensorPhase(false);
-		leftMaster.setInverted(false);
-		leftFollowerA.setInverted(true);
-		leftFollowerB.setInverted(true);
-		leftFollowerC.setInverted(false);
 		
 		leftMaster.setNeutralMode(NeutralMode.Brake);
-		
-		//PID
-		leftMaster.config_kP(0, 0, 0);
-		leftMaster.config_kI(0, 0, 0);
-		leftMaster.config_kD(0, 0, 0);
-		leftMaster.config_kF(0, 0, 0);
-		leftMaster.config_IntegralZone(0, 0, 0);
 
 		//clear options
-		leftMaster.configForwardSoftLimitEnable(false, 0);
-		leftMaster.configReverseSoftLimitEnable(false, 0);
-		leftMaster.configContinuousCurrentLimit(0, 0);
-		leftMaster.configPeakOutputForward(0.8, 0);
-		leftMaster.configPeakOutputReverse(-0.8, 0);
-		leftMaster.configOpenloopRamp(0, 0);
-		leftMaster.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_20Ms, 0);
+		leftMaster.configForwardSoftLimitEnable(false, 10);
+		leftMaster.configReverseSoftLimitEnable(false, 10);
+
+		leftMaster.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_20Ms, 10);
 		
 		/*
 		 * Right drive
 		 */
 		
 		//init right talons
-		rightMaster = new WPI_TalonSRX(prefs.getInt("kDrive_RightMasterTalonID", 5));
-		rightFollowerA = new VictorSPX(prefs.getInt("kDrive_RightFollowerATalonID", 6));
-		rightFollowerB = new VictorSPX(prefs.getInt("kDrive_RightFollowerBTalonID", 7));
-		rightFollowerC = new VictorSPX(prefs.getInt("kDrive_RightFollowerCTalonID", 8));
+		rightMaster = new WPI_TalonSRX(Constants.kDrive_RightMaster_ID);
+		if(isPracticeBot) {
+			rightFollowerA = new TalonSRX(Constants.kDrive_RightFollowerA_ID);
+			rightFollowerB = new TalonSRX(Constants.kDrive_RightFollowerB_ID);
+			rightFollowerC = new TalonSRX(Constants.kDrive_RightFollowerC_ID);
+		} else {
+			rightFollowerA = new VictorSPX(Constants.kDrive_RightFollowerA_ID);
+			rightFollowerB = new VictorSPX(Constants.kDrive_RightFollowerB_ID);
+			rightFollowerC = new VictorSPX(Constants.kDrive_RightFollowerC_ID);
+		}
 		
 		//setup followers
-		rightFollowerA.follow(rightMaster);
-		rightFollowerB.follow(rightMaster);
-		rightFollowerC.follow(rightMaster);
+		rightFollowerA.set(ControlMode.Follower, Constants.kDrive_RightMaster_ID);
+		rightFollowerB.set(ControlMode.Follower, Constants.kDrive_RightMaster_ID);
+		rightFollowerC.set(ControlMode.Follower, Constants.kDrive_RightMaster_ID);
 		
 		//Right settings
 		rightMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
+		rightMaster.setNeutralMode(NeutralMode.Brake);
+		
+		//clear options
+		rightMaster.configForwardSoftLimitEnable(false, 10);
+		rightMaster.configReverseSoftLimitEnable(false, 10);
+		rightMaster.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_20Ms, 10);
+		
+		configMotorControllers(10);
+		
+		/*
+		 * init differential drive
+		 */
+
+		drive = new DifferentialDrive(leftMaster, rightMaster);
+		drive.setSafetyEnabled(false);
+		drive.setMaxOutput(1.0);
+		
+		setBrake(true);
+	}
+	
+	/**
+	 * update motor controller options, in this case current limits and inverts
+	 */
+	public void configMotorControllers(int timeout) {
+		double kWheelCircumference = Constants.getWheelCircumference();
+		
+		/*
+		 * COMP BOT SETTINGS
+		leftMaster.setSensorPhase(false);
+		leftMaster.setInverted(false);
+		leftFollowerA.setInverted(true);
+		leftFollowerB.setInverted(true);
+		leftFollowerC.setInverted(false);
+		*/
+
+		leftMaster.setSensorPhase(Constants.kDrive_InvertLeftMaster);
+		leftMaster.setInverted(Constants.kDrive_InvertLeftMaster);
+		leftFollowerA.setInverted(Constants.kDrive_InvertLeftA);
+		leftFollowerB.setInverted(Constants.kDrive_InvertLeftB);
+		leftFollowerC.setInverted(Constants.kDrive_InvertLeftC);
+
+		leftMaster.configSetParameter(ParamEnum.eContinuousCurrentLimitAmps, Constants.kDrive_ContinuousCurrentLimit, 0x00, 0x00, timeout);
+		leftMaster.configSetParameter(ParamEnum.ePeakCurrentLimitAmps, Constants.kDrive_PeakCurrentLimit, 0x00, 0x00, timeout);
+		leftMaster.configSetParameter(ParamEnum.ePeakCurrentLimitMs, Constants.kDrive_PeakCurrentTime_ms, 0x00, 0x00, timeout);
+		leftMaster.enableCurrentLimit(true);
+		
+		leftMaster.configPeakOutputForward(Constants.kDrive_peakOutput, timeout);
+		leftMaster.configPeakOutputReverse(-Constants.kDrive_peakOutput, timeout);
+		leftMaster.configOpenloopRamp(0, timeout);
+		
+		/*
+		 * COMP BOT SETTINGS
 		rightMaster.setSensorPhase(false);
 		rightMaster.setInverted(true);
 		rightFollowerA.setInverted(false);
 		rightFollowerB.setInverted(true);
 		rightFollowerC.setInverted(false);
-
-		rightMaster.setNeutralMode(NeutralMode.Brake);
+		*/
+		
+		rightMaster.setSensorPhase(Constants.kDrive_InvertRightMaster);
+		rightMaster.setInverted(Constants.kDrive_InvertRightMaster);
+		rightFollowerA.setInverted(Constants.kDrive_InvertRightA);
+		rightFollowerB.setInverted(Constants.kDrive_InvertRightB);
+		rightFollowerC.setInverted(Constants.kDrive_InvertRightC);
+		
+		rightMaster.configSetParameter(ParamEnum.eContinuousCurrentLimitAmps, Constants.kDrive_ContinuousCurrentLimit, 0x00, 0x00, timeout);
+		rightMaster.configSetParameter(ParamEnum.ePeakCurrentLimitAmps, Constants.kDrive_PeakCurrentLimit, 0x00, 0x00, timeout);
+		rightMaster.configSetParameter(ParamEnum.ePeakCurrentLimitMs, Constants.kDrive_PeakCurrentTime_ms, 0x00, 0x00, timeout);
+		rightMaster.enableCurrentLimit(true);
+		
+		rightMaster.configPeakOutputForward(Constants.kDrive_peakOutput, timeout);
+		rightMaster.configPeakOutputReverse(-Constants.kDrive_peakOutput, timeout);
+		rightMaster.configOpenloopRamp(0, timeout);
 		
 		//PID
-		rightMaster.config_kP(0, 0, 0);
-		rightMaster.config_kI(0, 0, 0);
-		rightMaster.config_kD(0, 0, 0);
-		rightMaster.config_kF(0, 0, 0);
-		rightMaster.config_IntegralZone(0, 0, 0);
-		
-		//clear options
-		rightMaster.configForwardSoftLimitEnable(false, 0);
-		rightMaster.configReverseSoftLimitEnable(false, 0);
-		rightMaster.configContinuousCurrentLimit(0, 0);
-		rightMaster.configPeakOutputForward(0.8, 0);
-		rightMaster.configPeakOutputReverse(-0.8, 0);
+		rightMaster.config_kP(0, (Constants.kDrive_Motion_P * (1023.0/1.0) * (1.0/(kWheelCircumference)) * (1.0/4096.0)), 10);
+		rightMaster.config_kI(0, 0, 10);
+		rightMaster.config_kD(0, (Constants.kDrive_Motion_D * (1023.0/1.0) * (1.0/(1.0/kWheelCircumference)) * (1.0/4096.0) * (10.0)), 10);
+		rightMaster.config_kF(0, (Constants.kDrive_Motion_V * (1023.0/1.0) * (1.0/(1.0/kWheelCircumference)) * (1.0/4096.0) * (10.0)),  10);
+		rightMaster.config_IntegralZone(0, 0, 10);
 
-		rightMaster.configOpenloopRamp(0, 0);
-		
-		rightMaster.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_20Ms, 0);
+		leftMaster.config_kP(0, (Constants.kDrive_Motion_P * (1023.0/1.0) * (1.0/(kWheelCircumference)) * (1.0/4096.0)), 10);
+		leftMaster.config_kI(0, 0, 10);
+		leftMaster.config_kD(0, (Constants.kDrive_Motion_D * (1023.0/1.0) * (1.0/(1.0/kWheelCircumference)) * (1.0/4096.0) * (10.0)), 10);
+		leftMaster.config_kF(0, (Constants.kDrive_Motion_V * (1023.0/1.0) * (1.0/(1.0/kWheelCircumference)) * (1.0/4096.0) * (10.0)),  10);
+		leftMaster.config_IntegralZone(0, 0, 10);
 		
 		/*
-		 * init differential drive
+		 * ft/s -> ticks per 100ms
+		 * so ft/s * 1 rotation / circumference ft * 4096 / 1 rotation / 10
 		 */
-		drive = new DifferentialDrive(leftMaster, rightMaster);
-		drive.setSafetyEnabled(false);
-		
-		setBrake(true);
+		int nativeVelocity = (int) (Constants.kDrive_Motion_Velocity * 1.0/Constants.getWheelCircumference() * 4096.0 / 10.0);
+
+		/*
+		 * ft/s/s -> ticks per 100ms per s
+		 * so ft/s/s * 1 rotation / circumference ft * 4096 / 1 rotation / 10
+		 */
+		int nativeAcceleration = (int) (Constants.kDrive_Motion_Acceleration * 1.0/Constants.getWheelCircumference() * 4096.0 / 10.0);
+		leftMaster.configMotionCruiseVelocity(nativeVelocity, timeout);
+		leftMaster.configMotionAcceleration(nativeAcceleration, timeout);
+		rightMaster.configMotionCruiseVelocity(nativeVelocity, timeout);
+		rightMaster.configMotionAcceleration(nativeAcceleration, timeout);
 	}
 	
 	public Motion getMotion() {
@@ -267,101 +329,22 @@ public class Drive extends Subsystem {
 		drive.arcadeDrive(driveSpeed, turnSpeed);
 	}
 	
-	public void curvature(double driveSpeed, double turnSpeed) {
-		boolean isQuickTurn = Math.abs(driveSpeed) < 0.1;
+	public void curvature(double driveSpeed, double turnSpeed, boolean isQuickTurn) {
 		drive.curvatureDrive(driveSpeed, turnSpeed, isQuickTurn);
 	}
 	
-	public void cheesyDrive(double throttle, double wheel) {
-		double wheelNonLinearity;
-
-		boolean isQuickTurn = Math.abs(throttle) < 0.1;
-		wheel = handleDeadband(wheel, wheelDeadband);
-		throttle = handleDeadband(throttle, throttleDeadband);
-
-		double negInertia = wheel - oldWheel;
-		oldWheel = wheel;
-		
-		wheelNonLinearity = 0.6;
-		// Apply a sin function that's scaled to make it feel better.
-		wheel = Math.sin(Math.PI / 2.0 * wheelNonLinearity * wheel) / Math.sin(Math.PI / 2.0 * wheelNonLinearity);
-		wheel = Math.sin(Math.PI / 2.0 * wheelNonLinearity * wheel) / Math.sin(Math.PI / 2.0 * wheelNonLinearity);
-
-		double leftSpeed, rightSpeed, overPower;
-		double sensitivity;
-
-		double angularPower;
-		double linearPower;
-
-		// Negative inertia!
-		double negInertiaAccumulator = 0.0;
-		double negInertiaScalar;
-		if (Math.abs(wheel) > 0.65) {
-			negInertiaScalar = 2.5;
-		} else {
-			negInertiaScalar = 1.5;
-		}
-		sensitivity = turnSensitivity;
-		double negInertiaPower = negInertia * negInertiaScalar;
-		negInertiaAccumulator += negInertiaPower;
-
-		wheel = wheel + negInertiaAccumulator;
-		if (negInertiaAccumulator > 1) {
-			negInertiaAccumulator -= 1;
-		} else if (negInertiaAccumulator < -1) {
-			negInertiaAccumulator += 1;
-		} else {
-			negInertiaAccumulator = 0;
-		}
-		linearPower = throttle;
-
-		// Quickturn!
-		if (isQuickTurn) {
-			if (Math.abs(linearPower) < 0.2) {
-				double alpha = 0.1;
-				quickStopAccumulator = (1 - alpha) * quickStopAccumulator + alpha * Values.limit(-1.0, wheel, 1.0) * 5;
-			}
-			overPower = 1.0;
-			sensitivity = 1.0;
-			angularPower = wheel;
-		} else {
-			overPower = 0.0;
-			angularPower = Math.abs(throttle) * wheel * sensitivity - quickStopAccumulator;
-			if (quickStopAccumulator > 1) {
-				quickStopAccumulator -= 1;
-			} else if (quickStopAccumulator < -1) {
-				quickStopAccumulator += 1;
-			} else {
-				quickStopAccumulator = 0.0;
-			}
-		}
-
-		rightSpeed = leftSpeed = linearPower;
-		leftSpeed += angularPower;
-		rightSpeed -= angularPower;
-
-		if (leftSpeed > 1.0) {
-			rightSpeed -= overPower * (leftSpeed - 1.0);
-			leftSpeed = 1.0;
-		} else if (rightSpeed > 1.0) {
-			leftSpeed -= overPower * (rightSpeed - 1.0);
-			rightSpeed = 1.0;
-		} else if (leftSpeed < -1.0) {
-			rightSpeed += overPower * (-1.0 - leftSpeed);
-			leftSpeed = -1.0;
-		} else if (rightSpeed < -1.0) {
-			leftSpeed += overPower * (-1.0 - rightSpeed);
-			rightSpeed = -1.0;
-		}
-		tank(leftSpeed, rightSpeed);
-	}
-
-	private double handleDeadband(double val, double deadband) {
-		return Math.abs(val) > Math.abs(deadband) ? val : 0.0;
+	public void curvatureAutoQT(double driveSpeed, double turnSpeed) {
+		boolean isQuickTurn = Math.abs(driveSpeed) < 0.1;
+		drive.curvatureDrive(driveSpeed, turnSpeed, isQuickTurn);
 	}
 	
 	@Override
 	protected void initDefaultCommand() {
 		this.setDefaultCommand(new TeleopDrive(OI.throttle, OI.turn));
+	}
+	
+	public void position(double leftPos, double rightPos) {
+		leftMaster.set(ControlMode.MotionMagic, MotionUtils.distanceToRotations(leftPos, Constants.getWheelCircumference()) * 4096);
+		rightMaster.set(ControlMode.MotionMagic, MotionUtils.distanceToRotations(-rightPos, Constants.getWheelCircumference()) * 4096);
 	}
 }

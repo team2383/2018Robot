@@ -1,117 +1,79 @@
 package com.team2383.robot.subsystems;
 
-import static com.team2383.robot.HAL.prefs;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
-import com.team2383.ninjaLib.SetState;
-import com.team2383.robot.StaticConstants;
-import com.team2383.robot.subsystems.Intake.State;
+import com.team2383.ninjaLib.StatefulSubsystem;
+import com.team2383.robot.Constants;
 
 
-public class Intake extends SetState.StatefulSubsystem<Intake.State> {
+public class Intake extends StatefulSubsystem<Intake.State> {
 
-	private VictorSPX leftFeeder = new VictorSPX(prefs.getInt("kIntake_LeftFeederTalonID", 9));
-	private VictorSPX leftShooter = new VictorSPX(prefs.getInt("kIntake_LeftShooterTalonID", 10));
+	private BaseMotorController leftIntake;
+	private BaseMotorController rightIntake;
 	
-	private VictorSPX rightFeeder = new VictorSPX(prefs.getInt("kIntake_RightFeederTalonID", 11));
-	private VictorSPX rightShooter = new VictorSPX(prefs.getInt("kIntake_RightShooterTalonID", 12));
-	
-	private State state = State.STOPPED;
-	
-	public Intake(){
+	public Intake(boolean isPracticeBot){
+		
+		if (isPracticeBot) {
+			leftIntake = new TalonSRX(Constants.kIntake_LeftIntake_ID);
+			rightIntake = new TalonSRX(Constants.kIntake_RightIntake_ID);
+		} else {
+			leftIntake = new VictorSPX(Constants.kIntake_LeftIntake_ID);
+			rightIntake = new VictorSPX(Constants.kIntake_RightIntake_ID);
+		}
 		
 		/*
-		 * feeder init
+		 * Intake init
 		 */
 		
-		leftFeeder.setNeutralMode(NeutralMode.Brake);
-		rightFeeder.setNeutralMode(NeutralMode.Brake);
+		leftIntake.setNeutralMode(NeutralMode.Brake);
+		rightIntake.setNeutralMode(NeutralMode.Brake);
 		
-		leftFeeder.configPeakOutputForward(0.7, 0);
-		leftFeeder.configPeakOutputReverse(-0.7, 0);
+		leftIntake.setInverted(Constants.kIntake_InvertLeft);
+		leftIntake.setInverted(Constants.kIntake_InvertRight);
 		
-		rightFeeder.configPeakOutputForward(0.7, 0);
-		rightFeeder.configPeakOutputReverse(-0.7, 0);
+		leftIntake.configPeakOutputForward(1.0, 0);
+		leftIntake.configPeakOutputReverse(-1.0, 0);
 		
-		
-		/*
-		 * shooter init
-		 */
-		
-		leftShooter.setNeutralMode(NeutralMode.Brake);
-		rightShooter.setNeutralMode(NeutralMode.Brake);
-		
-		leftShooter.configPeakOutputForward(0.9,0);
-		leftShooter.configPeakOutputReverse(-0.9,0);
-		
-		rightShooter.configPeakOutputForward(0.9,0);
-		rightShooter.configPeakOutputReverse(-0.9,0);
+		rightIntake.configPeakOutputForward(1.0, 0);
+		rightIntake.configPeakOutputReverse(-1.0, 0);
 	}
 	
 	public enum State {
-		FEED, UNFEED, UNFEEDFAST, STOPPED
-	}
-	
-	public void feed(){
-		leftFeeder.set(ControlMode.PercentOutput, 1.0);
-		rightFeeder.set(ControlMode.PercentOutput, 1.0);
-		
-		leftShooter.set(ControlMode.PercentOutput, 1.0);
-		rightShooter.set(ControlMode.PercentOutput, 1.0);
-	}
-	
-	public void unfeed(){
-		leftFeeder.set(ControlMode.PercentOutput, -0.5);
-		rightFeeder.set(ControlMode.PercentOutput, -0.5);
-		
-		leftShooter.set(ControlMode.PercentOutput, -0.5);
-		rightShooter.set(ControlMode.PercentOutput, -0.5);
-	}
-	
-	public void unfeedFast(){
-		leftFeeder.set(ControlMode.PercentOutput, -1.0);
-		rightFeeder.set(ControlMode.PercentOutput, -1.0);
-		
-		leftShooter.set(ControlMode.PercentOutput, -1.0);
-		rightShooter.set(ControlMode.PercentOutput, -1.0);
-	}
-
-	public void stop() {
-		leftFeeder.set(ControlMode.PercentOutput, 0);
-		rightFeeder.set(ControlMode.PercentOutput, 0);
-		
-		leftShooter.set(ControlMode.PercentOutput, 0);
-		rightShooter.set(ControlMode.PercentOutput, 0);
+		FEED, UNFEED, UNFEED_FAST, STOP
 	}
 
 	@Override
 	public void setState(State state) {
 		switch (state) {
 			case FEED:
-				feed();
+				leftIntake.set(ControlMode.PercentOutput, 1.0);
+				rightIntake.set(ControlMode.PercentOutput, 0.9);
 				break;
 				
 			case UNFEED:
-				unfeed();
+				leftIntake.set(ControlMode.PercentOutput, -0.5);
+				rightIntake.set(ControlMode.PercentOutput, -0.5);
 				break;
 				
-			case UNFEEDFAST:
-				unfeedFast();
+			case UNFEED_FAST:
+				leftIntake.set(ControlMode.PercentOutput, -1.0);
+				rightIntake.set(ControlMode.PercentOutput, -1.0);
 				break;
 				
 			default:
-			case STOPPED:
-				stop();
+			case STOP:
+				leftIntake.set(ControlMode.PercentOutput, 0);
+				rightIntake.set(ControlMode.PercentOutput, 0);
 				break;
 		}
 	}
 
 	@Override
 	protected void initDefaultCommand() {
-		// TODO Auto-generated method stub
+		this.setDefaultCommand(this.setStateCommand(State.STOP));
 	}
 }
 

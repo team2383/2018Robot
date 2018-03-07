@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.DriverStation.MatchType;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.command.InstantCommand;
@@ -25,8 +26,12 @@ import com.team2383.robot.auto.LeftScaleAuto;
 import com.team2383.robot.auto.LeftSwitchAuto;
 import com.team2383.robot.auto.RightScaleAuto;
 import com.team2383.robot.auto.RightSwitchAuto;
+import com.team2383.robot.auto.TestDriveMotionMagic;
 import com.team2383.robot.auto.TestMotionProfile;
-import com.team2383.robot.commands.GeneralPeriodic;
+
+import com.team2383.robot.commands.ProfiledTurn;
+
+import java.lang.reflect.Field;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -37,8 +42,8 @@ import com.team2383.robot.commands.GeneralPeriodic;
  */
 public class Robot extends TimedRobot {
 	Command autoCommand;
+	Command pitMotorTestAuto;
 	Command generalPeriodicCommand;
-	Solenoid pcm = new Solenoid(1,6); //turn on the second pcm
 	SendableChooser<Command> autoChooser = new SendableChooser<>();
 
 	/*
@@ -76,11 +81,23 @@ public class Robot extends TimedRobot {
 		@SuppressWarnings("unused")
 		OI oi = new OI();
 		
+		/*
+		 * Joystick not available warnings are useless, disable them if coding
+		 */
+		if (DriverStation.getInstance().getMatchType() == MatchType.None) {
+			try {
+				Field nmt = DriverStation.getInstance().getClass().getDeclaredField("m_nextMessageTime");
+				nmt.setAccessible(true);
+				nmt.setDouble(DriverStation.getInstance(), Double.MAX_VALUE);
+			} catch (NoSuchFieldException | IllegalAccessException e) {
+				DriverStation.reportError("Failed to set nextMessageTime", e.getStackTrace());
+			}
+		}
+		
 		CameraServer.getInstance().startAutomaticCapture();
 		
-		generalPeriodicCommand = new GeneralPeriodic();
-		
 		autoChooser = new SendableChooser<Command>();
+
 		autoChooser.addObject("Do Nothing", new InstantCommand());
 		
 		/*
@@ -96,12 +113,17 @@ public class Robot extends TimedRobot {
 		autoChooser.addObject("Left Scale Auto", new LeftScaleAuto());
 		autoChooser.addObject("Right Scale Auto", new RightScaleAuto());
 		*/
+
+		//autoChooser.addObject("PIT AUTO: Fix Motor Direction", pitMotorTestAuto);
+
+
+		autoChooser.addObject("Test Motion Profiled 90 right turn", new ProfiledTurn(-180));
+		autoChooser.addObject("Test Drive Motion Magic", new TestDriveMotionMagic());
 		autoChooser.addObject("Test Motion Profiling Auto", new TestMotionProfile());
 		autoChooser.addObject("Calc Trackwidth", new CalculateTrackWidthAuto());
 		SmartDashboard.putData("Auto Chooser", autoChooser);
 		
 		this.setPeriod(0.02);
-		
 	}
 
 	/**
@@ -114,6 +136,11 @@ public class Robot extends TimedRobot {
 		if (!generalPeriodicCommand.isRunning()) {
 			generalPeriodicCommand.start();
 		}
+		
+		/*
+		 * We want to restart the pit command, not continue it
+		 */
+		pitMotorTestAuto.cancel();
 	}
 
 	@Override

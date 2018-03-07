@@ -1,7 +1,5 @@
 package com.team2383.robot.commands;
 
-import static com.team2383.robot.HAL.prefs;
-
 import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj.Sendable;
@@ -17,6 +15,7 @@ import static com.team2383.robot.HAL.drive;
 import static com.team2383.robot.HAL.navX;
 
 import com.team2383.ninjaLib.PathFollower;
+import com.team2383.robot.Constants;
 
 public class FollowTrajectory extends Command implements Sendable  {
 	PathFollower leftFollower;
@@ -41,29 +40,29 @@ public class FollowTrajectory extends Command implements Sendable  {
 	@Override
 	protected void initialize() {
 		this.trajectory = trajectorySupplier.get();
-		this.modifier = new TankModifier(trajectory).modify(prefs.getDouble("trackwidth", 2.72));
-		modifier.modify(prefs.getDouble("trackwidth", 2.72));
+		this.modifier = new TankModifier(trajectory).modify(Constants.kDrive_Motion_trackwidth);
+		modifier.modify(Constants.kDrive_Motion_trackwidth);
 		
 		leftFollower = new PathFollower(modifier.getLeftTrajectory());
 		rightFollower = new PathFollower(modifier.getRightTrajectory());
 		
-		leftFollower.configurePIDVA(prefs.getDouble("kDrive_Motion_P", 1.0),
-									0.0,
-									prefs.getDouble("kDrive_Motion_D", 0.0),
-									prefs.getDouble("kDrive_Motion_V", 1.0/14.0),
-									prefs.getDouble("kDrive_Motion_A", 1.0/10.0));
-		rightFollower.configurePIDVA(prefs.getDouble("kDrive_Motion_P", 1.0),
-									0.0,
-									prefs.getDouble("kDrive_Motion_D", 0.0),
-									prefs.getDouble("kDrive_Motion_V", 1.0/14.0),
-									prefs.getDouble("kDrive_Motion_A", 1.0/10.0));
+		leftFollower.configurePIDVA(Constants.kDrive_Motion_P,
+				0.0,
+				Constants.kDrive_Motion_D,
+				Constants.kDrive_Motion_V,
+				Constants.kDrive_Motion_A);
+
+		rightFollower.configurePIDVA(Constants.kDrive_Motion_P,
+				0.0,
+				Constants.kDrive_Motion_D,
+				Constants.kDrive_Motion_V,
+				Constants.kDrive_Motion_A);
 		
 
 		leftFollower.reset();
-		
 		rightFollower.reset();
 		drive.resetEncoders();
-		navX.reset();
+    	navX.zeroYaw();
 	}
 
 	@Override
@@ -79,12 +78,12 @@ public class FollowTrajectory extends Command implements Sendable  {
 		double leftOutput = leftFollower.calculate(drive.getMotion().leftPosition);
 		double rightOutput = rightFollower.calculate(drive.getMotion().rightPosition);
 		
-		double gyro_heading = navX.getAngle();    // Assuming the gyro is giving a value in degrees
-		double desired_heading = -Pathfinder.r2d(leftFollower.getHeading());  // Should also be in degrees, make sure its in phase
+		double gyro_heading = -navX.getAngle();    // Assuming the gyro is giving a value in degrees
+		double desired_heading = Pathfinder.r2d(leftFollower.getHeading());  // Should also be in degrees, make sure its in phase
 
 		angleDifference = Pathfinder.boundHalfDegrees(desired_heading - gyro_heading);
 		
-		double turn = 1.0 * prefs.getDouble("kDrive_Motion_TurnP", 0.0125) * angleDifference;
+		double turn = 1.0 * Constants.kDrive_Motion_turnP * angleDifference;
 		
 		SmartDashboard.putNumber("MP Left Output (%)", leftOutput);
 		SmartDashboard.putNumber("MP Right Output (%)", rightOutput);
@@ -104,35 +103,11 @@ public class FollowTrajectory extends Command implements Sendable  {
 		leftFollower.reset();
 		rightFollower.reset();
 		drive.resetEncoders();
-		navX.reset();
+    	navX.zeroYaw();
 	}
 
 	@Override
 	protected void interrupted() {
 		end();
-	}
-
-	@Override
-	public void initSendable(SendableBuilder builder) {
-		builder.setSmartDashboardType("Follower");
-	    builder.setSafeState(this::initialize);
-	    builder.addDoubleProperty("p", this.leftFollower::getKp, (kP) -> {
-	    	this.leftFollower.setKp(kP);
-	    	this.rightFollower.setKp(kP);
-	    });
-	    builder.addDoubleProperty("d", this.leftFollower::getKd, (kD) -> {
-	    	this.leftFollower.setKd(kD);
-	    	this.rightFollower.setKd(kD);
-	    });
-	    builder.addDoubleProperty("v", this.leftFollower::getKv, (kV) -> {
-	    	this.leftFollower.setKv(kV);
-	    	this.rightFollower.setKv(kV);
-	    });
-	    builder.addDoubleProperty("a", this.leftFollower::getKa, (kA) -> {
-	    	this.leftFollower.setKa(kA);
-	    	this.rightFollower.setKa(kA);
-	    });
-	    builder.addDoubleProperty("setpoint", () -> this.leftFollower.getSegment().position, (x) -> {});
-	    super.initSendable(builder);
 	}
 }

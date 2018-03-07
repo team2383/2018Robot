@@ -1,7 +1,5 @@
 package com.team2383.ninjaLib;
 
-import com.team2383.robot.StaticConstants;
-
 /**
  * MotionUtils provides convenience functions to convert between various units.
  * 
@@ -11,6 +9,7 @@ import com.team2383.robot.StaticConstants;
  * 
  */
 public class MotionUtils {
+	
 	/**
 	 * Convert Native Sensor Units/Ticks to Rotations
 	 * @param ticks ticks from sensor
