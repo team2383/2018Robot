@@ -24,17 +24,27 @@ public class FollowTrajectory extends Command implements Sendable  {
 	Trajectory trajectory;
 	TankModifier modifier;
 	double angleDifference;
+	boolean backwards;
 	
 	public FollowTrajectory(Supplier<Trajectory> trajectorySupplier) {
-		super("Follow Trajectory");
-
-		this.trajectorySupplier = trajectorySupplier;
-		
-		requires(drive);
+		this(trajectorySupplier, false);
 	}
 	
 	public FollowTrajectory(Trajectory trajectory) {
-		this(() -> trajectory);
+		this(() -> trajectory, false);
+	}
+	
+	public FollowTrajectory(Trajectory trajectory, boolean backwards) {
+		this(() -> trajectory, backwards);
+	}
+	
+	public FollowTrajectory(Supplier<Trajectory> trajectorySupplier, boolean backwards) {
+		super("Follow Trajectory");
+
+		this.trajectorySupplier = trajectorySupplier;
+		this.backwards = backwards;
+		
+		requires(drive);
 	}
 
 	@Override
@@ -75,21 +85,55 @@ public class FollowTrajectory extends Command implements Sendable  {
 		
 		SmartDashboard.putNumber("MP Target Heading", leftFollower.getSegment().heading);
 		
-		double leftOutput = leftFollower.calculate(drive.getMotion().leftPosition);
-		double rightOutput = rightFollower.calculate(drive.getMotion().rightPosition);
+		double leftOutput;
+		double rightOutput;
+		//forwards
+		if (!backwards) {
+			leftOutput = leftFollower.calculate(drive.getMotion().leftPosition);
+			rightOutput = rightFollower.calculate(drive.getMotion().rightPosition);
+		} else {
+			//backwards
+			leftOutput = leftFollower.calculate(-drive.getMotion().rightPosition); //left = -right
+			rightOutput = rightFollower.calculate(-drive.getMotion().leftPosition); //right = -left
+		}
 		
-		double gyro_heading = -navX.getAngle();    // Assuming the gyro is giving a value in degrees
+		double gyro_heading = -navX.getAngle(); //axis is the same
+		
 		double desired_heading = Pathfinder.r2d(leftFollower.getHeading());  // Should also be in degrees, make sure its in phase
 
+		SmartDashboard.putNumber("MP1 gyro_heading", gyro_heading);
+		SmartDashboard.putNumber("MP2 desired_heading", desired_heading);
+		SmartDashboard.putNumber("MP3 error", desired_heading-gyro_heading);
+		SmartDashboard.putNumber("MP6 turnP", Constants.kDrive_Motion_turnP);
+		
 		angleDifference = Pathfinder.boundHalfDegrees(desired_heading - gyro_heading);
+
+		SmartDashboard.putNumber("MP4 angleDiff", angleDifference);
 		
-		double turn = 1.0 * Constants.kDrive_Motion_turnP * angleDifference;
-		
+		double turn = Constants.kDrive_Motion_turnP * angleDifference;
 		SmartDashboard.putNumber("MP Left Output (%)", leftOutput);
 		SmartDashboard.putNumber("MP Right Output (%)", rightOutput);
-		SmartDashboard.putNumber("MP Heading Adj. Output (%)", turn);
+		SmartDashboard.putNumber("MP Left Output BCKWRDS (%)", -rightOutput);
+		SmartDashboard.putNumber("MP Right Output BCKWRDS(%)", -leftOutput);
+		SmartDashboard.putNumber("MP5 Heading Adj. Output (%)", turn);
 	
-		drive.tank(leftOutput + turn, rightOutput - turn);
+			//forwards
+		if (!backwards) {
+			drive.tank(leftOutput - turn, rightOutput + turn);
+		} else {
+			//backwards
+			/*.tank is forwards, so (fwd_left, fwd_right)
+			 * back_left = -fwd_right
+			 * 	so fwd_right = -back_left
+			 * back_right = -fwd_left
+			 * 	so fwd_left = -back_right
+			 * 
+			 * turn input is relative to true (fwd) drivetrain output, not the actual direction
+			 * so fwd_left(back_right) has to be less negative (going slower) then fwd_right(back_left), when turning right (negative turn)
+			 */
+			
+			drive.tank(-rightOutput - turn, -leftOutput + turn);
+		}
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package com.team2383.robot;
 
 import com.team2383.ninjaLib.ConstantsBase;
+import com.team2383.robot.OI.ControlScheme;
 
 /**
  * any constants set in here are defaults, and will be overridden by the json file on the bot
@@ -15,7 +16,7 @@ public class Constants extends ConstantsBase {
 	public static boolean isPracticeBot = false;
 
 	/*
-	 * Feeder and Shooter
+	 * Intake
 	 */
 	public static boolean kIntake_InvertLeft = false;
 	public static boolean kIntake_InvertRight = false;
@@ -23,13 +24,24 @@ public class Constants extends ConstantsBase {
 	public static int kIntake_LeftIntake_ID = 9;
 	public static int kIntake_RightIntake_ID = 11;
 	
+	public static double kIntake_UnfeedSlowSpeed = 0.5;
+	public static double kIntake_UnfeedFastSpeed = 0.68;
+	
+	/*
+	 * LiftWrist Constants
+	 */
+
+
+	public static double kLiftWrist_Wrist_LiftDownMaxAngle = 145;
+	public static double kLiftWrist_Lift_WristBackwardsMinHeight = 26.5;
+	
 	/*
 	 * Lift Constants
 	 */
 	public static int kLift_Master_ID = 13;
 	public static int kLift_Follower_ID = 14;
 
-	public static double kLift_MaxRate = 6;
+	public static double kLift_MaxRate = 20;
 	public static double kLift_MaxLiftOpenLoop = 7;
 	
 	public static double kLift_P = 0.2;
@@ -41,7 +53,7 @@ public class Constants extends ConstantsBase {
 	public static int kLift_Cruise_Velocity = 6000;
 	public static int kLift_Accel = 4000;
 
-	public static double kLift_Tolerance = 1.0;
+	public static double kLift_Tolerance = 0.5;
 	public static boolean kLift_InvertMaster = false;
 	public static boolean kLift_InvertFollower = false;
 	
@@ -49,19 +61,20 @@ public class Constants extends ConstantsBase {
 	 * Wrist Constants
 	 */
 
-	public static int kWrist_ID = 14;
+	public static int kWrist_ID = 15;
 
-	public static double kWrist_MaxRate = 6; //degrees/s
+	public static double kWrist_MaxRate = 120; //degrees/s
 	public static double kWrist_MaxWristOpenLoop = 0.5; //%
 	
-	public static double kWrist_P = 0.28;
+	public static double kWrist_P = 0.25;
 	public static double kWrist_I = 0;
-	public static double kWrist_D = 0.3;
-	public static double kWrist_F = 2.07;
+	public static double kWrist_D = 2.5;
+	public static double kWrist_F = 0.5174; //for 400:1 is 1.214  //for 160:1 is 0.647;
+	public static double kWrist_GravityCompensation = 0.15;
 	public static int kWrist_IZone = 0;
 
-	public static int kWrist_Cruise_Velocity = 200; //deg/s
-	public static int kWrist_Accel = 100; //deg/s
+	public static int kWrist_Cruise_Velocity = 1800; //deg/s
+	public static int kWrist_Accel = 3000; //deg/s
 
 	public static double kWrist_FullTravelTolerance = 0.5;
 	public static double kWrist_Tolerance = 0.1; //degrees
@@ -114,15 +127,16 @@ public class Constants extends ConstantsBase {
 		 * s = seconds
 		 */
 															// units
-	public static double kDrive_Motion_P = 1.0;				// %/ft
-	public static double kDrive_Motion_D = 0.0;				// %/(ft/s)
-	public static double kDrive_Motion_V = 1/14.0;			// %/(ft/s) max turn speed
-	public static double kDrive_Motion_A = 1/10;				// %/(ft/s/s) max acceleration
+	public static double kDrive_Motion_P = 0.87;				// %/ft
+	public static double kDrive_Motion_D = 12.0;				// %/(ft/s)
+	public static double kDrive_Motion_V = 0.072;			// %/(ft/s) max turn speed
+	public static double kDrive_Motion_A = 0.1;				// %/(ft/s/s) max acceleration
 	public static double kDrive_Motion_Tolerance = 1.0/12.0;// ft
-	public static double kDrive_Motion_turnP = 0.0125;
+	public static double kDrive_Motion_turnP = 0.0375;
+	public static double kDrive_Motion_turnD = 0.0025;
 	public static double kDrive_Motion_trackwidth = 2.72;
-	public static double kDrive_Motion_Velocity = 4.5;
-	public static double kDrive_Motion_Acceleration = 3.0;
+	public static double kDrive_Motion_Velocity = 6.0;
+	public static double kDrive_Motion_Acceleration = 13.0;
 	
 	public static double kDrive_Turn_Tolerance = 1.0;		// degrees
 
@@ -143,6 +157,8 @@ public class Constants extends ConstantsBase {
 	public static double inputDeadband = 0.05;
 
 	public static double motorTestMinRotations = 0.5;
+
+	public static int controlScheme = OI.ControlScheme.XBOX_JOYOperator.ordinal();
 	
 	@Override
 	public String getFileLocation() {

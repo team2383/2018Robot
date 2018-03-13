@@ -1,13 +1,12 @@
 package com.team2383.robot.subsystems;
 
-import static com.team2383.robot.HAL.lift;
-
 import com.ctre.phoenix.ParamEnum;
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-
+import com.team2383.ninjaLib.WPILambdas;
 import com.team2383.robot.Constants;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
@@ -18,17 +17,18 @@ public class Wrist extends Subsystem {
 		/*
 		 * Gearbox
 		 * BAG
-		 * 10:1
+		 * 9:1
 		 * 4:1
 		 * ENCODER
 		 * 18:72
 		 * 
 		 * 1encoder rot/4096ticks * 18 wrist rots / 72 encoder rots * 3600 ticks / 4096 ticks
 		 * 
-		 * max speed deg/s at motor = 1977 deg/s
+		 * max speed deg/s at wrist = 494.25 deg/s
+		 * max speed deg/s at encoder = 1977 deg/s
+		 * max speed deg/s at motor = 74,000 deg/s
 		 */
 
-		private static final double TALON_COEFF = (18.0/72.0) * (3600.0/4096.0);
 		private static final double MAX_WRIST_TRAVEL_DEGREES = 190;
 		private static final double MAX_WRIST_TRAVEL_TICKS = ticks(MAX_WRIST_TRAVEL_DEGREES);
 
@@ -36,20 +36,25 @@ public class Wrist extends Subsystem {
 		
 		public static enum Preset {
 			INTAKE(0),
-			SWITCH(10),
-			FORWARD_MID(15),
-			FORWARD_HIGH(20),
+			FORWARD_MID(45),
+			FORWARD_HIGH(65),
 			UP(90),
-			BACKWARDS(190);
+	
+			TRANSIT(120),
+			STARTING(142),
+			FORWARD_GRAVITY(142),
+			REVERSE_GRAVITY(156),
 
-			public double wristPosition;
+			BACKWARDS(175);
+
+			private double wristPosition;
 			
 			private Preset(double wristPosition) {
 				this.wristPosition = wristPosition;
 			}
 		}
 
-		public Wrist(boolean isPracticeBot) {
+		Wrist(boolean isPracticeBot) {
 			wrist = new TalonSRX(Constants.kWrist_ID);
 			
 			configMotorControllers(10);
@@ -59,7 +64,7 @@ public class Wrist extends Subsystem {
 		 * update configuration parameters on talonSRX from the constants file
 		 * @param timeout
 		 */
-		public void configMotorControllers(int timeout) {
+		void configMotorControllers(int timeout) {
 			wrist.config_kP(0, Constants.kWrist_P, timeout);
 			wrist.config_kI(0, Constants.kWrist_I, timeout);
 			wrist.config_kD(0, Constants.kWrist_D, timeout);
@@ -67,14 +72,9 @@ public class Wrist extends Subsystem {
 			wrist.config_IntegralZone(0, Constants.kWrist_IZone, timeout);
 
 			wrist.configForwardSoftLimitEnable(true, timeout);
-			//enforce travel limits of wrist
-			if (Math.abs(Lift.Preset.TOP.liftPosition - lift.getCurrentPosition()) < Constants.kWrist_FullTravelTolerance) {
-				setSoftLimit(Wrist.Preset.BACKWARDS.wristPosition);
-			} else {
-				setSoftLimit(Wrist.Preset.UP.wristPosition);
-			}
+			setSoftLimit(Wrist.Preset.BACKWARDS.wristPosition);
 			
-			wrist.configSelectedFeedbackCoefficient(TALON_COEFF, 0, timeout);
+			wrist.configSelectedFeedbackCoefficient(1.0, 0, timeout);
 			wrist.configSetParameter(ParamEnum.eClearPositionOnLimitR, 1, 0, 0, timeout);
 			wrist.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, timeout);
 
@@ -93,8 +93,8 @@ public class Wrist extends Subsystem {
 		 * @param ticks
 		 * @return degrees
 		 */
-		private static double degrees(int ticks) {
-			return ticks / 10.0;
+		static double degrees(int ticks) {
+			return ticks * (18.0/72.0) * (360.0/4096.0);
 		}
 		
 		/**
@@ -103,19 +103,26 @@ public class Wrist extends Subsystem {
 		 * @param degrees
 		 * @return ticks
 		 */
-		private static int ticks(double degrees) {
-			return (int) (degrees * 10.0);
+		static int ticks(double degrees) {
+			return (int) (degrees * (72.0/18) * (4096.0/360));
 		}
 		
 		/**
-		 * raise or lower the lift by @param change inches.
-		 * @param change amount to change the position by
+		 * holds wrist at current position
 		 */
-		public void changePosition(double change) {
-			setPosition(wrist.getClosedLoopTarget(0) + change);
+		void holdPosition() {
+			wrist.set(ControlMode.MotionMagic, wrist.getSelectedSensorPosition(0));
 		}
 		
-		public double getCurrentPosition() {
+		/**
+		 * raise or lower the wrist by @param change degrees.
+		 * @param change amount to change the position by
+		 */
+		void changePosition(double change) {
+			setPosition(degrees(wrist.getClosedLoopTarget(0))  + change);
+		}
+		
+		double getCurrentPosition() {
 			return degrees(wrist.getSelectedSensorPosition(0));
 		}
 		
@@ -123,7 +130,7 @@ public class Wrist extends Subsystem {
 		 * Set the position of the elevator to a preset
 		 * @param preset the desired preset
 		 */
-		public void setPreset(Preset preset) {
+		void setPreset(Preset preset) {
 			setPosition(preset.wristPosition);
 		}
 		
@@ -131,24 +138,33 @@ public class Wrist extends Subsystem {
 		 * Set the position of the elevator
 		 * @param position the desired position in the elevator in inches
 		 */
-		public void setPosition(double position) {
-			wrist.configForwardSoftLimitEnable(true, 2);
-			wrist.set(ControlMode.MotionMagic, ticks(position));
+		void setPosition(double position) {
+			double gravityComp;
+			
+			if(getCurrentPosition() < Preset.FORWARD_GRAVITY.wristPosition) {
+				gravityComp = Constants.kWrist_GravityCompensation;
+			} else if (getCurrentPosition() > Preset.REVERSE_GRAVITY.wristPosition){
+				gravityComp = -Constants.kWrist_GravityCompensation;
+			} else {
+				gravityComp = 0;
+			}
+			
+			if (wrist.getSensorCollection().isRevLimitSwitchClosed()) {
+				gravityComp = 0;
+			}
+			
+			wrist.set(ControlMode.MotionMagic, ticks(position), DemandType.ArbitraryFeedForward, gravityComp);
 		}
 		
-		public boolean atTarget() {
-			return degrees(wrist.getClosedLoopError(0)) < Constants.kWrist_Tolerance;
+		boolean atTarget() {
+			return Math.abs(degrees(wrist.getClosedLoopError(0))) < Constants.kWrist_Tolerance;
 		}
 		
-		public void setOutput(double output) {
-			/*
-			 * just in case the encoder is broken
-			 */
-			wrist.configForwardSoftLimitEnable(false, 2);
+		void setOutput(double output) {
 			wrist.set(ControlMode.PercentOutput, output);
 		}
 		
-		public void stop() {
+		void stop() {
 			wrist.set(ControlMode.PercentOutput, 0);
 		}
 		
@@ -156,18 +172,11 @@ public class Wrist extends Subsystem {
 		 * Set soft limit of wrist
 		 * @param degrees
 		 */
-		private void setSoftLimit(double degrees) {
+		void setSoftLimit(double degrees) {
 			wrist.configForwardSoftLimitThreshold(ticks(degrees), 5);
 		}
 		
-		public void periodic() {
-			//enforce travel limits of wrist
-			if (Math.abs(Lift.Preset.TOP.liftPosition - lift.getCurrentPosition()) < Constants.kWrist_FullTravelTolerance) {
-				setSoftLimit(Wrist.Preset.BACKWARDS.wristPosition);
-			} else {
-				setSoftLimit(Wrist.Preset.UP.wristPosition);
-			}
-			
+		public void periodic() {	
 			if (wrist.getControlMode() == ControlMode.MotionMagic) {
 				SmartDashboard.putNumber("wrist desired Position: ", degrees(wrist.getClosedLoopTarget(0)));
 			}

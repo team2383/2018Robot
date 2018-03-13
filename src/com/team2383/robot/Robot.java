@@ -42,8 +42,6 @@ import java.lang.reflect.Field;
  */
 public class Robot extends TimedRobot {
 	Command autoCommand;
-	Command pitMotorTestAuto;
-	Command generalPeriodicCommand;
 	SendableChooser<Command> autoChooser = new SendableChooser<>();
 
 	/*
@@ -99,11 +97,12 @@ public class Robot extends TimedRobot {
 		autoChooser = new SendableChooser<Command>();
 
 		autoChooser.addObject("Do Nothing", new InstantCommand());
+		autoChooser.addObject("Center Switch Auto", new CenterSwitchAuto());
+		autoChooser.addObject("Left Scale Auto", new LeftScaleAuto());
 		
 		/*
 		autoChooser.addObject("Baseline Auto", new BaselineAuto());
-		autoChooser.addObject("Center Switch Auto", new CenterSwitchAuto());
-		autoChooser.addObject("Left Scale Auto", new LeftScaleAuto());
+
 		*/
 
 		/*
@@ -133,14 +132,6 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void disabledInit() {
-		if (!generalPeriodicCommand.isRunning()) {
-			generalPeriodicCommand.start();
-		}
-		
-		/*
-		 * We want to restart the pit command, not continue it
-		 */
-		pitMotorTestAuto.cancel();
 	}
 
 	@Override
@@ -161,10 +152,6 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		if (!generalPeriodicCommand.isRunning()) {
-			generalPeriodicCommand.start();
-		}
-		
 		autoCommand = autoChooser.getSelected();
 		autoCommand = (Command) autoChooser.getSelected();
 		if (autoCommand != null) {
@@ -182,10 +169,6 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void teleopInit() {
-		if (!generalPeriodicCommand.isRunning()) {
-			generalPeriodicCommand.start();
-		}
-		
 		// This makes sure that the autonomous stops running when
 		// teleop starts running. If you want the autonomous to
 		// continue until interrupted by another command, remove

@@ -3,7 +3,9 @@ package com.team2383.robot;
 import com.kauailabs.navx.frc.AHRS;
 import com.team2383.robot.subsystems.Drive;
 import com.team2383.robot.subsystems.Intake;
+import com.team2383.robot.subsystems.IntakeArms;
 import com.team2383.robot.subsystems.Lift;
+import com.team2383.robot.subsystems.LiftWrist;
 import com.team2383.robot.subsystems.Wrist;
 
 import edu.wpi.first.wpilibj.SPI;
@@ -19,7 +21,7 @@ public class HAL {
 
 	public static Drive drive = new Drive(isPracticeBot);
 	public static Intake intake = new Intake(isPracticeBot);
+	public static IntakeArms intakeArms = new IntakeArms(isPracticeBot);
 
-	public static Lift lift = new Lift(isPracticeBot);
-	public static Wrist wrist = new Wrist(isPracticeBot); //requires lift, so init after it
+	public static LiftWrist liftWrist = new LiftWrist(isPracticeBot);
 }

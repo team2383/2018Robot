@@ -10,8 +10,8 @@ import jaci.pathfinder.modifiers.TankModifier;
 
 public class TestMotionProfile extends CommandGroup {
 	Waypoint[] points = new Waypoint[] {
-			new Waypoint(0,8,0),
-			new Waypoint(8,0,0)
+			new Waypoint(0,0,0),
+			new Waypoint(5,5,Pathfinder.d2r(90))
 			/*
 			 * 
 			 * BASIC SWITCH LEFT PATH
@@ -22,15 +22,17 @@ public class TestMotionProfile extends CommandGroup {
 		    */
 		};
 
-	Trajectory.Config config = new Trajectory.Config(Trajectory.FitMethod.HERMITE_CUBIC, Trajectory.Config.SAMPLES_HIGH,
-			0.02, 	//delta time
-			4.5,		//max velocity in ft/s for the motion profile
-			3,		//max acceleration in ft/s/s for the motion profile
-			10.0);	//max jerk in ft/s/s/s for the motion profile
+	Trajectory.Config config = new Trajectory.Config(
+			Trajectory.FitMethod.HERMITE_QUINTIC,
+			Trajectory.Config.SAMPLES_HIGH,
+			0.02, // delta time
+			5, // max velocity in ft/s for the motion profile
+			10, // max acceleration in ft/s/s for the motion profile
+			50.0); // max jerk in ft/s/s/s for the motion profile
 
 	Trajectory trajectory = Pathfinder.generate(points, config);
 
 	public TestMotionProfile() {
-		addSequential(new FollowTrajectory(trajectory));
+		addSequential(new FollowTrajectory(trajectory, true));
 	}
 }

@@ -1,16 +1,19 @@
 package com.team2383.robot.auto;
 
-import static com.team2383.robot.HAL.lift;
+import static com.team2383.robot.HAL.liftWrist;
 import static com.team2383.robot.HAL.intake;
 
 import com.team2383.robot.commands.FollowTrajectory;
 import com.team2383.robot.commands.WaitForFMSInfo;
 import com.team2383.robot.subsystems.Intake;
 import com.team2383.robot.subsystems.Lift;
+import com.team2383.robot.subsystems.LiftWrist;
+import com.team2383.ninjaLib.PathLoader;
 import com.team2383.ninjaLib.WPILambdas;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.command.CommandGroup;
+import edu.wpi.first.wpilibj.command.ConditionalCommand;
 import edu.wpi.first.wpilibj.command.WaitCommand;
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory;
@@ -21,41 +24,41 @@ import jaci.pathfinder.Waypoint;
  */
 public class RightScaleAuto extends CommandGroup {
 	Waypoint[] rightPoints = new Waypoint[] {
-			new Waypoint(0, 4, 0),
-			new Waypoint(22, 4, 30),
-			};
-	
-	Waypoint[] baseline = new Waypoint[] {
-			new Waypoint(0, 4, 0),
-			new Waypoint(12, 4, 0)
+			new Waypoint(0, 3.9, 0),
+			new Waypoint(23.5, 3.9, Pathfinder.d2r(30))
 			};
 
-	Trajectory.Config config = new Trajectory.Config(Trajectory.FitMethod.HERMITE_CUBIC, Trajectory.Config.SAMPLES_HIGH,
+	Trajectory.Config config = new Trajectory.Config(
+			Trajectory.FitMethod.HERMITE_QUINTIC,
+			Trajectory.Config.SAMPLES_HIGH,
 			0.02, // delta time
-			4.5, // max velocity in ft/s for the motion profile
-			2.5, // max acceleration in ft/s/s for the motion profile
-			5.0); // max jerk in ft/s/s/s for the motion profile
+			5, // max velocity in ft/s for the motion profile
+			10, // max acceleration in ft/s/s for the motion profile
+			50.0); // max jerk in ft/s/s/s for the motion profile
 
 	Trajectory rightTrajectory = Pathfinder.generate(rightPoints, config);
-	Trajectory baseTrajectory = Pathfinder.generate(baseline, config);
 
 	public RightScaleAuto() {
-		addSequential(WPILambdas.runOnceCommand(() -> lift.setPreset(Lift.Preset.AUTO_SWITCH), true));
+		addSequential(liftWrist.setStateCommand(LiftWrist.State.SWITCH_AUTO, true));
 		addSequential(new WaitForFMSInfo());
-		addSequential(new FollowTrajectory(() -> {
-			String positions = DriverStation.getInstance().getGameSpecificMessage();
-
-			/*
-			 * if its on our side, run right trajectory, otherwise run baseline
-			 */
-			Trajectory t = (positions.charAt(0) == 'R') ? rightTrajectory : baseTrajectory;
-
-			return t;
-		}));
-		addSequential(WPILambdas.createCommand(() -> {
-			lift.setPreset(Lift.Preset.SCALE_MID);
-			return lift.atTarget();
-		}));
-		addSequential(intake.setStateCommand(Intake.State.UNFEED, Intake.State.STOP));
+		addSequential(new ConditionalCommand(new ScoreRightScale(), new BaselineAuto()) {
+			@Override
+			protected boolean condition() {
+				String positions = DriverStation.getInstance().getGameSpecificMessage();
+				return positions.charAt(1) == 'R';
+			}
+		});
+	}
+	
+	private class ScoreRightScale extends CommandGroup {
+		public ScoreRightScale() {
+			addSequential(new FollowTrajectory(rightTrajectory, true));
+			addSequential(WPILambdas.createCommand(() -> {
+				liftWrist.setState(LiftWrist.State.SCALE_HIGH_BACK);
+				return liftWrist.atTarget();
+			}));
+			addSequential(new WaitCommand(0.8));
+			addSequential(intake.setStateCommand(Intake.State.UNFEED_SLOW, Intake.State.STOP, 2.0));
+		}
 	}
 }

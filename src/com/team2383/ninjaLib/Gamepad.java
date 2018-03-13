@@ -189,15 +189,11 @@ public class Gamepad extends Joystick {
 		return new JoystickButton(this, BUTTON_RIGHT_STICK);
 	}
 
-	public Button getLeftTriggerClick() {
-		return WPILambdas.createButton(() -> {
-			return getRawAxis(AXIS_SHOULDER_L) > 0.7;
-			});
+	public boolean getLeftTriggerClick() {
+		 return getRawAxis(AXIS_SHOULDER_L) > 0.7;
 	}
 
-	public Button getRightTriggerClick() {
-		return WPILambdas.createButton(() -> {
-			return getRawAxis(AXIS_SHOULDER_R) > 0.7;
-			});
+	public boolean getRightTriggerClick() {
+		return getRawAxis(AXIS_SHOULDER_R) > 0.7;
 	}
 }

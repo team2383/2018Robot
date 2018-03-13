@@ -3,6 +3,8 @@ package com.team2383.robot.subsystems;
 import com.ctre.phoenix.ParamEnum;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
+import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -32,22 +34,23 @@ public class Lift extends Subsystem {
 		 * 32179 = integer ticks max
 		 */
 	
-		private static final double SPROCKET_CIRCUMFERENCE_IN = 1.568 * Math.PI;
+
 		private static final double MAX_LIFT_TRAVEL_IN = 38.7;
-		private static final double MAX_LIFT_TRAVEL_TICKS = liftTicks(MAX_LIFT_TRAVEL_IN);
+		private static double SPROCKET_CIRCUMFERENCE_IN;
+		private static double MAX_LIFT_TRAVEL_TICKS;
 
 		private TalonSRX masterLift;
 		private BaseMotorController followerLift;
 		
-		public static enum Preset {
+		static enum Preset {
 			BOTTOM(0),
 			TRAVEL(2),
-			AUTO_SWITCH(12),
-			TELEOP_SWITCH(12),
-			SCALE_MID(MAX_LIFT_TRAVEL_IN-5),
+
+			SWITCH(15),
+
+			SCALE_MID(MAX_LIFT_TRAVEL_IN-4),
 			SCALE_HIGH(MAX_LIFT_TRAVEL_IN),
-			SCALE_BACKWARDS(MAX_LIFT_TRAVEL_IN),
-			SCALE_UP(MAX_LIFT_TRAVEL_IN),
+
 			TOP(MAX_LIFT_TRAVEL_IN);
 			
 			public double liftPosition;
@@ -57,13 +60,17 @@ public class Lift extends Subsystem {
 			}
 		}
 
-		public Lift(boolean isPracticeBot) {
+		Lift(boolean isPracticeBot) {
 			masterLift = new TalonSRX(Constants.kLift_Master_ID);
 			
 			if (isPracticeBot) {
+				SPROCKET_CIRCUMFERENCE_IN = 1.406 * Math.PI;
+				MAX_LIFT_TRAVEL_TICKS = liftTicks(MAX_LIFT_TRAVEL_IN);
 				followerLift = new TalonSRX(Constants.kLift_Follower_ID);
 			} else {
 				followerLift = new VictorSPX(Constants.kLift_Follower_ID);
+				SPROCKET_CIRCUMFERENCE_IN = 1.568 * Math.PI;
+				MAX_LIFT_TRAVEL_TICKS = liftTicks(MAX_LIFT_TRAVEL_IN);
 			}
 			
 			configMotorControllers(10);
@@ -73,16 +80,19 @@ public class Lift extends Subsystem {
 		 * update configuration parameters on talonSRX from the constants file
 		 * @param timeout
 		 */
-		public void configMotorControllers(int timeout) {
+		void configMotorControllers(int timeout) {
 			
 			masterLift.config_kP(0, Constants.kLift_P, timeout);
 			masterLift.config_kI(0, Constants.kLift_I, timeout);
 			masterLift.config_kD(0, Constants.kLift_D, timeout);
 			masterLift.config_kF(0, Constants.kLift_F, timeout);
 			masterLift.config_IntegralZone(0, Constants.kLift_IZone, timeout);
-
+			
+			
+			masterLift.configSelectedFeedbackCoefficient(1, 0, timeout);
 			masterLift.configForwardSoftLimitThreshold((int) MAX_LIFT_TRAVEL_TICKS, timeout);
 			masterLift.configForwardSoftLimitEnable(true, timeout);
+			masterLift.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, timeout);
 			
 			masterLift.configSetParameter(ParamEnum.eClearPositionOnLimitR, 1, 0, 0, timeout);
 			masterLift.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, timeout);
@@ -105,7 +115,7 @@ public class Lift extends Subsystem {
 		 * @param ticks
 		 * @return inches
 		 */
-		private static double liftInches(int ticks) {
+		static double liftInches(int ticks) {
 			return MotionUtils.rotationsToDistance((ticks / 4096.0), SPROCKET_CIRCUMFERENCE_IN);
 		}
 		
@@ -115,7 +125,7 @@ public class Lift extends Subsystem {
 		 * @param inches
 		 * @return ticks
 		 */
-		private static int liftTicks(double inches) {
+		static int liftTicks(double inches) {
 			return (int) (MotionUtils.distanceToRotations(inches, SPROCKET_CIRCUMFERENCE_IN) * 4096.0);
 		}
 		
@@ -123,11 +133,17 @@ public class Lift extends Subsystem {
 		 * raise or lower the lift by @param change inches.
 		 * @param change amount to change the position by
 		 */
-		public void changePosition(double change) {
-			setPosition(masterLift.getClosedLoopTarget(0) + change);
+		void changePosition(double change) {
+			setPosition(liftInches(masterLift.getClosedLoopTarget(0)) + change);
 		}
 		
-		public double getCurrentPosition() {
+		void holdPosition() {
+			System.out.println("holding at " + masterLift.getSelectedSensorPosition(0) + " to: " + liftInches(masterLift.getSelectedSensorPosition(0)));
+			
+			masterLift.set(ControlMode.MotionMagic, masterLift.getSelectedSensorPosition(0));
+		}
+		
+		double getCurrentPosition() {
 			return liftInches(masterLift.getSelectedSensorPosition(0));
 		}
 		
@@ -135,7 +151,7 @@ public class Lift extends Subsystem {
 		 * Set the position of the elevator to a preset
 		 * @param preset the desired preset
 		 */
-		public void setPreset(Preset preset) {
+		void setPreset(Preset preset) {
 			setPosition(preset.liftPosition);
 		}
 		
@@ -143,24 +159,19 @@ public class Lift extends Subsystem {
 		 * Set the position of the elevator
 		 * @param position the desired position in the elevator in inches
 		 */
-		public void setPosition(double position) {
-			masterLift.configForwardSoftLimitEnable(true, 2);
+		void setPosition(double position) {
 			masterLift.set(ControlMode.MotionMagic, liftTicks(position));
 		}
 		
-		public boolean atTarget() {
-			return liftInches(masterLift.getClosedLoopError(0)) < Constants.kLift_Tolerance;
+		boolean atTarget() {
+			return Math.abs(liftInches(masterLift.getClosedLoopError(0))) < Constants.kLift_Tolerance;
 		}
 		
-		public void setOutput(double output) {
-			/**
-			 * REMOVE ASAP TODO
-			 */
-			masterLift.configForwardSoftLimitEnable(false, 2);
+		void setOutput(double output) {
 			masterLift.set(ControlMode.PercentOutput, output);
 		}
 		
-		public void stop() {
+		void stop() {
 			masterLift.set(ControlMode.PercentOutput, 0);
 		}
 		
@@ -168,8 +179,9 @@ public class Lift extends Subsystem {
 			if (masterLift.getControlMode() == ControlMode.MotionMagic) {
 				SmartDashboard.putNumber("lift desired Position: ", liftInches(masterLift.getClosedLoopTarget(0)));
 			}
-			SmartDashboard.putNumber("lift actual Position: ", liftInches(masterLift.getSelectedSensorPosition(0)));
+			SmartDashboard.putNumber("lift actual Position: ", getCurrentPosition());
 			SmartDashboard.putNumber("lift Rotations: ", liftInches(masterLift.getSelectedSensorPosition(0)));
+			SmartDashboard.putNumber("Lift ticks", liftTicks(getCurrentPosition()));
 		}
 		
 		@Override

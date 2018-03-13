@@ -11,7 +11,7 @@ import jaci.pathfinder.Waypoint;
 public class BaselineAuto extends CommandGroup {
 	Waypoint[] baseline = new Waypoint[] {
 			new Waypoint(0, 0, 0),
-			new Waypoint(12, 0, 0)
+			new Waypoint(14, 0, 0)
 			};
 
 	Trajectory.Config config = new Trajectory.Config(Trajectory.FitMethod.HERMITE_CUBIC, Trajectory.Config.SAMPLES_HIGH,

@@ -1,5 +1,6 @@
 package com.team2383.robot;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.DoubleUnaryOperator;
 
@@ -11,11 +12,11 @@ import com.team2383.ninjaLib.LambdaButton;
 import com.team2383.ninjaLib.OnChangeButton;
 import com.team2383.ninjaLib.Values;
 import com.team2383.ninjaLib.WPILambdas;
-import com.team2383.robot.commands.LiftPreset;
-import com.team2383.robot.commands.TeleopLiftMotionMagic;
-import com.team2383.robot.commands.TeleopLiftOpenLoop;
 import com.team2383.robot.subsystems.Intake;
+import com.team2383.robot.subsystems.IntakeArms;
 import com.team2383.robot.subsystems.Lift;
+import com.team2383.robot.subsystems.LiftWrist;
+import com.team2383.robot.subsystems.Wrist;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -28,8 +29,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static com.team2383.robot.HAL.drive;
 import static com.team2383.robot.HAL.intake;
-import static com.team2383.robot.HAL.lift;
-import static com.team2383.robot.HAL.wrist;
+import static com.team2383.robot.HAL.intakeArms;
+import static com.team2383.robot.HAL.liftWrist;
 
 
 
@@ -69,54 +70,130 @@ public class OI {
 	
 	
 	// All-in-one
-	public static Gamepad driver = new Gamepad(0);
 	public static Joystick operator = new Joystick(2);
 	
-	public static DoubleSupplier throttle = () -> (-driver.getLeftY());
-	public static DoubleSupplier turn = () -> (driver.getRightX());
+	public static DoubleSupplier throttle;
+	public static DoubleSupplier turn;
+	public static Button driveStraight;
+	public static Button feed;
 	
 	public static DoubleSupplier liftSpeed = () -> (operator.getY());
 	
-	public static Button unfeed = new DPadButton(operator, Direction.UP);
-	public static Button unfeedFast = new JoystickButton(operator, 1);
-	public static Button feed = new DPadButton(operator, Direction.DOWN);
-	public static Button clamp = new JoystickButton(operator, 5);
-
-	public static Button liftMotionMagic = new JoystickButton(operator, 2);
-	public static Button liftManual = new JoystickButton(operator, 3);
+	public static BooleanSupplier lockout;
 	
-	public static Button liftPresetBottom = new JoystickButton(operator, 11);
-	public static Button liftPresetSwitch = new JoystickButton(operator, 9);
-	public static Button liftPresetScaleMid = new JoystickButton(operator, 7);
-	public static Button liftPresetScaleHigh = new JoystickButton(operator, 8);
+	public static Button unfeedSlow;
 
-	public static Button allLiftPresets = new LambdaButton(() -> {
-		return operator.getRawButton(9) || operator.getRawButton(8) || operator.getRawButton(7) || operator.getRawButton(11);
-	});
+	public static Button unfeedFast;
+
+	public static Button closeArms = new DPadButton(operator, DPadButton.Direction.DOWN);
+	public static Button openArms = new DPadButton(operator, DPadButton.Direction.UP);
+
+	public static Button liftManual = new JoystickButton(operator, 5);
+	public static Button wristManual = new JoystickButton(operator, 6);
+	
+	public static Button driveByLeft = new JoystickButton(operator, 3);
+	public static Button driveByRight = new JoystickButton(operator, 4);
+	
+	public static Button liftWristPresetScaleHighFwd = new JoystickButton(operator, 7);
+	public static Button liftWristPresetScaleHighBack = new JoystickButton(operator, 8);
+	
+	public static Button liftWristPresetScaleMidFwd = new JoystickButton(operator, 9);
+	public static Button liftWristPresetScaleMidBack = new JoystickButton(operator, 10);
+
+	public static Button liftWristPresetIntake = new JoystickButton(operator, 11);
+	public static Button liftWristPresetSwitch = new JoystickButton(operator, 12);
 	
 	public static Button updateMotorControllers = new NetworkButton("SmartDashboard", "Update Motor Controllers");
 	
-	public static Button rev = new JoystickButton(driver, 3);
+	public enum ControlScheme {
+		XBOX_JOYOperator,
+		YOKE_JOYThrottle_JOYOperator,
+		YOKE_YOKEThrottle_JOYOperator
+	}
 	
 	public OI() {
 		//init the button
 		SmartDashboard.putBoolean("Update Motor Controllers", false);
 
-		unfeed.whileHeld(intake.setStateCommand(Intake.State.UNFEED, Intake.State.STOP));
+		ControlScheme cs = ControlScheme.values()[Constants.controlScheme];
+		
+		switch(cs) {
+			case YOKE_JOYThrottle_JOYOperator:
+				System.out.println("yokeJoy");
+				Joystick yoke = new Joystick(0);
+				Joystick driver_throttle = new Joystick(1);
+				
+				turn = () -> (yoke.getX());
+				throttle = () -> (-driver_throttle.getY());
+				
+				lockout = () -> driver_throttle.getRawButton(2);
+
+				driveStraight = new JoystickButton(yoke, 1);
+				feed = new JoystickButton(driver_throttle, 1);
+				break;
+			case YOKE_YOKEThrottle_JOYOperator:
+				System.out.println("yokeThrottle");
+				Joystick yokeT = new Joystick(0);
+				
+				turn = () -> (yokeT.getX());
+				throttle = () -> (-yokeT.getY());
+				
+				lockout = () -> (yokeT.getRawButton(1) && yokeT.getRawButton(2));
+
+				driveStraight = new JoystickButton(yokeT, 1);
+				feed = new JoystickButton(yokeT, 2);
+				break;
+			default:
+			case XBOX_JOYOperator:
+				System.out.println("xbox");
+				Gamepad driver = new Gamepad(0);
+				
+				turn = () -> (driver.getRightX());
+				throttle = () -> (-driver.getLeftY());
+				
+				lockout = () -> (driver.getLeftTriggerClick() && driver.getRightTriggerClick());
+				
+				driveStraight = new JoystickButton(driver, Gamepad.BUTTON_SHOULDER_LEFT);
+				feed = new JoystickButton(driver, Gamepad.BUTTON_SHOULDER_RIGHT);
+				break;
+		}
+		
+		unfeedSlow = new LambdaButton(() -> {
+			return lockout.getAsBoolean() && operator.getRawButton(2);
+		});
+		unfeedFast = new LambdaButton(() -> {
+			return lockout.getAsBoolean() && operator.getRawButton(1);
+		});
+		
+		unfeedSlow.whileHeld(intake.setStateCommand(Intake.State.UNFEED_SLOW, Intake.State.STOP));
 		unfeedFast.whileHeld(intake.setStateCommand(Intake.State.UNFEED_FAST, Intake.State.STOP));
-		feed.whileHeld(intake.setStateCommand(Intake.State.FEED, Intake.State.STOP));
 		
-		liftManual.whileHeld(new TeleopLiftOpenLoop(liftSpeed));
-		liftMotionMagic.whileHeld(new TeleopLiftMotionMagic(liftSpeed));
+		feed.whileHeld(intake.setStateCommand(Intake.State.FEED, Intake.State.STOP, false));
 		
-		liftPresetBottom.whenPressed(new LiftPreset(Lift.Preset.BOTTOM));
-		liftPresetSwitch.whenPressed(new LiftPreset(Lift.Preset.TELEOP_SWITCH));
-		liftPresetScaleMid.whenPressed(new LiftPreset(Lift.Preset.SCALE_MID));
-		liftPresetScaleHigh.whenPressed(new LiftPreset(Lift.Preset.SCALE_HIGH));
+		closeArms.whileHeld(intakeArms.setStateCommand(IntakeArms.State.CLOSED));
+		openArms.whileHeld(intakeArms.setStateCommand(IntakeArms.State.OPEN));
+		
+		liftManual.whenPressed(liftWrist.setStateCommand(LiftWrist.State.MANUAL_LIFT));
+		wristManual.whenPressed(liftWrist.setStateCommand(LiftWrist.State.MANUAL_WRIST));
+		liftManual.whenReleased(liftWrist.setStateCommand(LiftWrist.State.STOPPED));
+		wristManual.whenReleased(liftWrist.setStateCommand(LiftWrist.State.STOPPED));
+		
+		driveByLeft.whileHeld(intakeArms.setStateCommand(IntakeArms.State.LEFT));
+		driveByLeft.whenPressed(liftWrist.setStateCommand(LiftWrist.State.SWITCH_DRIVE_BY));
+		driveByRight.whileHeld(intakeArms.setStateCommand(IntakeArms.State.RIGHT));
+		driveByRight.whenPressed(liftWrist.setStateCommand(LiftWrist.State.SWITCH_DRIVE_BY));
+		
+		liftWristPresetScaleHighFwd.whenPressed(liftWrist.setStateCommand(LiftWrist.State.SCALE_HIGH_FWD));
+		liftWristPresetScaleHighBack.whenPressed(liftWrist.setStateCommand(LiftWrist.State.SCALE_HIGH_BACK));
+		
+		liftWristPresetScaleMidFwd.whenPressed(liftWrist.setStateCommand(LiftWrist.State.SCALE_MID_FWD));
+		liftWristPresetScaleMidBack.whenPressed(liftWrist.setStateCommand(LiftWrist.State.SCALE_MID_BACK));
+
+		liftWristPresetIntake.whenPressed(liftWrist.setStateCommand(LiftWrist.State.INTAKE));
+		liftWristPresetSwitch.whenPressed(liftWrist.setStateCommand(LiftWrist.State.SWITCH));
 		
 		updateMotorControllers.whenReleased(WPILambdas.runOnceCommand(() -> {
-			lift.configMotorControllers(10);
-			wrist.configMotorControllers(10);
+			liftWrist.configMotorControllers(10);
 			drive.configMotorControllers(10);
 			}, true));
 	}

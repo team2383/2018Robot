@@ -1,32 +1,36 @@
 package com.team2383.robot.commands;
 
-import static com.team2383.robot.HAL.lift;
-import com.team2383.robot.subsystems.Lift;
+import static com.team2383.robot.HAL.liftWrist;
+
+import com.team2383.robot.subsystems.LiftWrist;
+import com.team2383.robot.subsystems.LiftWrist.State;
 
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
  *
  */
-public class LiftPreset extends Command {
-	private Lift.Preset preset;
-    public LiftPreset(Lift.Preset preset) {
-		this.preset = preset;
-        requires(lift);
+public class LiftWristStateWait extends Command {
+    private State state;
+
+	public LiftWristStateWait(LiftWrist.State state) {
+    	super(0.2);
+    	requires(liftWrist);
+    	this.state = state;
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
+    	liftWrist.setState(state);
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	lift.setPreset(preset);
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return false;
+        return liftWrist.getState() == state && liftWrist.atTarget() && this.isTimedOut();
     }
 
     // Called once after isFinished returns true
