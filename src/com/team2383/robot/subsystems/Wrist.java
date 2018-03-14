@@ -47,7 +47,7 @@ public class Wrist extends Subsystem {
 
 			BACKWARDS(175);
 
-			private double wristPosition;
+			public double wristPosition;
 			
 			private Preset(double wristPosition) {
 				this.wristPosition = wristPosition;
@@ -122,6 +122,10 @@ public class Wrist extends Subsystem {
 			setPosition(degrees(wrist.getClosedLoopTarget(0))  + change);
 		}
 		
+		double getClosedLoopTargetPosition() {
+			return degrees(wrist.getClosedLoopTarget(0));
+		}
+		
 		double getCurrentPosition() {
 			return degrees(wrist.getSelectedSensorPosition(0));
 		}
@@ -179,8 +183,9 @@ public class Wrist extends Subsystem {
 		public void periodic() {	
 			if (wrist.getControlMode() == ControlMode.MotionMagic) {
 				SmartDashboard.putNumber("wrist desired Position: ", degrees(wrist.getClosedLoopTarget(0)));
+				SmartDashboard.putBoolean("wrist at target?: ", atTarget());
+				SmartDashboard.putNumber("wrist error: ", degrees(wrist.getClosedLoopError(0)));
 			}
-
 			SmartDashboard.putNumber("wrist actual Position: ", getCurrentPosition());
 		}
 		

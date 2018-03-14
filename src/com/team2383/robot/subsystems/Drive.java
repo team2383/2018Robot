@@ -237,11 +237,11 @@ public class Drive extends Subsystem {
 		leftMaster.configSetParameter(ParamEnum.eContinuousCurrentLimitAmps, Constants.kDrive_ContinuousCurrentLimit, 0x00, 0x00, timeout);
 		leftMaster.configSetParameter(ParamEnum.ePeakCurrentLimitAmps, Constants.kDrive_PeakCurrentLimit, 0x00, 0x00, timeout);
 		leftMaster.configSetParameter(ParamEnum.ePeakCurrentLimitMs, Constants.kDrive_PeakCurrentTime_ms, 0x00, 0x00, timeout);
-		leftMaster.enableCurrentLimit(true);
+		leftMaster.enableCurrentLimit(false);
 		
 		leftMaster.configPeakOutputForward(Constants.kDrive_peakOutput, timeout);
 		leftMaster.configPeakOutputReverse(-Constants.kDrive_peakOutput, timeout);
-		leftMaster.configOpenloopRamp(0, timeout);
+		leftMaster.configOpenloopRamp(0.0, timeout);
 		
 		/*
 		 * COMP BOT SETTINGS
@@ -261,24 +261,24 @@ public class Drive extends Subsystem {
 		rightMaster.configSetParameter(ParamEnum.eContinuousCurrentLimitAmps, Constants.kDrive_ContinuousCurrentLimit, 0x00, 0x00, timeout);
 		rightMaster.configSetParameter(ParamEnum.ePeakCurrentLimitAmps, Constants.kDrive_PeakCurrentLimit, 0x00, 0x00, timeout);
 		rightMaster.configSetParameter(ParamEnum.ePeakCurrentLimitMs, Constants.kDrive_PeakCurrentTime_ms, 0x00, 0x00, timeout);
-		rightMaster.enableCurrentLimit(true);
+		rightMaster.enableCurrentLimit(false);
 		
 		rightMaster.configPeakOutputForward(Constants.kDrive_peakOutput, timeout);
 		rightMaster.configPeakOutputReverse(-Constants.kDrive_peakOutput, timeout);
-		rightMaster.configOpenloopRamp(0, timeout);
+		rightMaster.configOpenloopRamp(0.0, timeout);
 		
 		//PID
-		rightMaster.config_kP(0, (Constants.kDrive_Motion_P * (1023.0/1.0) * (1.0/(kWheelCircumference)) * (1.0/4096.0)), 10);
-		rightMaster.config_kI(0, 0, 10);
-		rightMaster.config_kD(0, (Constants.kDrive_Motion_D * (1023.0/1.0) * (1.0/(1.0/kWheelCircumference)) * (1.0/4096.0) * (10.0)), 10);
+		rightMaster.config_kP(0, (Constants.kDrive_Motion_talonP * (1023.0/1.0) * (1.0/(kWheelCircumference)) * (1.0/4096.0)), 10);
+		rightMaster.config_kI(0, Constants.kDrive_Motion_talonI, 10);
+		rightMaster.config_kD(0, (Constants.kDrive_Motion_talonD * (1023.0/1.0) * (1.0/(1.0/kWheelCircumference)) * (1.0/4096.0) * (10.0)), 10);
 		rightMaster.config_kF(0, (Constants.kDrive_Motion_V * (1023.0/1.0) * (1.0/(1.0/kWheelCircumference)) * (1.0/4096.0) * (10.0)),  10);
-		rightMaster.config_IntegralZone(0, 0, 10);
+		rightMaster.config_IntegralZone(0, 50, 10);
 
-		leftMaster.config_kP(0, (Constants.kDrive_Motion_P * (1023.0/1.0) * (1.0/(kWheelCircumference)) * (1.0/4096.0)), 10);
-		leftMaster.config_kI(0, 0, 10);
-		leftMaster.config_kD(0, (Constants.kDrive_Motion_D * (1023.0/1.0) * (1.0/(1.0/kWheelCircumference)) * (1.0/4096.0) * (10.0)), 10);
+		leftMaster.config_kP(0, (Constants.kDrive_Motion_talonP * (1023.0/1.0) * (1.0/(kWheelCircumference)) * (1.0/4096.0)), 10);
+		leftMaster.config_kI(0, Constants.kDrive_Motion_talonI, 10);
+		leftMaster.config_kD(0, (Constants.kDrive_Motion_talonD * (1023.0/1.0) * (1.0/(1.0/kWheelCircumference)) * (1.0/4096.0) * (10.0)), 10);
 		leftMaster.config_kF(0, (Constants.kDrive_Motion_V * (1023.0/1.0) * (1.0/(1.0/kWheelCircumference)) * (1.0/4096.0) * (10.0)),  10);
-		leftMaster.config_IntegralZone(0, 0, 10);
+		leftMaster.config_IntegralZone(0, 50, 10);
 		
 		/*
 		 * ft/s -> ticks per 100ms

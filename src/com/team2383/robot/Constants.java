@@ -24,6 +24,9 @@ public class Constants extends ConstantsBase {
 	public static int kIntake_LeftIntake_ID = 9;
 	public static int kIntake_RightIntake_ID = 11;
 	
+	public static double kIntake_UnfeedAutoSpeedFirst = 0.37;
+	public static double kIntake_UnfeedAutoSpeedSecond = 0.3;
+	
 	public static double kIntake_UnfeedSlowSpeed = 0.5;
 	public static double kIntake_UnfeedFastSpeed = 0.68;
 	
@@ -31,7 +34,7 @@ public class Constants extends ConstantsBase {
 	 * LiftWrist Constants
 	 */
 
-
+	public static double kLiftWrist_SetpointWait = 0.4;
 	public static double kLiftWrist_Wrist_LiftDownMaxAngle = 145;
 	public static double kLiftWrist_Lift_WristBackwardsMinHeight = 26.5;
 	
@@ -127,23 +130,26 @@ public class Constants extends ConstantsBase {
 		 * s = seconds
 		 */
 															// units
-	public static double kDrive_Motion_P = 0.87;				// %/ft
-	public static double kDrive_Motion_D = 12.0;				// %/(ft/s)
-	public static double kDrive_Motion_V = 0.072;			// %/(ft/s) max turn speed
-	public static double kDrive_Motion_A = 0.1;				// %/(ft/s/s) max acceleration
+	public static double kDrive_Motion_P = 1.0;				// %/ft
+	public static double kDrive_Motion_D = 0.0;				// %/(ft/s)
+
+	public static double kDrive_Motion_talonP = 0.7;			// %/ft
+	public static double kDrive_Motion_talonI = 0.002;			//natives
+	public static double kDrive_Motion_talonD = 15;			// %/(ft/s)
+	
+	//talon V and motio V are shared
+	public static double kDrive_Motion_Velocity = 6.0;		// for turn
+	public static double kDrive_Motion_Acceleration = 13.0; // for turn
+
+	public static double kDrive_Motion_V = 0.074;			// %/(ft/s) max turn speed
+	public static double kDrive_Motion_A = 0.07;				// %/(ft/s/s) max acceleration
+
 	public static double kDrive_Motion_Tolerance = 1.0/12.0;// ft
-	public static double kDrive_Motion_turnP = 0.0375;
+	public static double kDrive_Motion_turnP = 0.02;
 	public static double kDrive_Motion_turnD = 0.0025;
 	public static double kDrive_Motion_trackwidth = 2.72;
-	public static double kDrive_Motion_Velocity = 6.0;
-	public static double kDrive_Motion_Acceleration = 13.0;
 	
 	public static double kDrive_Turn_Tolerance = 1.0;		// degrees
-
-	public static double kDrive_Heading_P = 0.04;			// %/degree
-	public static double kDrive_Heading_I = 0.000;			// %/(degree*s)
-	public static double kDrive_Heading_D = 0.03;			// %/(degree/s)
-	public static double kDrive_Heading_F = 0;				// %/(degree/s) max turn speed
 	
 	public static double kDrive_peakOutput = 0.8;
 	

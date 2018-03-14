@@ -42,7 +42,7 @@ public class PathLoader {
 		return trajectory;
 	}
 
-	private static double generateHashCode(Waypoint[] path, Trajectory.Config config) {
+	private static String generateHashCode(Waypoint[] path, Trajectory.Config config) {
 		double hash = 1.0;
 		for (int i = 0; i < path.length; i++) {
 			double r = 1;
@@ -54,6 +54,7 @@ public class PathLoader {
 
 		hash += ((config.dt * 3) + (config.max_velocity * 7) + (config.max_acceleration * 11) + (config.max_jerk * 19)
 				+ (config.fit.ordinal() * 7) + (config.sample_count * 23));
-		return (int) Math.abs(hash*10 * path.length);
+		
+		return Long.toHexString(Double.doubleToRawLongBits(hash));
 	}
 }

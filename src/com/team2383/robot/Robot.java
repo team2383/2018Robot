@@ -42,30 +42,24 @@ import java.lang.reflect.Field;
  */
 public class Robot extends TimedRobot {
 	Command autoCommand;
+	//SendableChooser<Command> testChooser = new SendableChooser<>();
 	SendableChooser<Command> autoChooser = new SendableChooser<>();
-
-	/*
-	 * So wpilib is trying to shoot us in the foot as usual
-	 * lets make sure exceptions crash the program so broken code doesn't bork us on the field
-	 * 
-	 * Keep an eye on wpilib updates for when they come up with a better solution for this.
-	 * (non-Javadoc)
-	 * @see edu.wpi.first.wpilibj.IterativeRobotBase#loopFunc()
-	 */
-	@Override
-	protected void loopFunc()
-	{
-	    	try
-	    	{
-	    		// calls user code
-			super.loopFunc();
-	    	} // catch all the things
-	    	catch(Throwable throwable)
-	    	{
-	    		DriverStation.reportError("Unhandled exception: " + throwable.toString(),
-	    		          throwable.getStackTrace());
-	    		System.exit(1); // kill the program so it can restart
-		}
+	//SendableChooser<Position> positionChooser = new SendableChooser<>();
+	
+	private enum Position {
+		CENTER,
+		LEFT,
+		RIGHT
+	}
+	
+	private enum Auto {
+		NOTHING,
+		BASELINE,
+		ONLY_SWITCH,
+		ONLY_SCALE,
+		//SCALE_TO_SWITCH,
+		//DOUBLE_SCALE,
+		//TRIPLE_SCALE
 	}
 	
 	/**
@@ -94,32 +88,31 @@ public class Robot extends TimedRobot {
 		
 		CameraServer.getInstance().startAutomaticCapture();
 		
-		autoChooser = new SendableChooser<Command>();
-
-		autoChooser.addObject("Do Nothing", new InstantCommand());
-		autoChooser.addObject("Center Switch Auto", new CenterSwitchAuto());
-		autoChooser.addObject("Left Scale Auto", new LeftScaleAuto());
-		
 		/*
-		autoChooser.addObject("Baseline Auto", new BaselineAuto());
-
+		positionChooser = new SendableChooser<Position>();
+		positionChooser.addDefault("Center", Position.CENTER);
+		positionChooser.addObject("Left", Position.LEFT);
+		positionChooser.addObject("Right", Position.RIGHT);
 		*/
 
-		/*
+		autoChooser = new SendableChooser<Command>();
+
+		autoChooser.addObject("Baseline Auto", new BaselineAuto());
+		autoChooser.addObject("Center Switch Auto", new CenterSwitchAuto());
+		autoChooser.addObject("Left Scale Auto", new LeftScaleAuto());
+
 		autoChooser.addObject("Left Switch Auto", new LeftSwitchAuto());
 		autoChooser.addObject("Right Switch Auto", new RightSwitchAuto());
 		
 		autoChooser.addObject("Left Scale Auto", new LeftScaleAuto());
 		autoChooser.addObject("Right Scale Auto", new RightScaleAuto());
-		*/
 
-		//autoChooser.addObject("PIT AUTO: Fix Motor Direction", pitMotorTestAuto);
-
-
-		autoChooser.addObject("Test Motion Profiled 90 right turn", new ProfiledTurn(-180));
+		autoChooser.addDefault("Nothing", new InstantCommand("Nothing"));
+		autoChooser.addObject("Test Motion Profiled 90 right turn", new ProfiledTurn(-90));
 		autoChooser.addObject("Test Drive Motion Magic", new TestDriveMotionMagic());
 		autoChooser.addObject("Test Motion Profiling Auto", new TestMotionProfile());
 		autoChooser.addObject("Calc Trackwidth", new CalculateTrackWidthAuto());
+
 		SmartDashboard.putData("Auto Chooser", autoChooser);
 		
 		this.setPeriod(0.02);

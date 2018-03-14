@@ -21,12 +21,15 @@ import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Waypoint;
 
 /**
- * score in right scale if its on our side
+ * score in right scale if its on opposite side
  */
-public class RightScaleAuto extends CommandGroup {
+public class RightScaleAcrossAuto extends CommandGroup {
 	Waypoint[] rightPoints = new Waypoint[] {
-			new Waypoint(0, 3.9, 0),
-			new Waypoint(23.5, 3.9, Pathfinder.d2r(30))
+			new Waypoint(3.21, 3.9, 0),
+			new Waypoint(15.4, 3.9, 0),
+			new Waypoint(20, 10, Pathfinder.d2r(90)),
+			new Waypoint(20, 16.5, Pathfinder.d2r(90)),
+			new Waypoint(25, 19.7, 0),
 			};
 
 	Trajectory.Config config = new Trajectory.Config(
@@ -39,7 +42,7 @@ public class RightScaleAuto extends CommandGroup {
 
 	Trajectory rightTrajectory = PathLoader.get(rightPoints, config);
 
-	public RightScaleAuto() {
+	public RightScaleAcrossAuto() {
 		addSequential(liftWrist.setStateCommand(LiftWrist.State.SWITCH_AUTO, true));
 		addSequential(new WaitForFMSInfo());
 		addSequential(new ConditionalCommand(new ScoreRightScale(), new BaselineAuto()) {

@@ -31,8 +31,8 @@ public class LiftWrist extends StatefulSubsystem<LiftWrist.State> {
 		SCALE_HIGH_FWD(Lift.Preset.SCALE_HIGH, Wrist.Preset.FORWARD_HIGH),
 		SCALE_HIGH_BACK(Lift.Preset.SCALE_HIGH, Wrist.Preset.BACKWARDS);
 		
-		private Lift.Preset liftPreset;
-		private Wrist.Preset wristPreset;
+		protected Lift.Preset liftPreset;
+		protected Wrist.Preset wristPreset;
 
 		private State(Lift.Preset liftPreset, Wrist.Preset wristPreset) {
 			this.liftPreset = liftPreset;
@@ -116,7 +116,9 @@ public class LiftWrist extends StatefulSubsystem<LiftWrist.State> {
 	}
 
 	public boolean atTarget() {
-		return wrist.atTarget() && lift.atTarget();
+		boolean wristAtTarget = Math.abs(state.wristPreset.wristPosition - wrist.getCurrentPosition()) < Constants.kWrist_Tolerance;
+		boolean liftAtTarget = Math.abs(state.liftPreset.liftPosition - lift.getCurrentPosition()) < Constants.kLift_Tolerance;
+		return wristAtTarget && liftAtTarget;
 	}
 	
 	public void initDefaultCommand() {

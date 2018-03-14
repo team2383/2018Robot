@@ -127,6 +127,45 @@ public class WPILambdas {
 			}
 		};
 	}
+	
+	public static Command createCommand(BooleanSupplier execute, double finishedWait) {
+		return new Command() {
+			private boolean isFinished;
+			private double timeAtSetpoint;
+			private double lastCheck;
+
+			@Override
+			protected void execute() {
+				isFinished = execute.getAsBoolean();
+				timeAtSetpoint = 0;
+				lastCheck = 0;
+			}
+
+			@Override
+			protected boolean isFinished() {
+				if (isFinished) {
+					timeAtSetpoint += this.timeSinceInitialized() - lastCheck;
+				} else {
+					timeAtSetpoint = 0;
+				}
+				
+				lastCheck = this.timeSinceInitialized();
+				return isFinished && timeAtSetpoint >= finishedWait;
+			}
+
+			@Override
+			protected void initialize() {
+			}
+
+			@Override
+			protected void end() {
+			}
+
+			@Override
+			protected void interrupted() {
+			}
+		};
+	}
 
 	public static Command createCommand(Runnable initialize, BooleanSupplier execute, Runnable end,
 			Runnable interrupted) {

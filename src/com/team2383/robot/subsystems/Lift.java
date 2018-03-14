@@ -143,6 +143,10 @@ public class Lift extends Subsystem {
 			masterLift.set(ControlMode.MotionMagic, masterLift.getSelectedSensorPosition(0));
 		}
 		
+		double getClosedLoopTargetPosition() {
+			return liftInches(masterLift.getClosedLoopTarget(0));
+		}
+		
 		double getCurrentPosition() {
 			return liftInches(masterLift.getSelectedSensorPosition(0));
 		}
@@ -164,7 +168,7 @@ public class Lift extends Subsystem {
 		}
 		
 		boolean atTarget() {
-			return Math.abs(liftInches(masterLift.getClosedLoopError(0))) < Constants.kLift_Tolerance;
+			return Math.abs(getClosedLoopTargetPosition()-getCurrentPosition()) < Constants.kLift_Tolerance;
 		}
 		
 		void setOutput(double output) {
@@ -178,7 +182,10 @@ public class Lift extends Subsystem {
 		public void periodic() {
 			if (masterLift.getControlMode() == ControlMode.MotionMagic) {
 				SmartDashboard.putNumber("lift desired Position: ", liftInches(masterLift.getClosedLoopTarget(0)));
+				SmartDashboard.putNumber("lift error: ", liftInches(Math.abs(masterLift.getClosedLoopError(0))));
+				SmartDashboard.putBoolean("lift at target?: ", atTarget());
 			}
+			
 			SmartDashboard.putNumber("lift actual Position: ", getCurrentPosition());
 			SmartDashboard.putNumber("lift Rotations: ", liftInches(masterLift.getSelectedSensorPosition(0)));
 			SmartDashboard.putNumber("Lift ticks", liftTicks(getCurrentPosition()));

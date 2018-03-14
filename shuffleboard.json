@@ -1,5 +1,5 @@
 {
-  "dividerPosition": 0.4153225806451613,
+  "dividerPosition": 0.3350050150451354,
   "tabPane": [
     {
       "title": "Dashboard",
@@ -13,68 +13,13 @@
         "tiles": {
           "0,1": {
             "size": [
-              4,
-              5
+              3,
+              1
             ],
             "content": {
               "_type": "ComboBox Chooser",
               "_source0": "network_table:///SmartDashboard/Auto Chooser",
-              "_title": "/SmartDashboard/Auto Chooser"
-            }
-          },
-          "0,7": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Drive Left Position (ft)",
-              "_title": "/SmartDashboard/Drive Left Position (ft)"
-            }
-          },
-          "1,7": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Drive Right Position (ft)",
-              "_title": "/SmartDashboard/Drive Right Position (ft)"
-            }
-          },
-          "0,9": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Drive Bounded Heading (degrees)",
-              "_title": "SmartDashboard/Drive Bounded Heading (degrees)"
-            }
-          },
-          "0,8": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Difference Angle",
-              "_title": "SmartDashboard/Difference Angle"
-            }
-          },
-          "0,10": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Distance",
-              "_title": "SmartDashboard/Distance"
+              "_title": "SmartDashboard/Auto Chooser"
             }
           }
         }
@@ -92,286 +37,7 @@
         "tiles": {
           "0,0": {
             "size": [
-              3,
-              2
-            ],
-            "content": {
-              "_type": "Differential Drivebase",
-              "_source0": "network_table:///LiveWindow/Ungrouped/DifferentialDrive[1]",
-              "_title": "/LiveWindow/Ungrouped/DifferentialDrive[1]",
-              "numberOfWheels": 4,
-              "wheelDiameter": 80.0,
-              "showVectors": true
-            }
-          },
-          "3,0": {
-            "size": [
-              1,
-              3
-            ],
-            "content": {
-              "_type": "List Layout",
-              "_title": "LiveWindow/Lift",
-              "_children": []
-            }
-          },
-          "4,0": {
-            "size": [
-              1,
-              3
-            ],
-            "content": {
-              "_type": "List Layout",
-              "_title": "LiveWindow/Intake",
-              "_children": []
-            }
-          },
-          "5,0": {
-            "size": [
-              1,
-              3
-            ],
-            "content": {
-              "_type": "List Layout",
-              "_title": "LiveWindow/Drivetrain",
-              "_children": []
-            }
-          },
-          "0,2": {
-            "size": [
               2,
-              2
-            ],
-            "content": {
-              "_type": "PDP",
-              "_source0": "network_table:///LiveWindow/Ungrouped/PowerDistributionPanel[0]",
-              "_title": "LiveWindow/Ungrouped/PowerDistributionPanel[0]",
-              "showIndicatorText": true
-            }
-          },
-          "6,0": {
-            "size": [
-              1,
-              3
-            ],
-            "content": {
-              "_type": "List Layout",
-              "_title": "Ungrouped",
-              "_children": [
-                {
-                  "_type": "PDP",
-                  "_source0": "network_table:///LiveWindow/Ungrouped/PowerDistributionPanel[0]",
-                  "_title": "PowerDistributionPanel[0]",
-                  "showIndicatorText": true
-                },
-                {
-                  "_type": "Differential Drivebase",
-                  "_source0": "network_table:///LiveWindow/Ungrouped/DifferentialDrive[1]",
-                  "_title": "DifferentialDrive[1]",
-                  "numberOfWheels": 4,
-                  "wheelDiameter": 80.0,
-                  "showVectors": true
-                }
-              ]
-            }
-          },
-          "2,3": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "List Layout",
-              "_title": "Drivetrain",
-              "_children": []
-            }
-          },
-          "3,3": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "List Layout",
-              "_title": "Intake",
-              "_children": []
-            }
-          },
-          "4,3": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "List Layout",
-              "_title": "Lift",
-              "_children": []
-            }
-          },
-          "5,3": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "List Layout",
-              "_title": "Ungrouped",
-              "_children": [
-                {
-                  "_type": "PDP",
-                  "_source0": "network_table:///LiveWindow/Ungrouped/PowerDistributionPanel[0]",
-                  "_title": "PowerDistributionPanel[0]",
-                  "showIndicatorText": true
-                },
-                {
-                  "_type": "Differential Drivebase",
-                  "_source0": "network_table:///LiveWindow/Ungrouped/DifferentialDrive[1]",
-                  "_title": "DifferentialDrive[1]",
-                  "numberOfWheels": 4,
-                  "wheelDiameter": 80.0,
-                  "showVectors": true
-                }
-              ]
-            }
-          },
-          "0,4": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "List Layout",
-              "_title": "Ungrouped",
-              "_children": [
-                {
-                  "_type": "PDP",
-                  "_source0": "network_table:///LiveWindow/Ungrouped/PowerDistributionPanel[0]",
-                  "_title": "PowerDistributionPanel[0]",
-                  "showIndicatorText": true
-                },
-                {
-                  "_type": "Differential Drivebase",
-                  "_source0": "network_table:///LiveWindow/Ungrouped/DifferentialDrive[1]",
-                  "_title": "DifferentialDrive[1]",
-                  "numberOfWheels": 4,
-                  "wheelDiameter": 80.0,
-                  "showVectors": true
-                }
-              ]
-            }
-          },
-          "1,4": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "List Layout",
-              "_title": "Intake",
-              "_children": []
-            }
-          },
-          "2,4": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "List Layout",
-              "_title": "Lift",
-              "_children": []
-            }
-          },
-          "3,4": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "List Layout",
-              "_title": "Drivetrain",
-              "_children": []
-            }
-          },
-          "4,4": {
-            "size": [
-              1,
-              2
-            ],
-            "content": {
-              "_type": "List Layout",
-              "_title": "Ungrouped",
-              "_children": [
-                {
-                  "_type": "PDP",
-                  "_source0": "network_table:///LiveWindow/Ungrouped/PowerDistributionPanel[0]",
-                  "_title": "PowerDistributionPanel[0]",
-                  "showIndicatorText": true
-                },
-                {
-                  "_type": "Differential Drivebase",
-                  "_source0": "network_table:///LiveWindow/Ungrouped/DifferentialDrive[1]",
-                  "_title": "DifferentialDrive[1]",
-                  "numberOfWheels": 4,
-                  "wheelDiameter": 80.0,
-                  "showVectors": true
-                }
-              ]
-            }
-          },
-          "0,5": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///LiveWindow/Ungrouped/DoubleSolenoid[0,6]/Value",
-              "_title": "Ungrouped/DoubleSolenoid[0,6]/Value"
-            }
-          },
-          "1,5": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Boolean Box",
-              "_source0": "network_table:///LiveWindow/Ungrouped/Solenoid[1,6]/Value",
-              "_title": "Ungrouped/Solenoid[1,6]/Value",
-              "colorWhenTrue": "#7CFC00FF",
-              "colorWhenFalse": "#8B0000FF"
-            }
-          },
-          "2,5": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Boolean Box",
-              "_source0": "network_table:///LiveWindow/Ungrouped/Solenoid[1,0]/Value",
-              "_title": "Ungrouped/Solenoid[1,0]/Value",
-              "colorWhenTrue": "#7CFC00FF",
-              "colorWhenFalse": "#8B0000FF"
-            }
-          },
-          "3,5": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Boolean Box",
-              "_source0": "network_table:///LiveWindow/Ungrouped/Solenoid[0,0]/Value",
-              "_title": "Ungrouped/Solenoid[0,0]/Value",
-              "colorWhenTrue": "#7CFC00FF",
-              "colorWhenFalse": "#8B0000FF"
-            }
-          },
-          "7,0": {
-            "size": [
-              1,
               4
             ],
             "content": {
@@ -381,10 +47,10 @@
               "_children": []
             }
           },
-          "5,4": {
+          "2,0": {
             "size": [
-              1,
-              2
+              2,
+              4
             ],
             "content": {
               "_type": "Subsystem Layout",
@@ -399,6 +65,13 @@
                   "colorWhenFalse": "#8B0000FF"
                 },
                 {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/Solenoid[0,1]/Value",
+                  "_title": "Solenoid[0,1]/Value",
+                  "colorWhenTrue": "#7CFC00FF",
+                  "colorWhenFalse": "#8B0000FF"
+                },
+                {
                   "_type": "Differential Drivebase",
                   "_source0": "network_table:///LiveWindow/Ungrouped/DifferentialDrive[1]",
                   "_title": "DifferentialDrive[1]",
@@ -409,51 +82,34 @@
               ]
             }
           },
-          "8,0": {
+          "0,4": {
             "size": [
-              1,
-              4
-            ],
-            "content": {
-              "_type": "Subsystem Layout",
-              "_source0": "network_table:///LiveWindow/IntakePivot",
-              "_title": "IntakePivot",
-              "_children": []
-            }
-          },
-          "6,4": {
-            "size": [
-              1,
-              4
-            ],
-            "content": {
-              "_type": "Subsystem Layout",
-              "_source0": "network_table:///LiveWindow/Intake",
-              "_title": "Intake",
-              "_children": []
-            }
-          },
-          "9,0": {
-            "size": [
-              1,
-              4
-            ],
-            "content": {
-              "_type": "Subsystem Layout",
-              "_source0": "network_table:///LiveWindow/Wrist",
-              "_title": "Wrist",
-              "_children": []
-            }
-          },
-          "7,4": {
-            "size": [
-              1,
+              2,
               4
             ],
             "content": {
               "_type": "Subsystem Layout",
               "_source0": "network_table:///LiveWindow/Lift",
               "_title": "Lift",
+              "_children": [
+                {
+                  "_type": "Subsystem Layout",
+                  "_source0": "network_table:///LiveWindow/LiftWrist",
+                  "_title": "LiveWindow/LiftWrist",
+                  "_children": []
+                }
+              ]
+            }
+          },
+          "2,4": {
+            "size": [
+              2,
+              4
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_source0": "network_table:///LiveWindow/IntakeArms",
+              "_title": "IntakeArms",
               "_children": []
             }
           }
@@ -482,17 +138,6 @@
               "searchBoxVisible": true
             }
           },
-          "2,4": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Auto Chooser/.name",
-              "_title": "SmartDashboard/Auto Chooser/.name"
-            }
-          },
           "0,4": {
             "size": [
               1,
@@ -502,6 +147,17 @@
               "_type": "Toggle Button",
               "_source0": "network_table:///SmartDashboard/Update Motor Controllers",
               "_title": "SmartDashboard/Update Motor Controllers"
+            }
+          },
+          "0,5": {
+            "size": [
+              3,
+              1
+            ],
+            "content": {
+              "_type": "ComboBox Chooser",
+              "_source0": "network_table:///SmartDashboard/Auto Chooser",
+              "_title": "SmartDashboard/Auto Chooser"
             }
           }
         }
@@ -516,115 +172,7 @@
         "showGrid": true,
         "hgap": 16.0,
         "vgap": 16.0,
-        "tiles": {
-          "2,0": {
-            "size": [
-              2,
-              2
-            ],
-            "content": {
-              "_type": "Graph",
-              "_title": "Graph (no sources)",
-              "Visible time": 30.0
-            }
-          },
-          "4,0": {
-            "size": [
-              2,
-              3
-            ],
-            "content": {
-              "_type": "Graph",
-              "_source0": "network_table:///SmartDashboard/Drive Motion/Avg Velocity (ft/s)",
-              "_title": "/SmartDashboard/Drive Motion/Avg Velocity (ft/s)",
-              "Visible time": 30.0
-            }
-          },
-          "2,3": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Gyro",
-              "_title": "",
-              "majorTickSpace": 45.0,
-              "startAngle": 180.0,
-              "tickMarkRingVisible": true
-            }
-          },
-          "1,3": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Simple Dial",
-              "_source0": "network_table:///SmartDashboard/Drive Motion/Right Velocity (ft/s)",
-              "_title": "SmartDashboard/Drive Motion/Right Velocity (ft/s)",
-              "minValue": -20.0,
-              "maxValue": 20.0,
-              "valueVisible": true
-            }
-          },
-          "0,3": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Simple Dial",
-              "_source0": "network_table:///SmartDashboard/Drive Motion/Left Velocity (ft/s)",
-              "_title": "SmartDashboard/Drive Motion/Left Velocity (ft/s)",
-              "minValue": -20.0,
-              "maxValue": 20.0,
-              "valueVisible": true
-            }
-          },
-          "0,0": {
-            "size": [
-              2,
-              2
-            ],
-            "content": {
-              "_type": "Graph",
-              "_title": "Graph (no sources)",
-              "Visible time": 30.0
-            }
-          },
-          "0,2": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Number Bar",
-              "_source0": "network_table:///LiveWindow/Ungrouped/DifferentialDrive[1]/Left Motor Speed",
-              "_title": "LiveWindow/Ungrouped/DifferentialDrive[1]/Left Motor Speed",
-              "min": -1.0,
-              "max": 1.0,
-              "center": 0.0,
-              "numTickMarks": 5.0,
-              "showText": true
-            }
-          },
-          "1,2": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Number Bar",
-              "_source0": "network_table:///LiveWindow/Ungrouped/DifferentialDrive[1]/Right Motor Speed",
-              "_title": "LiveWindow/Ungrouped/DifferentialDrive[1]/Right Motor Speed",
-              "min": -1.0,
-              "max": 1.0,
-              "center": 0.0,
-              "numTickMarks": 5.0,
-              "showText": true
-            }
-          }
-        }
+        "tiles": {}
       }
     },
     {
@@ -636,114 +184,7 @@
         "showGrid": true,
         "hgap": 16.0,
         "vgap": 16.0,
-        "tiles": {
-          "4,0": {
-            "size": [
-              1,
-              2
-            ],
-            "content": {
-              "_type": "Simple Dial",
-              "_source0": "network_table:///SmartDashboard/MP Left Output (%)",
-              "_title": "SmartDashboard/MP Left Output (%)",
-              "minValue": -1.0,
-              "maxValue": 1.0,
-              "valueVisible": true
-            }
-          },
-          "4,2": {
-            "size": [
-              1,
-              2
-            ],
-            "content": {
-              "_type": "Simple Dial",
-              "_source0": "network_table:///SmartDashboard/MP Right Output (%)",
-              "_title": "SmartDashboard/MP Right Output (%)",
-              "minValue": -1.0,
-              "maxValue": 1.0,
-              "valueVisible": true
-            }
-          },
-          "5,0": {
-            "size": [
-              1,
-              2
-            ],
-            "content": {
-              "_type": "Simple Dial",
-              "_source0": "network_table:///SmartDashboard/Drive Bounded Heading (degrees)",
-              "_title": "SmartDashboard/Drive Bounded Heading (degrees)",
-              "minValue": -180.0,
-              "maxValue": 180.0,
-              "valueVisible": true
-            }
-          },
-          "0,3": {
-            "size": [
-              2,
-              3
-            ],
-            "content": {
-              "_type": "Graph",
-              "_source0": "network_table:///SmartDashboard/MP Target Left Velocity (ft-s)",
-              "_source1": "network_table:///SmartDashboard/MP Target Heading",
-              "_source2": "network_table:///SmartDashboard/MP Left Output (%)",
-              "_title": "Graph (3 sources)",
-              "Visible time": 5.0
-            }
-          },
-          "2,3": {
-            "size": [
-              2,
-              3
-            ],
-            "content": {
-              "_type": "Graph",
-              "_source0": "network_table:///SmartDashboard/MP Target Left Velocity (ft-s)",
-              "_source1": "network_table:///SmartDashboard/MP Target Right Velocity (ft-s)",
-              "_title": "Graph (2 sources)",
-              "Visible time": 5.0
-            }
-          },
-          "0,0": {
-            "size": [
-              2,
-              3
-            ],
-            "content": {
-              "_type": "Graph",
-              "_source0": "network_table:///SmartDashboard/MP Target Left Position (ft)",
-              "_source1": "network_table:///SmartDashboard/MP Right Output (%)",
-              "_title": "Graph (2 sources)",
-              "Visible time": 15.0
-            }
-          },
-          "4,4": {
-            "size": [
-              2,
-              2
-            ],
-            "content": {
-              "_type": "Graph",
-              "_source0": "network_table:///SmartDashboard/MP Heading Adj. Output (%)",
-              "_title": "/SmartDashboard/MP Heading Adj. Output (%)",
-              "Visible time": 15.0
-            }
-          },
-          "2,0": {
-            "size": [
-              2,
-              3
-            ],
-            "content": {
-              "_type": "Graph",
-              "_source0": "network_table:///SmartDashboard/MP Target Right Position (ft)",
-              "_title": "/SmartDashboard/MP Target Right Position (ft)",
-              "Visible time": 15.0
-            }
-          }
-        }
+        "tiles": {}
       }
     }
   ]

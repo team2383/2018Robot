@@ -46,7 +46,7 @@ public class Intake extends StatefulSubsystem<Intake.State> {
 	}
 	
 	public enum State {
-		RAW, FEED, UNFEED_SLOW, UNFEED_FAST, UNFEED_SWITCHAUTO, STOP
+		RAW, FEED, UNFEED_SLOW, UNFEED_FAST, UNFEED_AUTO_SCALE_FIRST, UNFEED_AUTO_SCALE_SECOND, UNFEED_AUTO_STARTING, STOP
 	}
 
 	@Override
@@ -57,10 +57,20 @@ public class Intake extends StatefulSubsystem<Intake.State> {
 				rightIntake.set(ControlMode.PercentOutput, -OI.liftSpeed.getAsDouble());
 				break;
 
-			case UNFEED_SWITCHAUTO:
+			case UNFEED_AUTO_STARTING:
 			case FEED:
 				leftIntake.set(ControlMode.PercentOutput, 1.0);
 				rightIntake.set(ControlMode.PercentOutput, 1.0);
+				break;
+				
+			case UNFEED_AUTO_SCALE_FIRST:
+				leftIntake.set(ControlMode.PercentOutput, -Constants.kIntake_UnfeedAutoSpeedFirst);
+				rightIntake.set(ControlMode.PercentOutput, -Constants.kIntake_UnfeedAutoSpeedFirst);
+				break;
+				
+			case UNFEED_AUTO_SCALE_SECOND:
+				leftIntake.set(ControlMode.PercentOutput, -Constants.kIntake_UnfeedAutoSpeedSecond);
+				rightIntake.set(ControlMode.PercentOutput, -Constants.kIntake_UnfeedAutoSpeedSecond);
 				break;
 				
 			case UNFEED_SLOW:

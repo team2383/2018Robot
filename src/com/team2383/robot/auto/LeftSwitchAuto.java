@@ -5,6 +5,7 @@ import static com.team2383.robot.HAL.intake;
 
 import com.team2383.robot.commands.FollowTrajectory;
 import com.team2383.robot.commands.ProfiledTurn;
+import com.team2383.robot.commands.SetLiftWrist;
 import com.team2383.robot.commands.WaitForFMSInfo;
 import com.team2383.robot.subsystems.Intake;
 import com.team2383.robot.subsystems.Lift;
@@ -33,9 +34,9 @@ public class LeftSwitchAuto extends CommandGroup {
 			Trajectory.FitMethod.HERMITE_QUINTIC,
 			Trajectory.Config.SAMPLES_HIGH,
 			0.02, // delta time
-			5, // max velocity in ft/s for the motion profile
+			8, // max velocity in ft/s for the motion profile
 			10, // max acceleration in ft/s/s for the motion profile
-			50.0); // max jerk in ft/s/s/s for the motion profile
+			5.0); // max jerk in ft/s/s/s for the motion profile
 
 	Trajectory leftTrajectory = PathLoader.get(leftPoints, config);
 
@@ -54,12 +55,9 @@ public class LeftSwitchAuto extends CommandGroup {
 	private class ScoreLeftSwitch extends CommandGroup {
 		public ScoreLeftSwitch() {
 			addSequential(new FollowTrajectory(leftTrajectory));
-			addSequential(WPILambdas.createCommand(() -> {
-				liftWrist.setState(LiftWrist.State.SWITCH_AUTO);
-				return liftWrist.atTarget();
-			}));
+			addSequential(new SetLiftWrist(LiftWrist.State.SWITCH_AUTO));
 			addSequential(new ProfiledTurn(-90));
-			addSequential(intake.setStateCommand(Intake.State.UNFEED_SWITCHAUTO, Intake.State.STOP, 2.0));
+			addSequential(intake.setStateCommand(Intake.State.UNFEED_AUTO_STARTING, Intake.State.STOP, 2.0));
 		}
 	}
 }

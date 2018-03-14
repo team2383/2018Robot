@@ -1,5 +1,6 @@
 package com.team2383.robot.auto;
 
+import com.team2383.ninjaLib.PathLoader;
 import com.team2383.robot.commands.FollowTrajectory;
 
 import edu.wpi.first.wpilibj.command.Command;
@@ -20,7 +21,7 @@ public class BaselineAuto extends CommandGroup {
 			2.5,		//max acceleration in ft/s/s for the motion profile
 			5.0);	//max jerk in ft/s/s/s for the motion profile
 
-	Trajectory trajectory = Pathfinder.generate(baseline, config);
+	Trajectory trajectory = PathLoader.get(baseline, config);
 
 	public BaselineAuto() {
 		addSequential(new FollowTrajectory(trajectory));

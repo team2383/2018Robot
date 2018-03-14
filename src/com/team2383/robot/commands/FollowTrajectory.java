@@ -67,7 +67,6 @@ public class FollowTrajectory extends Command implements Sendable  {
 				Constants.kDrive_Motion_D,
 				Constants.kDrive_Motion_V,
 				Constants.kDrive_Motion_A);
-		
 
 		leftFollower.reset();
 		rightFollower.reset();
