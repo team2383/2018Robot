@@ -44,6 +44,7 @@ public class Lift extends Subsystem {
 		
 		static enum Preset {
 			BOTTOM(0),
+			INTAKE_2(5),
 			TRAVEL(2),
 
 			SWITCH(15),

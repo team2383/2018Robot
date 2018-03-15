@@ -25,24 +25,44 @@ public class FollowTrajectory extends Command implements Sendable  {
 	TankModifier modifier;
 	double angleDifference;
 	boolean backwards;
+	double startingAngle;
 	
 	public FollowTrajectory(Supplier<Trajectory> trajectorySupplier) {
-		this(trajectorySupplier, false);
+		this(trajectorySupplier, false, 0);
 	}
 	
 	public FollowTrajectory(Trajectory trajectory) {
-		this(() -> trajectory, false);
+		this(() -> trajectory, false, 0);
 	}
 	
 	public FollowTrajectory(Trajectory trajectory, boolean backwards) {
-		this(() -> trajectory, backwards);
+		this(() -> trajectory, backwards, 0);
 	}
 	
-	public FollowTrajectory(Supplier<Trajectory> trajectorySupplier, boolean backwards) {
+	public FollowTrajectory(Supplier<Trajectory> trajectorySupplier, double startingAngle) {
+		this(trajectorySupplier, false, startingAngle);
+	}
+	
+	public FollowTrajectory(Trajectory trajectory, double startingAngle) {
+		this(() -> trajectory, false, startingAngle);
+	}
+	
+	public FollowTrajectory(Trajectory trajectory, boolean backwards, double startingAngle) {
+		this(() -> trajectory, backwards, startingAngle);
+	}
+	 
+	/**
+	 * 
+	 * @param trajectorySupplier
+	 * @param backwards
+	 * @param startingAngle RADIANS!
+	 */
+	public FollowTrajectory(Supplier<Trajectory> trajectorySupplier, boolean backwards, double startingAngle) {
 		super("Follow Trajectory");
 
 		this.trajectorySupplier = trajectorySupplier;
 		this.backwards = backwards;
+		this.startingAngle = startingAngle;
 		
 		requires(drive);
 	}
@@ -98,7 +118,7 @@ public class FollowTrajectory extends Command implements Sendable  {
 		
 		double gyro_heading = -navX.getAngle(); //axis is the same
 		
-		double desired_heading = Pathfinder.r2d(leftFollower.getHeading());  // Should also be in degrees, make sure its in phase
+		double desired_heading = Pathfinder.r2d(leftFollower.getHeading() - startingAngle);  // Should also be in degrees, make sure its in phase
 
 		SmartDashboard.putNumber("MP1 gyro_heading", gyro_heading);
 		SmartDashboard.putNumber("MP2 desired_heading", desired_heading);

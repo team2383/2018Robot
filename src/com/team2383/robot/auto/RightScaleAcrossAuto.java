@@ -21,7 +21,7 @@ import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Waypoint;
 
 /**
- * score in right scale if its on opposite side
+ * score in opposite
  */
 public class RightScaleAcrossAuto extends CommandGroup {
 	Waypoint[] rightPoints = new Waypoint[] {
@@ -49,7 +49,7 @@ public class RightScaleAcrossAuto extends CommandGroup {
 			@Override
 			protected boolean condition() {
 				String positions = DriverStation.getInstance().getGameSpecificMessage();
-				return positions.charAt(1) == 'R';
+				return positions.charAt(1) == 'L';
 			}
 		});
 	}

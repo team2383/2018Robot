@@ -22,8 +22,10 @@ import com.team2383.robot.OI;
 import com.team2383.robot.auto.BaselineAuto;
 import com.team2383.robot.auto.CalculateTrackWidthAuto;
 import com.team2383.robot.auto.CenterSwitchAuto;
+import com.team2383.robot.auto.LeftScaleAcrossAuto;
 import com.team2383.robot.auto.LeftScaleAuto;
 import com.team2383.robot.auto.LeftSwitchAuto;
+import com.team2383.robot.auto.RightScaleAcrossAuto;
 import com.team2383.robot.auto.RightScaleAuto;
 import com.team2383.robot.auto.RightSwitchAuto;
 import com.team2383.robot.auto.TestDriveMotionMagic;
@@ -98,14 +100,16 @@ public class Robot extends TimedRobot {
 		autoChooser = new SendableChooser<Command>();
 
 		autoChooser.addObject("Baseline Auto", new BaselineAuto());
-		autoChooser.addObject("Center Switch Auto", new CenterSwitchAuto());
-		autoChooser.addObject("Left Scale Auto", new LeftScaleAuto());
 
+		autoChooser.addObject("Center Switch Auto", new CenterSwitchAuto());
 		autoChooser.addObject("Left Switch Auto", new LeftSwitchAuto());
 		autoChooser.addObject("Right Switch Auto", new RightSwitchAuto());
 		
 		autoChooser.addObject("Left Scale Auto", new LeftScaleAuto());
+		autoChooser.addObject("Left Scale Across Auto", new LeftScaleAcrossAuto());
+		
 		autoChooser.addObject("Right Scale Auto", new RightScaleAuto());
+		autoChooser.addObject("Right Scale Across Auto", new RightScaleAcrossAuto());
 
 		autoChooser.addDefault("Nothing", new InstantCommand("Nothing"));
 		autoChooser.addObject("Test Motion Profiled 90 right turn", new ProfiledTurn(-90));

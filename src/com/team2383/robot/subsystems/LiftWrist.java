@@ -23,13 +23,16 @@ public class LiftWrist extends StatefulSubsystem<LiftWrist.State> {
 		MANUAL_LIFT(null, null),
 		MANUAL_WRIST(null, null),
 		INTAKE(Lift.Preset.BOTTOM, Wrist.Preset.INTAKE),
+		INTAKE_2(Lift.Preset.INTAKE_2, Wrist.Preset.INTAKE),
 		SWITCH_AUTO(Lift.Preset.BOTTOM, Wrist.Preset.STARTING),
 		SWITCH(Lift.Preset.SWITCH, Wrist.Preset.INTAKE),
 		SWITCH_DRIVE_BY(Lift.Preset.SWITCH, Wrist.Preset.UP),
 		SCALE_MID_FWD(Lift.Preset.SCALE_MID, Wrist.Preset.FORWARD_MID),
 		SCALE_MID_BACK(Lift.Preset.SCALE_MID, Wrist.Preset.BACKWARDS),
 		SCALE_HIGH_FWD(Lift.Preset.SCALE_HIGH, Wrist.Preset.FORWARD_HIGH),
-		SCALE_HIGH_BACK(Lift.Preset.SCALE_HIGH, Wrist.Preset.BACKWARDS);
+		SCALE_HIGH_BACK(Lift.Preset.SCALE_HIGH, Wrist.Preset.BACKWARDS_DOWN),
+		SCALE_HIGH_BACK_TILTUP(Lift.Preset.SCALE_HIGH, Wrist.Preset.BACKWARDS_UP),
+		SCALE_HIGH_BACK_TILTDOWN(Lift.Preset.SCALE_HIGH, Wrist.Preset.BACKWARDS_DOWN);
 		
 		protected Lift.Preset liftPreset;
 		protected Wrist.Preset wristPreset;
@@ -71,6 +74,7 @@ public class LiftWrist extends StatefulSubsystem<LiftWrist.State> {
 				lift.setPreset(state.liftPreset);
 				break;
 			case INTAKE:
+			case INTAKE_2:
 			case SWITCH_DRIVE_BY:
 			case SWITCH:
 				wrist.setPreset(state.wristPreset);
@@ -79,7 +83,7 @@ public class LiftWrist extends StatefulSubsystem<LiftWrist.State> {
 					//don't tell the lift to go down unless the wrist won't hit it
 					lift.setPreset(state.liftPreset);
 				} else {
-					lift.setPosition(Constants.kLiftWrist_Lift_WristBackwardsMinHeight);
+					lift.setPosition(Constants.kLiftWrist_Lift_WristBackwardsDownMinHeight);
 				}
 				break;
 			case SCALE_MID_FWD:
@@ -90,9 +94,11 @@ public class LiftWrist extends StatefulSubsystem<LiftWrist.State> {
 
 			case SCALE_HIGH_BACK:
 			case SCALE_MID_BACK:
+			case SCALE_HIGH_BACK_TILTDOWN:
+			case SCALE_HIGH_BACK_TILTUP:
 				lift.setPreset(state.liftPreset);
 				//make sure the wrist clears the lift
-				if (lift.getCurrentPosition() > Constants.kLiftWrist_Lift_WristBackwardsMinHeight) {
+				if (lift.getCurrentPosition() > Constants.kLiftWrist_Lift_WristBackwardsUpMinHeight) {
 					//don't tell the wrist to go back unless it wont hit the lift
 					wrist.setPreset(state.wristPreset);
 				} else {

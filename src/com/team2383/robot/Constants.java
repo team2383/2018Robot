@@ -36,7 +36,8 @@ public class Constants extends ConstantsBase {
 
 	public static double kLiftWrist_SetpointWait = 0.4;
 	public static double kLiftWrist_Wrist_LiftDownMaxAngle = 145;
-	public static double kLiftWrist_Lift_WristBackwardsMinHeight = 26.5;
+	public static double kLiftWrist_Lift_WristBackwardsUpMinHeight = 34.5;
+	public static double kLiftWrist_Lift_WristBackwardsDownMinHeight = 24.5;
 	
 	/*
 	 * Lift Constants

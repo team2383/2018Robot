@@ -36,6 +36,17 @@ public class LeftScaleAuto extends CommandGroup {
 			};
 
 	Waypoint[] secondCubePoints = new Waypoint[] {
+			new Waypoint(23.5, 20.5, Pathfinder.d2r(180 - 18)),
+			new Waypoint(18.4, 18.6, Pathfinder.d2r(180 - 4))
+			};
+	
+	Waypoint[] backToScalePoints = new Waypoint[] {
+			new Waypoint(18.4, 19.2, 0),
+			new Waypoint(23.5, 19.6, Pathfinder.d2r(-24))
+			};
+	
+	/* old good
+	Waypoint[] secondCubePoints = new Waypoint[] {
 			new Waypoint(0, 0, 0),
 			new Waypoint(4.0, 2.8, Pathfinder.d2r(40))
 			};
@@ -44,6 +55,7 @@ public class LeftScaleAuto extends CommandGroup {
 			new Waypoint(0, 0, 0),
 			new Waypoint(3.85, -3.15, Pathfinder.d2r(-22))
 			};
+	*/
 
 	Trajectory.Config config_long = new Trajectory.Config(
 			Trajectory.FitMethod.HERMITE_QUINTIC,
@@ -57,9 +69,9 @@ public class LeftScaleAuto extends CommandGroup {
 			Trajectory.FitMethod.HERMITE_QUINTIC,
 			Trajectory.Config.SAMPLES_HIGH,
 			0.02, // delta time
-			12, // max velocity in ft/s for the motion profile
-			9, // max acceleration in ft/s/s for the motion profile
-			20.0); // max jerk in ft/s/s/s for the motion profile
+			5, // max velocity in ft/s for the motion profile
+			5, // max acceleration in ft/s/s for the motion profile
+			30.0); // max jerk in ft/s/s/s for the motion profile
 	
 	Trajectory leftTrajectory = PathLoader.get(leftPoints, config_long);
 	Trajectory secondCubeTrajectory = PathLoader.get(secondCubePoints, config);
@@ -82,12 +94,12 @@ public class LeftScaleAuto extends CommandGroup {
 			addSequential(new FollowTrajectory(leftTrajectory, true));
 
 			addSequential(new SetLiftWrist(LiftWrist.State.SCALE_MID_BACK));
-			addSequential(intake.setStateCommand(Intake.State.UNFEED_AUTO_SCALE_FIRST, Intake.State.STOP, 1.0));
+			addSequential(intake.setStateCommand(Intake.State.UNFEED_AUTO_SCALE_FIRST, Intake.State.STOP, 0.7));
 			addSequential(new SetLiftWrist(LiftWrist.State.INTAKE));
-			addParallel(intake.setStateCommand(Intake.State.FEED, Intake.State.STOP, 2.3));
-			addParallel(intakeArms.setStateCommand(IntakeArms.State.OPEN, IntakeArms.State.CLOSED, 2.0));
+			addParallel(intake.setStateCommand(Intake.State.FEED, Intake.State.STOP, 3.0));
+			addParallel(intakeArms.setStateCommand(IntakeArms.State.OPEN, IntakeArms.State.CLOSED, 1.7));
 
-			addSequential(new FollowTrajectory(secondCubeTrajectory));
+			addSequential(new FollowTrajectory(secondCubeTrajectory, Pathfinder.d2r(180-18)));
 
 			addSequential(new PrintCommand("Waiting for secondCubeTrajectory"));
 			addSequential(new WaitForChildren());

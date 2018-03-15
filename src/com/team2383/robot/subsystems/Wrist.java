@@ -45,7 +45,9 @@ public class Wrist extends Subsystem {
 			FORWARD_GRAVITY(142),
 			REVERSE_GRAVITY(156),
 
-			BACKWARDS(175);
+			BACKWARDS(175),
+			BACKWARDS_UP(160),
+			BACKWARDS_DOWN(188);
 
 			public double wristPosition;
 			

@@ -85,21 +85,26 @@ public class OI {
 
 	public static Button unfeedFast;
 
+	public static Button driver_intake;
+	public static Button driver_intake_2;
+	
 	public static Button closeArms = new DPadButton(operator, DPadButton.Direction.DOWN);
 	public static Button openArms = new DPadButton(operator, DPadButton.Direction.UP);
+	public static Button leftArms = new DPadButton(operator, DPadButton.Direction.LEFT);
+	public static Button rightArms = new DPadButton(operator, DPadButton.Direction.RIGHT);
 
 	public static Button liftManual = new JoystickButton(operator, 5);
 	public static Button wristManual = new JoystickButton(operator, 6);
-	
-	public static Button driveByLeft = new JoystickButton(operator, 3);
-	public static Button driveByRight = new JoystickButton(operator, 4);
+
+	public static Button liftWristPresetHighBack_TiltDown = new JoystickButton(operator, 3);
+	public static Button liftWristPresetHighBack_TiltUp = new JoystickButton(operator, 4);
 	
 	public static Button liftWristPresetScaleHighFwd = new JoystickButton(operator, 7);
 	public static Button liftWristPresetScaleHighBack = new JoystickButton(operator, 8);
 	
 	public static Button liftWristPresetScaleMidFwd = new JoystickButton(operator, 9);
 	public static Button liftWristPresetScaleMidBack = new JoystickButton(operator, 10);
-
+	
 	public static Button liftWristPresetIntake = new JoystickButton(operator, 11);
 	public static Button liftWristPresetSwitch = new JoystickButton(operator, 12);
 	
@@ -153,6 +158,9 @@ public class OI {
 				
 				lockout = () -> (driver.getLeftTriggerClick() && driver.getRightTriggerClick());
 				
+				driver_intake = new JoystickButton(driver, Gamepad.BUTTON_A);
+				driver_intake_2 = new JoystickButton(driver, Gamepad.BUTTON_Y);
+				
 				driveStraight = new JoystickButton(driver, Gamepad.BUTTON_SHOULDER_LEFT);
 				feed = new JoystickButton(driver, Gamepad.BUTTON_SHOULDER_RIGHT);
 				break;
@@ -172,16 +180,16 @@ public class OI {
 		
 		closeArms.whileHeld(intakeArms.setStateCommand(IntakeArms.State.CLOSED));
 		openArms.whileHeld(intakeArms.setStateCommand(IntakeArms.State.OPEN));
+		leftArms.whileHeld(intakeArms.setStateCommand(IntakeArms.State.LEFT));
+		rightArms.whileHeld(intakeArms.setStateCommand(IntakeArms.State.RIGHT));
 		
 		liftManual.whenPressed(liftWrist.setStateCommand(LiftWrist.State.MANUAL_LIFT));
 		wristManual.whenPressed(liftWrist.setStateCommand(LiftWrist.State.MANUAL_WRIST));
 		liftManual.whenReleased(liftWrist.setStateCommand(LiftWrist.State.STOPPED));
 		wristManual.whenReleased(liftWrist.setStateCommand(LiftWrist.State.STOPPED));
 		
-		driveByLeft.whileHeld(intakeArms.setStateCommand(IntakeArms.State.LEFT));
-		driveByLeft.whenPressed(liftWrist.setStateCommand(LiftWrist.State.SWITCH_DRIVE_BY));
-		driveByRight.whileHeld(intakeArms.setStateCommand(IntakeArms.State.RIGHT));
-		driveByRight.whenPressed(liftWrist.setStateCommand(LiftWrist.State.SWITCH_DRIVE_BY));
+		liftWristPresetHighBack_TiltUp.whenPressed(liftWrist.setStateCommand(LiftWrist.State.SCALE_HIGH_BACK_TILTUP));
+		liftWristPresetHighBack_TiltDown.whenPressed(liftWrist.setStateCommand(LiftWrist.State.SCALE_HIGH_BACK_TILTDOWN));
 		
 		liftWristPresetScaleHighFwd.whenPressed(liftWrist.setStateCommand(LiftWrist.State.SCALE_HIGH_FWD));
 		liftWristPresetScaleHighBack.whenPressed(liftWrist.setStateCommand(LiftWrist.State.SCALE_HIGH_BACK));
@@ -189,6 +197,8 @@ public class OI {
 		liftWristPresetScaleMidFwd.whenPressed(liftWrist.setStateCommand(LiftWrist.State.SCALE_MID_FWD));
 		liftWristPresetScaleMidBack.whenPressed(liftWrist.setStateCommand(LiftWrist.State.SCALE_MID_BACK));
 
+		driver_intake.whenPressed(liftWrist.setStateCommand(LiftWrist.State.INTAKE));
+		driver_intake_2.whenPressed(liftWrist.setStateCommand(LiftWrist.State.INTAKE_2));
 		liftWristPresetIntake.whenPressed(liftWrist.setStateCommand(LiftWrist.State.INTAKE));
 		liftWristPresetSwitch.whenPressed(liftWrist.setStateCommand(LiftWrist.State.SWITCH));
 		
