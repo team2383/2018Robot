@@ -7,9 +7,9 @@ import edu.wpi.first.wpilibj.command.Command;
 /**
  *
  */
-public class TestDriveMotionMagic extends Command {
+public class Test_DriveMotionMagic extends Command {
 
-    public TestDriveMotionMagic() {
+    public Test_DriveMotionMagic() {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
     	requires(drive);

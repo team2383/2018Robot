@@ -9,9 +9,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 /**
  *
  */
-public class CalculateTrackWidthAuto extends Command {
+public class Test_CalculateTrackWidthAuto extends Command {
 
-    public CalculateTrackWidthAuto() {
+    public Test_CalculateTrackWidthAuto() {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
     	requires(drive);

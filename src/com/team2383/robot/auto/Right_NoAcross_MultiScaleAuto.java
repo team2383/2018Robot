@@ -2,62 +2,59 @@ package com.team2383.robot.auto;
 
 import static com.team2383.robot.HAL.liftWrist;
 import static com.team2383.robot.HAL.intake;
+import static com.team2383.robot.HAL.intakeArms;
 
+import com.team2383.robot.auto.paths.RightPath_RightScale;
+import com.team2383.robot.auto.paths.PathStyle;
 import com.team2383.robot.commands.FollowTrajectory;
 import com.team2383.robot.commands.ProfiledTurn;
 import com.team2383.robot.commands.SetLiftWrist;
 import com.team2383.robot.commands.WaitForFMSInfo;
 import com.team2383.robot.subsystems.Intake;
+import com.team2383.robot.subsystems.IntakeArms;
 import com.team2383.robot.subsystems.Lift;
 import com.team2383.robot.subsystems.LiftWrist;
+import com.team2383.ninjaLib.AutoDescription;
 import com.team2383.ninjaLib.PathLoader;
 import com.team2383.ninjaLib.WPILambdas;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.command.WaitForChildren;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.ConditionalCommand;
+import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj.command.PrintCommand;
 import edu.wpi.first.wpilibj.command.WaitCommand;
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Waypoint;
 
 /**
- * score in left switch if its on our side
+ * from left, score multiple cubes in scale. 
+ * cross if necessary
  */
-public class LeftSwitchAuto extends CommandGroup {
-	Waypoint[] leftPoints = new Waypoint[] {
-			new Waypoint(0, 0, 0),
-			new Waypoint(14, 0, 0)
-			};
+public class Right_NoAcross_MultiScaleAuto extends CommandGroup implements AutoDescription {
+	CommandGroup scoreRightScaleMulti = new RightPath_RightScale(PathStyle.SCALE_MULTI_CUBE);
+	CommandGroup baseline = new All_BaselineAuto();
 
-	Trajectory.Config config = new Trajectory.Config(
-			Trajectory.FitMethod.HERMITE_QUINTIC,
-			Trajectory.Config.SAMPLES_HIGH,
-			0.02, // delta time
-			8, // max velocity in ft/s for the motion profile
-			10, // max acceleration in ft/s/s for the motion profile
-			5.0); // max jerk in ft/s/s/s for the motion profile
-
-	Trajectory leftTrajectory = PathLoader.get(leftPoints, config);
-
-	public LeftSwitchAuto() {
+	public Right_NoAcross_MultiScaleAuto() {
 		addSequential(liftWrist.setStateCommand(LiftWrist.State.SWITCH_AUTO, true));
 		addSequential(new WaitForFMSInfo());
-		addSequential(new ConditionalCommand(new ScoreLeftSwitch(), new BaselineAuto()) {
+		/*
+		 * if its a left scale, score in left scale
+		 * else auto run
+		 */
+		addSequential(new ConditionalCommand(scoreRightScaleMulti, baseline) {
 			@Override
 			protected boolean condition() {
 				String positions = DriverStation.getInstance().getGameSpecificMessage();
-				return positions.charAt(0) == 'L';
+				return positions.charAt(1) == 'R';
 			}
 		});
 	}
-	
-	private class ScoreLeftSwitch extends CommandGroup {
-		public ScoreLeftSwitch() {
-			addSequential(new FollowTrajectory(leftTrajectory));
-			addSequential(new SetLiftWrist(LiftWrist.State.SWITCH_AUTO));
-			addSequential(new ProfiledTurn(-90));
-			addSequential(intake.setStateCommand(Intake.State.UNFEED_AUTO_STARTING, Intake.State.STOP, 2.0));
-		}
+
+	@Override
+	public String getDescription() {
+		return "Starting right, if _R_ multiple cubes in scale, else baseline";
 	}
 }

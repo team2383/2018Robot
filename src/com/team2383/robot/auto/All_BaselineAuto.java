@@ -9,7 +9,7 @@ import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Waypoint;
 
-public class BaselineAuto extends CommandGroup {
+public class All_BaselineAuto extends CommandGroup {
 	Waypoint[] baseline = new Waypoint[] {
 			new Waypoint(0, 0, 0),
 			new Waypoint(14, 0, 0)
@@ -23,7 +23,7 @@ public class BaselineAuto extends CommandGroup {
 
 	Trajectory trajectory = PathLoader.get(baseline, config);
 
-	public BaselineAuto() {
+	public All_BaselineAuto() {
 		addSequential(new FollowTrajectory(trajectory));
 	}
 }

@@ -17,20 +17,25 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import com.team2383.ninjaLib.AutoDescription;
 import com.team2383.robot.HAL;
 import com.team2383.robot.OI;
-import com.team2383.robot.auto.BaselineAuto;
-import com.team2383.robot.auto.CalculateTrackWidthAuto;
-import com.team2383.robot.auto.CenterSwitchAuto;
-import com.team2383.robot.auto.LeftScaleAcrossAuto;
-import com.team2383.robot.auto.LeftScaleAuto;
-import com.team2383.robot.auto.LeftSwitchAuto;
-import com.team2383.robot.auto.RightScaleAcrossAuto;
-import com.team2383.robot.auto.RightScaleAuto;
-import com.team2383.robot.auto.RightSwitchAuto;
-import com.team2383.robot.auto.TestDriveMotionMagic;
-import com.team2383.robot.auto.TestMotionProfile;
-
+import com.team2383.robot.auto.All_BaselineAuto;
+import com.team2383.robot.auto.Test_CalculateTrackWidthAuto;
+import com.team2383.robot.auto.Center_SwitchAuto;
+import com.team2383.robot.auto.Left_Cross_MultiScaleAuto;
+import com.team2383.robot.auto.Left_Cross_ScaleToSwitchAuto;
+import com.team2383.robot.auto.Left_NoAcross_MultiScaleAuto;
+import com.team2383.robot.auto.Left_NoAcross_ScaleToSwitchAuto;
+import com.team2383.robot.auto.Right_Cross_MultiScaleAuto;
+import com.team2383.robot.auto.Right_Cross_ScaleToSwitchAuto;
+import com.team2383.robot.auto.Right_NoAcross_MultiScaleAuto;
+import com.team2383.robot.auto.Right_NoAcross_ScaleToSwitchAuto;
+import com.team2383.robot.auto.Test_DriveMotionMagic;
+import com.team2383.robot.auto.Test_MotionProfile;
+import com.team2383.robot.auto.paths.RightPath_ScoreAcrossToLeftScale;
+import com.team2383.robot.auto.paths.RightPath_RightScale;
 import com.team2383.robot.commands.ProfiledTurn;
 
 import java.lang.reflect.Field;
@@ -44,25 +49,7 @@ import java.lang.reflect.Field;
  */
 public class Robot extends TimedRobot {
 	Command autoCommand;
-	//SendableChooser<Command> testChooser = new SendableChooser<>();
 	SendableChooser<Command> autoChooser = new SendableChooser<>();
-	//SendableChooser<Position> positionChooser = new SendableChooser<>();
-	
-	private enum Position {
-		CENTER,
-		LEFT,
-		RIGHT
-	}
-	
-	private enum Auto {
-		NOTHING,
-		BASELINE,
-		ONLY_SWITCH,
-		ONLY_SCALE,
-		//SCALE_TO_SWITCH,
-		//DOUBLE_SCALE,
-		//TRIPLE_SCALE
-	}
 	
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -89,33 +76,30 @@ public class Robot extends TimedRobot {
 		}
 		
 		CameraServer.getInstance().startAutomaticCapture();
-		
-		/*
-		positionChooser = new SendableChooser<Position>();
-		positionChooser.addDefault("Center", Position.CENTER);
-		positionChooser.addObject("Left", Position.LEFT);
-		positionChooser.addObject("Right", Position.RIGHT);
-		*/
 
 		autoChooser = new SendableChooser<Command>();
 
-		autoChooser.addObject("Baseline Auto", new BaselineAuto());
-
-		autoChooser.addObject("Center Switch Auto", new CenterSwitchAuto());
-		autoChooser.addObject("Left Switch Auto", new LeftSwitchAuto());
-		autoChooser.addObject("Right Switch Auto", new RightSwitchAuto());
-		
-		autoChooser.addObject("Left Scale Auto", new LeftScaleAuto());
-		autoChooser.addObject("Left Scale Across Auto", new LeftScaleAcrossAuto());
-		
-		autoChooser.addObject("Right Scale Auto", new RightScaleAuto());
-		autoChooser.addObject("Right Scale Across Auto", new RightScaleAcrossAuto());
-
 		autoChooser.addDefault("Nothing", new InstantCommand("Nothing"));
+		autoChooser.addObject("Baseline Auto", new All_BaselineAuto());
+
+		autoChooser.addObject("Center Switch Auto", new Center_SwitchAuto());
+		
+		autoChooser.addObject("Left - Can go across ScaleToSwitch", new Left_Cross_ScaleToSwitchAuto());
+		autoChooser.addObject("Left - Can go across MultiScale", new Left_Cross_MultiScaleAuto());
+
+		autoChooser.addObject("Left - No go across ScaleToSwitch", new Left_NoAcross_ScaleToSwitchAuto());
+		autoChooser.addObject("Left - No go across MultiScale", new Left_NoAcross_MultiScaleAuto());
+		
+		autoChooser.addObject("Right - Can go across ScaleToSwitch", new Right_Cross_ScaleToSwitchAuto());
+		autoChooser.addObject("Right - Can go across MultiScale", new Right_Cross_MultiScaleAuto());
+
+		autoChooser.addObject("Right - No go across ScaleToSwitch", new Right_NoAcross_ScaleToSwitchAuto());
+		autoChooser.addObject("Right - No go across MultiScale", new Right_NoAcross_MultiScaleAuto());
+
 		autoChooser.addObject("Test Motion Profiled 90 right turn", new ProfiledTurn(-90));
-		autoChooser.addObject("Test Drive Motion Magic", new TestDriveMotionMagic());
-		autoChooser.addObject("Test Motion Profiling Auto", new TestMotionProfile());
-		autoChooser.addObject("Calc Trackwidth", new CalculateTrackWidthAuto());
+		autoChooser.addObject("Test Drive Motion Magic", new Test_DriveMotionMagic());
+		autoChooser.addObject("Test Motion Profiling Auto", new Test_MotionProfile());
+		autoChooser.addObject("Calc Trackwidth", new Test_CalculateTrackWidthAuto());
 
 		SmartDashboard.putData("Auto Chooser", autoChooser);
 		
@@ -134,6 +118,10 @@ public class Robot extends TimedRobot {
 	@Override
 	public void disabledPeriodic() {
 		Scheduler.getInstance().run();
+		Command c = autoChooser.getSelected();
+		if (c instanceof AutoDescription) {
+			SmartDashboard.putString("Auto Description", ((AutoDescription) c).getDescription());
+		}
 	}
 
 	/**

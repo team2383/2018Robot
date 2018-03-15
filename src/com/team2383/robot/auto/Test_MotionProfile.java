@@ -8,7 +8,7 @@ import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Waypoint;
 import jaci.pathfinder.modifiers.TankModifier;
 
-public class TestMotionProfile extends CommandGroup {
+public class Test_MotionProfile extends CommandGroup {
 	Waypoint[] points = new Waypoint[] {
 			new Waypoint(0,5,0),
 			new Waypoint(5,0,Pathfinder.d2r(90))
@@ -32,7 +32,7 @@ public class TestMotionProfile extends CommandGroup {
 
 	Trajectory trajectory = Pathfinder.generate(points, config);
 
-	public TestMotionProfile() {
+	public Test_MotionProfile() {
 		addSequential(new FollowTrajectory(trajectory, false));
 	}
 }
