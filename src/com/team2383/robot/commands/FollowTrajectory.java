@@ -150,7 +150,6 @@ public class FollowTrajectory extends Command implements Sendable  {
 			 * turn input is relative to true (fwd) drivetrain output, not the actual direction
 			 * so fwd_left(back_right) has to be less negative (going slower) then fwd_right(back_left), when turning right (negative turn)
 			 */
-			
 			drive.tank(-rightOutput - turn, -leftOutput + turn);
 		}
 	}

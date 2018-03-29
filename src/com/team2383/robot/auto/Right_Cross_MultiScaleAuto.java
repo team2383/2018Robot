@@ -4,7 +4,9 @@ import static com.team2383.robot.HAL.liftWrist;
 
 import com.team2383.robot.auto.paths.RightPath_RightScale;
 import com.team2383.robot.auto.paths.RightPath_ScoreAcrossToLeftScale;
+import com.team2383.robot.Robot;
 import com.team2383.robot.auto.paths.PathStyle;
+import com.team2383.robot.commands.SetLiftWrist;
 import com.team2383.robot.commands.WaitForFMSInfo;
 import com.team2383.robot.subsystems.LiftWrist;
 import com.team2383.ninjaLib.AutoDescription;
@@ -22,16 +24,15 @@ public class Right_Cross_MultiScaleAuto extends CommandGroup implements AutoDesc
 	CommandGroup scoreAcrossToLeftScaleMulti = new RightPath_ScoreAcrossToLeftScale(PathStyle.SCALE_MULTI_CUBE);
 	
 	public Right_Cross_MultiScaleAuto() {
-		addSequential(liftWrist.setStateCommand(LiftWrist.State.SWITCH_AUTO, true));
+		addSequential(new SetLiftWrist(LiftWrist.Preset.SWITCH_AUTO, false));
 		addSequential(new WaitForFMSInfo());
 		/*
-		 * if its a right scale, score in right scale
-		 * else score across to the left scale
+		 * pick 
 		 */
 		addSequential(new ConditionalCommand(scoreRightScaleMulti, scoreAcrossToLeftScaleMulti) {
 			@Override
 			protected boolean condition() {
-				String positions = DriverStation.getInstance().getGameSpecificMessage();
+				String positions = Robot.getGameData();
 				return positions.charAt(1) == 'R';
 			}
 		});

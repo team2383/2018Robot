@@ -2,10 +2,12 @@ package com.team2383.robot.auto;
 
 import static com.team2383.robot.HAL.liftWrist;
 
+import com.team2383.robot.Robot;
 import com.team2383.robot.auto.paths.LeftPath_LeftScale;
 import com.team2383.robot.auto.paths.LeftPath_ScoreAcrossToRightScale;
 
 import com.team2383.robot.auto.paths.PathStyle;
+import com.team2383.robot.commands.SetLiftWrist;
 import com.team2383.robot.commands.WaitForFMSInfo;
 import com.team2383.robot.subsystems.LiftWrist;
 import com.team2383.ninjaLib.AutoDescription;
@@ -24,7 +26,7 @@ public class Left_Cross_ScaleToSwitchAuto extends CommandGroup implements AutoDe
 	CommandGroup scaleToSwitch = new ScaleToSwitch();
 	
 	public Left_Cross_ScaleToSwitchAuto() {
-		addSequential(liftWrist.setStateCommand(LiftWrist.State.SWITCH_AUTO, true));
+		addSequential(new SetLiftWrist(LiftWrist.Preset.SWITCH_AUTO, false));
 		addSequential(new WaitForFMSInfo());
 		/*
 		 * if scale and switch are on same site, proceed to crossScaleToSwitch, else run crossMultiScale
@@ -32,7 +34,7 @@ public class Left_Cross_ScaleToSwitchAuto extends CommandGroup implements AutoDe
 		addSequential(new ConditionalCommand(scaleToSwitch, multiScale) {
 			@Override
 			protected boolean condition() {
-				String positions = DriverStation.getInstance().getGameSpecificMessage();
+				String positions = Robot.getGameData();
 				return positions.charAt(0) == positions.charAt(1); //scale and switch on same side, so equal to each other
 			}
 		});
@@ -43,7 +45,7 @@ public class Left_Cross_ScaleToSwitchAuto extends CommandGroup implements AutoDe
 			addSequential(new ConditionalCommand(scoreLeftScaleToSwitch, scoreAcrossToRightScaleToSwitch) {
 				@Override
 				protected boolean condition() {
-					String positions = DriverStation.getInstance().getGameSpecificMessage();
+					String positions = Robot.getGameData();
 					return positions.charAt(0) == 'L' && positions.charAt(1) == 'L'; //scale and switch on left, run leftScaleToSwitch
 				}
 			});

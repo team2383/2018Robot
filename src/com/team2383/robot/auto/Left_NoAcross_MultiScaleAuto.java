@@ -2,8 +2,10 @@ package com.team2383.robot.auto;
 
 import static com.team2383.robot.HAL.liftWrist;
 
+import com.team2383.robot.Robot;
 import com.team2383.robot.auto.paths.LeftPath_LeftScale;
 import com.team2383.robot.auto.paths.PathStyle;
+import com.team2383.robot.commands.SetLiftWrist;
 import com.team2383.robot.commands.WaitForFMSInfo;
 import com.team2383.robot.subsystems.LiftWrist;
 import com.team2383.ninjaLib.AutoDescription;
@@ -18,10 +20,10 @@ import edu.wpi.first.wpilibj.command.ConditionalCommand;
  */
 public class Left_NoAcross_MultiScaleAuto extends CommandGroup implements AutoDescription {
 	CommandGroup scoreLeftScaleMulti = new LeftPath_LeftScale(PathStyle.SCALE_MULTI_CUBE);
-	CommandGroup baseline = new All_BaselineAuto();
+	CommandGroup baseline = new All_BaselineAuto(true);
 
 	public Left_NoAcross_MultiScaleAuto() {
-		addSequential(liftWrist.setStateCommand(LiftWrist.State.SWITCH_AUTO, true));
+		addSequential(new SetLiftWrist(LiftWrist.Preset.SWITCH_AUTO, false));
 		addSequential(new WaitForFMSInfo());
 		/*
 		 * if its a left scale, score in left scale
@@ -30,7 +32,7 @@ public class Left_NoAcross_MultiScaleAuto extends CommandGroup implements AutoDe
 		addSequential(new ConditionalCommand(scoreLeftScaleMulti, baseline) {
 			@Override
 			protected boolean condition() {
-				String positions = DriverStation.getInstance().getGameSpecificMessage();
+				String positions = Robot.getGameData();
 				return positions.charAt(1) == 'L';
 			}
 		});

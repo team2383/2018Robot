@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
@@ -35,21 +36,26 @@ public class Lift extends Subsystem {
 		 */
 	
 
-		private static final double MAX_LIFT_TRAVEL_IN = 38.7;
+		private static final double MAX_LIFT_TRAVEL_IN = 39.5;
 		private static double SPROCKET_CIRCUMFERENCE_IN;
 		private static double MAX_LIFT_TRAVEL_TICKS;
 
 		private TalonSRX masterLift;
 		private BaseMotorController followerLift;
 		
-		static enum Preset {
+		public static enum Preset {
 			BOTTOM(0),
-			INTAKE_2(5),
+			INTAKE_2(12),
 			TRAVEL(2),
 
 			SWITCH(15),
-
-			SCALE_MID(MAX_LIFT_TRAVEL_IN-4),
+			
+			PORTAL(9),
+			
+			SCALE_LOW(31),
+			SCALE_LOWMID(34),
+			SCALE_MID(MAX_LIFT_TRAVEL_IN-3.5),
+			SCALE_MIDHIGH(MAX_LIFT_TRAVEL_IN-2),
 			SCALE_HIGH(MAX_LIFT_TRAVEL_IN),
 
 			TOP(MAX_LIFT_TRAVEL_IN);
@@ -65,12 +71,12 @@ public class Lift extends Subsystem {
 			masterLift = new TalonSRX(Constants.kLift_Master_ID);
 			
 			if (isPracticeBot) {
-				SPROCKET_CIRCUMFERENCE_IN = 1.406 * Math.PI;
+				SPROCKET_CIRCUMFERENCE_IN = 1.432 * Math.PI;
 				MAX_LIFT_TRAVEL_TICKS = liftTicks(MAX_LIFT_TRAVEL_IN);
 				followerLift = new TalonSRX(Constants.kLift_Follower_ID);
 			} else {
 				followerLift = new VictorSPX(Constants.kLift_Follower_ID);
-				SPROCKET_CIRCUMFERENCE_IN = 1.568 * Math.PI;
+				SPROCKET_CIRCUMFERENCE_IN = 1.432 * Math.PI;
 				MAX_LIFT_TRAVEL_TICKS = liftTicks(MAX_LIFT_TRAVEL_IN);
 			}
 			
@@ -89,7 +95,6 @@ public class Lift extends Subsystem {
 			masterLift.config_kF(0, Constants.kLift_F, timeout);
 			masterLift.config_IntegralZone(0, Constants.kLift_IZone, timeout);
 			
-			
 			masterLift.configSelectedFeedbackCoefficient(1, 0, timeout);
 			masterLift.configForwardSoftLimitThreshold((int) MAX_LIFT_TRAVEL_TICKS, timeout);
 			masterLift.configForwardSoftLimitEnable(true, timeout);
@@ -97,12 +102,18 @@ public class Lift extends Subsystem {
 			
 			masterLift.configSetParameter(ParamEnum.eClearPositionOnLimitR, 1, 0, 0, timeout);
 			masterLift.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, timeout);
+			
+			masterLift.configAllowableClosedloopError(0, liftTicks(0.1), timeout);
 
-			masterLift.configMotionAcceleration(Constants.kLift_Accel, timeout);
-			masterLift.configMotionCruiseVelocity(Constants.kLift_Cruise_Velocity, timeout);
+			masterLift.configMotionAcceleration(Constants.kLift_Down_Accel, timeout);
+			masterLift.configMotionCruiseVelocity(Constants.kLift_Down_Cruise_Velocity, timeout);
 
 			masterLift.setNeutralMode(NeutralMode.Brake);
 			followerLift.setNeutralMode(NeutralMode.Brake);
+
+			masterLift.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 40, timeout);
+			masterLift.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 10, timeout);
+			masterLift.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, timeout);
 			
 			masterLift.setSensorPhase(false);
 			masterLift.setInverted(Constants.kLift_InvertMaster);
@@ -165,11 +176,34 @@ public class Lift extends Subsystem {
 		 * @param position the desired position in the elevator in inches
 		 */
 		void setPosition(double position) {
+			//really slow below 10in
+			//full if farther than 20in from setpoint
+			//slow down when close to setpoint
+			if(position <= 10) {
+				masterLift.configMotionAcceleration(Constants.kLift_Down_Accel, 0);
+				masterLift.configMotionCruiseVelocity(Constants.kLift_Down_Cruise_Velocity, 0);
+			} else if (getPositiveError() > Constants.kLift_UpAccelMinError) {
+				masterLift.configMotionAcceleration(Constants.kLift_Up_Accel, 0);
+				masterLift.configMotionCruiseVelocity(Constants.kLift_Up_Cruise_Velocity, 0);
+			} else {
+				masterLift.configMotionAcceleration(Constants.kLift_Down_Accel, 0);
+				masterLift.configMotionCruiseVelocity(Constants.kLift_Down_Cruise_Velocity, 0);
+			} 
+			
+			
+			//cushion on the bottom
+			
+			
+			
 			masterLift.set(ControlMode.MotionMagic, liftTicks(position));
 		}
 		
 		boolean atTarget() {
-			return Math.abs(getClosedLoopTargetPosition()-getCurrentPosition()) < Constants.kLift_Tolerance;
+			return getPositiveError() < Constants.kLift_Tolerance;
+		}
+		
+		double getPositiveError() {
+			return Math.abs(getClosedLoopTargetPosition()-getCurrentPosition());
 		}
 		
 		void setOutput(double output) {
@@ -185,6 +219,12 @@ public class Lift extends Subsystem {
 				SmartDashboard.putNumber("lift desired Position: ", liftInches(masterLift.getClosedLoopTarget(0)));
 				SmartDashboard.putNumber("lift error: ", liftInches(Math.abs(masterLift.getClosedLoopError(0))));
 				SmartDashboard.putBoolean("lift at target?: ", atTarget());
+
+				SmartDashboard.putNumber("lift output ", masterLift.getMotorOutputPercent());
+				SmartDashboard.putNumber("lift cruise accel ", masterLift.configGetParameter(ParamEnum.eMotMag_Accel, 0, 0));
+				SmartDashboard.putNumber("lift cruise vel ", masterLift.configGetParameter(ParamEnum.eMotMag_VelCruise, 0, 0));
+				SmartDashboard.putNumber("lift target speed in ticks: ", masterLift.getActiveTrajectoryVelocity());
+				SmartDashboard.putNumber("lift speed in ticks: ", masterLift.getSelectedSensorVelocity(0));
 			}
 			
 			SmartDashboard.putNumber("lift actual Position: ", getCurrentPosition());
@@ -194,5 +234,9 @@ public class Lift extends Subsystem {
 		
 		@Override
 		protected void initDefaultCommand() {
+		}
+
+		public void setZero() {
+			masterLift.setSelectedSensorPosition(0, 0, 10);
 		}		
 }

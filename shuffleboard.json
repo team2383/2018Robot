@@ -1,5 +1,5 @@
 {
-  "dividerPosition": 0.3350050150451354,
+  "dividerPosition": 0.27266387726638774,
   "tabPane": [
     {
       "title": "Dashboard",
@@ -11,15 +11,81 @@
         "hgap": 16.0,
         "vgap": 16.0,
         "tiles": {
-          "0,1": {
+          "0,11": {
             "size": [
-              3,
-              1
+              7,
+              2
             ],
             "content": {
               "_type": "ComboBox Chooser",
               "_source0": "network_table:///SmartDashboard/Auto Chooser",
               "_title": "SmartDashboard/Auto Chooser"
+            }
+          },
+          "0,13": {
+            "size": [
+              7,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Auto Description",
+              "_title": "SmartDashboard/Auto Description"
+            }
+          },
+          "0,0": {
+            "size": [
+              5,
+              11
+            ],
+            "content": {
+              "_type": "Camera Stream",
+              "_source0": "camera_server://USB Camera 0",
+              "_title": "USB Camera 0"
+            }
+          },
+          "5,0": {
+            "size": [
+              3,
+              3
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Drive Left Position (ft)",
+              "_title": "SmartDashboard/Drive Left Position (ft)"
+            }
+          },
+          "8,0": {
+            "size": [
+              3,
+              3
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Drive Right Position (ft)",
+              "_title": "SmartDashboard/Drive Right Position (ft)"
+            }
+          },
+          "5,3": {
+            "size": [
+              3,
+              3
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/lift actual Position: ",
+              "_title": "SmartDashboard/lift actual Position: "
+            }
+          },
+          "8,3": {
+            "size": [
+              3,
+              3
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/lift actual Position: ",
+              "_title": "SmartDashboard/lift actual Position: "
             }
           }
         }
@@ -37,7 +103,7 @@
         "tiles": {
           "0,0": {
             "size": [
-              2,
+              1,
               4
             ],
             "content": {
@@ -47,9 +113,9 @@
               "_children": []
             }
           },
-          "2,0": {
+          "1,0": {
             "size": [
-              2,
+              1,
               4
             ],
             "content": {
@@ -78,6 +144,20 @@
                   "numberOfWheels": 4,
                   "wheelDiameter": 80.0,
                   "showVectors": true
+                },
+                {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/Solenoid[1,0]/Value",
+                  "_title": "LiveWindow/Ungrouped/Solenoid[1,0]/Value",
+                  "colorWhenTrue": "#7CFC00FF",
+                  "colorWhenFalse": "#8B0000FF"
+                },
+                {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/Solenoid[1,1]/Value",
+                  "_title": "LiveWindow/Ungrouped/Solenoid[1,1]/Value",
+                  "colorWhenTrue": "#7CFC00FF",
+                  "colorWhenFalse": "#8B0000FF"
                 }
               ]
             }
@@ -112,6 +192,37 @@
               "_title": "IntakeArms",
               "_children": []
             }
+          },
+          "2,0": {
+            "size": [
+              1,
+              4
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_source0": "network_table:///LiveWindow/Wrist",
+              "_title": "Wrist",
+              "_children": []
+            }
+          },
+          "3,0": {
+            "size": [
+              1,
+              4
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_source0": "network_table:///LiveWindow/Intake",
+              "_title": "Intake",
+              "_children": [
+                {
+                  "_type": "Subsystem Layout",
+                  "_source0": "network_table:///LiveWindow/IntakeArms",
+                  "_title": "LiveWindow/IntakeArms",
+                  "_children": []
+                }
+              ]
+            }
           }
         }
       }
@@ -126,10 +237,10 @@
         "hgap": 16.0,
         "vgap": 16.0,
         "tiles": {
-          "0,0": {
+          "2,0": {
             "size": [
               3,
-              4
+              8
             ],
             "content": {
               "_type": "Robot Preferences",
@@ -140,7 +251,7 @@
           },
           "0,4": {
             "size": [
-              1,
+              2,
               1
             ],
             "content": {
@@ -151,7 +262,7 @@
           },
           "0,5": {
             "size": [
-              3,
+              2,
               1
             ],
             "content": {

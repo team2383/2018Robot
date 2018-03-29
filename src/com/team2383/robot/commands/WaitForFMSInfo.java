@@ -1,5 +1,7 @@
 package com.team2383.robot.commands;
 
+import com.team2383.robot.Robot;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.command.Command;
 
@@ -22,7 +24,7 @@ public class WaitForFMSInfo extends Command {
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-    	String positions = DriverStation.getInstance().getGameSpecificMessage();
+    	String positions = Robot.getGameData();
     	System.out.println(positions);
     	return positions.length() > 0;
     }

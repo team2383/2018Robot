@@ -46,15 +46,26 @@ public class Intake extends StatefulSubsystem<Intake.State> {
 	}
 	
 	public enum State {
-		RAW, FEED, UNFEED_SLOW, UNFEED_FAST, UNFEED_AUTO_SCALE_FIRST, UNFEED_AUTO_SCALE_SECOND, UNFEED_AUTO_STARTING, STOP
+		RAW,
+		FEED,
+		UNFEED_PLACE,
+		UNFEED_SLOW,
+		UNFEED_MID,
+		UNFEED_FAST,
+		
+		UNFEED_AUTO_STARTING,
+		
+		UNFEED_DRIVEBY_LEFT,
+		UNFEED_DRIVEBY_RIGHT,
+		STOP, 
 	}
 
 	@Override
 	public void setState(State state) {
 		switch (state) {
 			case RAW:
-				leftIntake.set(ControlMode.PercentOutput, -OI.liftSpeed.getAsDouble());
-				rightIntake.set(ControlMode.PercentOutput, -OI.liftSpeed.getAsDouble());
+				leftIntake.set(ControlMode.PercentOutput, -OI.manualSpeed.getAsDouble());
+				rightIntake.set(ControlMode.PercentOutput, -OI.manualSpeed.getAsDouble());
 				break;
 
 			case UNFEED_AUTO_STARTING:
@@ -63,14 +74,9 @@ public class Intake extends StatefulSubsystem<Intake.State> {
 				rightIntake.set(ControlMode.PercentOutput, 1.0);
 				break;
 				
-			case UNFEED_AUTO_SCALE_FIRST:
-				leftIntake.set(ControlMode.PercentOutput, -Constants.kIntake_UnfeedAutoSpeedFirst);
-				rightIntake.set(ControlMode.PercentOutput, -Constants.kIntake_UnfeedAutoSpeedFirst);
-				break;
-				
-			case UNFEED_AUTO_SCALE_SECOND:
-				leftIntake.set(ControlMode.PercentOutput, -Constants.kIntake_UnfeedAutoSpeedSecond);
-				rightIntake.set(ControlMode.PercentOutput, -Constants.kIntake_UnfeedAutoSpeedSecond);
+			case UNFEED_PLACE:
+				leftIntake.set(ControlMode.PercentOutput, -Constants.kIntake_UnfeedPlaceSpeed);
+				rightIntake.set(ControlMode.PercentOutput, -Constants.kIntake_UnfeedPlaceSpeed);
 				break;
 				
 			case UNFEED_SLOW:
@@ -78,9 +84,24 @@ public class Intake extends StatefulSubsystem<Intake.State> {
 				rightIntake.set(ControlMode.PercentOutput, -Constants.kIntake_UnfeedSlowSpeed);
 				break;
 				
+			case UNFEED_MID:
+				leftIntake.set(ControlMode.PercentOutput, -Constants.kIntake_UnfeedMidSpeed);
+				rightIntake.set(ControlMode.PercentOutput, -Constants.kIntake_UnfeedMidSpeed);
+				break;
+				
 			case UNFEED_FAST:
 				leftIntake.set(ControlMode.PercentOutput, -Constants.kIntake_UnfeedFastSpeed);
 				rightIntake.set(ControlMode.PercentOutput, -Constants.kIntake_UnfeedFastSpeed);
+				break;
+				
+			case UNFEED_DRIVEBY_LEFT:
+				leftIntake.set(ControlMode.PercentOutput, -Constants.kIntake_UnfeedDrivebyOpen);
+				rightIntake.set(ControlMode.PercentOutput, -Constants.kIntake_UnfeedDrivebyClosed);
+				break;
+				
+			case UNFEED_DRIVEBY_RIGHT:
+				leftIntake.set(ControlMode.PercentOutput, -Constants.kIntake_UnfeedDrivebyClosed);
+				rightIntake.set(ControlMode.PercentOutput, -Constants.kIntake_UnfeedDrivebyOpen);
 				break;
 				
 			default:

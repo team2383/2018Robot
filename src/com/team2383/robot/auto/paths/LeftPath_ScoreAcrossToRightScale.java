@@ -24,11 +24,11 @@ public class LeftPath_ScoreAcrossToRightScale extends CommandGroup {
 			new Waypoint(15.4, 23.1, 0),
 			new Waypoint(20, 17, Pathfinder.d2r(-90)),
 			new Waypoint(20, 10.5, Pathfinder.d2r(-90)),
-			new Waypoint(24, 7.2, Pathfinder.d2r(15)),
+			new Waypoint(23.7, 7.2, Pathfinder.d2r(15)),
 			};
 	
 	Waypoint[] secondCubePoints = new Waypoint[] {
-			new Waypoint(24, 7, Pathfinder.d2r(180 + 15)),
+			new Waypoint(23.7, 7, Pathfinder.d2r(180 + 15)),
 			new Waypoint(18.4, 8, Pathfinder.d2r(180 - 10))
 			};
 	
@@ -54,9 +54,9 @@ public class LeftPath_ScoreAcrossToRightScale extends CommandGroup {
 	
 	public LeftPath_ScoreAcrossToRightScale(PathStyle style) {
 		addSequential(new FollowTrajectory(toScaleTrajectory, true));
-		addSequential(new SetLiftWrist(LiftWrist.State.SCALE_MID_BACK));
-		addSequential(intake.setStateCommand(Intake.State.UNFEED_AUTO_SCALE_FIRST, Intake.State.STOP, 0.7));
-		addSequential(new SetLiftWrist(LiftWrist.State.INTAKE));
+		addSequential(new SetLiftWrist(LiftWrist.Preset.SCALE_MID_BACK_DOWN));
+		addSequential(intake.setStateCommand(Intake.State.UNFEED_MID, Intake.State.STOP, 0.7));
+		addSequential(new SetLiftWrist(LiftWrist.Preset.INTAKE));
 		addParallel(intake.setStateCommand(Intake.State.FEED, Intake.State.STOP, 3.0));
 		addParallel(intakeArms.setStateCommand(IntakeArms.State.OPEN, IntakeArms.State.CLOSED, 1.7));
 
@@ -68,12 +68,12 @@ public class LeftPath_ScoreAcrossToRightScale extends CommandGroup {
 		
 		switch(style) {
 			case SCALE_MULTI_CUBE:
-				addSequential(new SetLiftWrist(LiftWrist.State.SWITCH));
+				addSequential(new SetLiftWrist(LiftWrist.Preset.SWITCH));
 				break;
 			case SCALE_TO_SWITCH:
-				addSequential(new SetLiftWrist(LiftWrist.State.SWITCH));
+				addSequential(new SetLiftWrist(LiftWrist.Preset.SWITCH));
 				addSequential(new WaitCommand(0.1));
-				addSequential(intake.setStateCommand(Intake.State.UNFEED_AUTO_SCALE_SECOND, Intake.State.STOP, 1.0));
+				addSequential(intake.setStateCommand(Intake.State.UNFEED_FAST, Intake.State.STOP, 1.0));
 				break;
 		}
 	}

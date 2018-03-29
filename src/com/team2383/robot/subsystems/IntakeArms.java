@@ -21,8 +21,13 @@ public class IntakeArms extends StatefulSubsystem<IntakeArms.State> {
 	private Solenoid rightArm;
 	
 	public IntakeArms(boolean isPracticeBot) {
-		leftArm = new Solenoid(0, 0);
-		rightArm = new Solenoid(0, 1);
+		if(isPracticeBot) {
+			leftArm = new Solenoid(1, 0);
+			rightArm = new Solenoid(1, 1);
+		} else {
+			leftArm = new Solenoid(1, 0);
+			rightArm = new Solenoid(1, 1);
+		}
 
 		instanceSupplier = () -> intakeArms;
 		this.state = State.CLOSED;

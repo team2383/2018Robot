@@ -11,6 +11,7 @@ import com.ctre.phoenix.ParamEnum;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
 import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -148,20 +149,23 @@ public class Drive extends Subsystem {
 			leftFollowerA = new TalonSRX(Constants.kDrive_LeftFollowerA_ID);
 			leftFollowerB = new TalonSRX(Constants.kDrive_LeftFollowerB_ID);
 			leftFollowerC = new TalonSRX(Constants.kDrive_LeftFollowerC_ID);
+			//setup followers
+			int lMasterID = leftMaster.getDeviceID();
+			leftFollowerA.set(ControlMode.Follower, leftMaster.getDeviceID());
+			leftFollowerB.set(ControlMode.Follower, leftMaster.getDeviceID());
+			leftFollowerC.set(ControlMode.Follower, leftMaster.getDeviceID());
 		} else {
 			leftFollowerA = new VictorSPX(Constants.kDrive_LeftFollowerA_ID);
 			leftFollowerB = new VictorSPX(Constants.kDrive_LeftFollowerB_ID);
 			leftFollowerC = new VictorSPX(Constants.kDrive_LeftFollowerC_ID);
+			//setup followers
+			leftFollowerA.follow(leftMaster);
+			leftFollowerB.follow(leftMaster);
+			leftFollowerC.follow(leftMaster);
 		}
-
-		//setup followers
-		leftFollowerA.set(ControlMode.Follower, Constants.kDrive_LeftMaster_ID);
-		leftFollowerB.set(ControlMode.Follower, Constants.kDrive_LeftMaster_ID);
-		leftFollowerC.set(ControlMode.Follower, Constants.kDrive_LeftMaster_ID);
 		
 		//Left settings
 		leftMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
-		
 		leftMaster.setNeutralMode(NeutralMode.Brake);
 
 		//clear options
@@ -180,16 +184,20 @@ public class Drive extends Subsystem {
 			rightFollowerA = new TalonSRX(Constants.kDrive_RightFollowerA_ID);
 			rightFollowerB = new TalonSRX(Constants.kDrive_RightFollowerB_ID);
 			rightFollowerC = new TalonSRX(Constants.kDrive_RightFollowerC_ID);
+			//setup followers
+			int rMasterID = rightMaster.getDeviceID();
+			rightFollowerA.set(ControlMode.Follower, rMasterID);
+			rightFollowerB.set(ControlMode.Follower, rMasterID);
+			rightFollowerC.set(ControlMode.Follower, rMasterID);
 		} else {
 			rightFollowerA = new VictorSPX(Constants.kDrive_RightFollowerA_ID);
 			rightFollowerB = new VictorSPX(Constants.kDrive_RightFollowerB_ID);
 			rightFollowerC = new VictorSPX(Constants.kDrive_RightFollowerC_ID);
+			//setup followers
+			rightFollowerA.follow(rightMaster);
+			rightFollowerB.follow(rightMaster);
+			rightFollowerC.follow(rightMaster);
 		}
-		
-		//setup followers
-		rightFollowerA.set(ControlMode.Follower, Constants.kDrive_RightMaster_ID);
-		rightFollowerB.set(ControlMode.Follower, Constants.kDrive_RightMaster_ID);
-		rightFollowerC.set(ControlMode.Follower, Constants.kDrive_RightMaster_ID);
 		
 		//Right settings
 		rightMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
@@ -218,7 +226,7 @@ public class Drive extends Subsystem {
 	 */
 	public void configMotorControllers(int timeout) {
 		double kWheelCircumference = Constants.getWheelCircumference();
-		
+
 		/*
 		 * COMP BOT SETTINGS
 		leftMaster.setSensorPhase(false);
@@ -313,7 +321,13 @@ public class Drive extends Subsystem {
 	public void setBrake(boolean brake) {
 		NeutralMode mode = brake ? NeutralMode.Brake : NeutralMode.Coast;
 		leftMaster.setNeutralMode(mode);
+		leftFollowerA.setNeutralMode(mode);
+		leftFollowerB.setNeutralMode(mode);
+		leftFollowerC.setNeutralMode(mode);
 		rightMaster.setNeutralMode(mode);
+		rightFollowerA.setNeutralMode(mode);
+		rightFollowerB.setNeutralMode(mode);
+		rightFollowerC.setNeutralMode(mode);
 	}
 
 	public void resetEncoders() {
@@ -322,7 +336,7 @@ public class Drive extends Subsystem {
 	}
 	
 	public void tank(double leftValue, double rightValue) {
-		drive.tankDrive(leftValue, rightValue);
+		drive.tankDrive(leftValue, rightValue, false);
 	}
 
 	public void arcade(double driveSpeed, double turnSpeed) {

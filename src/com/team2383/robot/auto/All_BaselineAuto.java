@@ -23,7 +23,7 @@ public class All_BaselineAuto extends CommandGroup {
 
 	Trajectory trajectory = PathLoader.get(baseline, config);
 
-	public All_BaselineAuto() {
-		addSequential(new FollowTrajectory(trajectory));
+	public All_BaselineAuto(boolean backwards) {
+		addSequential(new FollowTrajectory(trajectory, backwards));
 	}
 }

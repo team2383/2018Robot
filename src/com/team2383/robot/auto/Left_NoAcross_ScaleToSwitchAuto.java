@@ -2,8 +2,10 @@ package com.team2383.robot.auto;
 
 import static com.team2383.robot.HAL.liftWrist;
 
+import com.team2383.robot.Robot;
 import com.team2383.robot.auto.paths.LeftPath_LeftScale;
 import com.team2383.robot.auto.paths.PathStyle;
+import com.team2383.robot.commands.SetLiftWrist;
 import com.team2383.robot.commands.WaitForFMSInfo;
 import com.team2383.robot.subsystems.LiftWrist;
 import com.team2383.ninjaLib.AutoDescription;
@@ -17,11 +19,11 @@ import edu.wpi.first.wpilibj.command.ConditionalCommand;
  */
 public class Left_NoAcross_ScaleToSwitchAuto extends CommandGroup implements AutoDescription {
 	CommandGroup scoreLeftScaleToSwitch = new LeftPath_LeftScale(PathStyle.SCALE_TO_SWITCH);
-	CommandGroup baseline = new All_BaselineAuto();
+	CommandGroup baseline = new All_BaselineAuto(true);
 	CommandGroup multiScale = new Left_NoAcross_MultiScaleAuto();
 
 	public Left_NoAcross_ScaleToSwitchAuto() {
-		addSequential(liftWrist.setStateCommand(LiftWrist.State.SWITCH_AUTO, true));
+		addSequential(new SetLiftWrist(LiftWrist.Preset.SWITCH_AUTO, false));
 		addSequential(new WaitForFMSInfo());
 		/*
 		 * if scale and switch are both on left, then run scaleToSwitch. else, try multi scale, else, baseline
@@ -29,7 +31,7 @@ public class Left_NoAcross_ScaleToSwitchAuto extends CommandGroup implements Aut
 		addSequential(new ConditionalCommand(scoreLeftScaleToSwitch, multiScale) {
 			@Override
 			protected boolean condition() {
-				String positions = DriverStation.getInstance().getGameSpecificMessage();
+				String positions = Robot.getGameData();
 				return positions.charAt(0) == 'L' && positions.charAt(1) == 'L'; //scale and switch on left
 			}
 		});

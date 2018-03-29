@@ -5,6 +5,7 @@ import static com.team2383.robot.HAL.intake;
 import static com.team2383.robot.HAL.intakeArms;
 
 import com.team2383.robot.auto.paths.RightPath_RightScale;
+import com.team2383.robot.Robot;
 import com.team2383.robot.auto.paths.PathStyle;
 import com.team2383.robot.commands.FollowTrajectory;
 import com.team2383.robot.commands.ProfiledTurn;
@@ -35,10 +36,10 @@ import jaci.pathfinder.Waypoint;
  */
 public class Right_NoAcross_MultiScaleAuto extends CommandGroup implements AutoDescription {
 	CommandGroup scoreRightScaleMulti = new RightPath_RightScale(PathStyle.SCALE_MULTI_CUBE);
-	CommandGroup baseline = new All_BaselineAuto();
+	CommandGroup baseline = new All_BaselineAuto(true);
 
 	public Right_NoAcross_MultiScaleAuto() {
-		addSequential(liftWrist.setStateCommand(LiftWrist.State.SWITCH_AUTO, true));
+		addSequential(new SetLiftWrist(LiftWrist.Preset.SWITCH_AUTO, false));
 		addSequential(new WaitForFMSInfo());
 		/*
 		 * if its a left scale, score in left scale
@@ -47,7 +48,7 @@ public class Right_NoAcross_MultiScaleAuto extends CommandGroup implements AutoD
 		addSequential(new ConditionalCommand(scoreRightScaleMulti, baseline) {
 			@Override
 			protected boolean condition() {
-				String positions = DriverStation.getInstance().getGameSpecificMessage();
+				String positions = Robot.getGameData();
 				return positions.charAt(1) == 'R';
 			}
 		});

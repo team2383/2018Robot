@@ -32,17 +32,22 @@ public class LeftPath_LeftScale extends CommandGroup {
 	
 	Waypoint[] toScalePoints = new Waypoint[] {
 			new Waypoint(3.21, 23.1, 0),
-			new Waypoint(23.5, 20.5, Pathfinder.d2r(-18))
+			new Waypoint(24, 20.5, Pathfinder.d2r(-18))
 			};
 
 	Waypoint[] secondCubePoints = new Waypoint[] {
-			new Waypoint(23.5, 20.5, Pathfinder.d2r(180 - 18)),
+			new Waypoint(24, 20.5, Pathfinder.d2r(180 - 18)),
 			new Waypoint(18.4, 18.6, Pathfinder.d2r(180 - 4))
 			};
 	
 	Waypoint[] backToScalePoints = new Waypoint[] {
 			new Waypoint(18.4, 19.2, 0),
-			new Waypoint(23.5, 19.6, Pathfinder.d2r(-24))
+			new Waypoint(24, 19.6, Pathfinder.d2r(-24))
+			};
+	
+	Waypoint[] switchForwardPoints = new Waypoint[] {
+			new Waypoint(0, 0, 0),
+			new Waypoint(0.8, 0, 0)
 			};
 	
 	Trajectory.Config config_long = new Trajectory.Config(
@@ -64,13 +69,14 @@ public class LeftPath_LeftScale extends CommandGroup {
 	Trajectory toScaleTrajectory = PathLoader.get(toScalePoints, config_long);
 	Trajectory secondCubeTrajectory = PathLoader.get(secondCubePoints, config_second_cube);
 	Trajectory backToScaleTrajectory = PathLoader.get(backToScalePoints, config_second_cube);
+	Trajectory switchForwardTrajectory = PathLoader.get(switchForwardPoints, config_second_cube);
 
 	public LeftPath_LeftScale(PathStyle style) {
 		addSequential(new FollowTrajectory(toScaleTrajectory, true));
 
-		addSequential(new SetLiftWrist(LiftWrist.State.SCALE_MID_BACK));
-		addSequential(intake.setStateCommand(Intake.State.UNFEED_AUTO_SCALE_FIRST, Intake.State.STOP, 0.7));
-		addSequential(new SetLiftWrist(LiftWrist.State.INTAKE));
+		addSequential(new SetLiftWrist(LiftWrist.Preset.SCALE_MID_BACK_DOWN));
+		addSequential(intake.setStateCommand(Intake.State.UNFEED_MID, Intake.State.STOP, 0.7));
+		addSequential(new SetLiftWrist(LiftWrist.Preset.INTAKE));
 		addParallel(intake.setStateCommand(Intake.State.FEED, Intake.State.STOP, 3.0));
 		addParallel(intakeArms.setStateCommand(IntakeArms.State.OPEN, IntakeArms.State.CLOSED, 1.7));
 
@@ -81,19 +87,19 @@ public class LeftPath_LeftScale extends CommandGroup {
 		
 		switch(style) {
 			case SCALE_MULTI_CUBE:
-				addParallel(new SetLiftWrist(LiftWrist.State.SCALE_MID_BACK));
+				addParallel(new SetLiftWrist(LiftWrist.Preset.SCALE_MID_BACK_DOWN));
 
 				addSequential(new FollowTrajectory(backToScaleTrajectory, true));
 
 				addSequential(new PrintCommand("Waiting for LiftWrist"));
 				addSequential(new WaitForChildren());
 				addSequential(new WaitCommand(0.1));
-				addSequential(intake.setStateCommand(Intake.State.UNFEED_AUTO_SCALE_SECOND, Intake.State.STOP, 1.0));
+				addSequential(intake.setStateCommand(Intake.State.UNFEED_SLOW, Intake.State.STOP, 1.0));
 				break;
 			case SCALE_TO_SWITCH:
-				addSequential(new SetLiftWrist(LiftWrist.State.SWITCH));
-				addSequential(new WaitCommand(0.1));
-				addSequential(intake.setStateCommand(Intake.State.UNFEED_AUTO_SCALE_SECOND, Intake.State.STOP, 1.0));
+				addSequential(new SetLiftWrist(LiftWrist.Preset.SWITCH));
+				addSequential(new FollowTrajectory(switchForwardTrajectory));
+				addSequential(intake.setStateCommand(Intake.State.UNFEED_FAST, Intake.State.STOP, 1.0));
 				break;
 		}
 	}

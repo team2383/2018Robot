@@ -2,9 +2,11 @@ package com.team2383.robot.auto;
 
 import static com.team2383.robot.HAL.liftWrist;
 
+import com.team2383.robot.Robot;
 import com.team2383.robot.auto.paths.LeftPath_LeftScale;
 import com.team2383.robot.auto.paths.LeftPath_ScoreAcrossToRightScale;
 import com.team2383.robot.auto.paths.PathStyle;
+import com.team2383.robot.commands.SetLiftWrist;
 import com.team2383.robot.commands.WaitForFMSInfo;
 import com.team2383.robot.subsystems.LiftWrist;
 import com.team2383.ninjaLib.AutoDescription;
@@ -22,7 +24,7 @@ public class Left_Cross_MultiScaleAuto extends CommandGroup implements AutoDescr
 	CommandGroup scoreAcrossToRightScaleMulti = new LeftPath_ScoreAcrossToRightScale(PathStyle.SCALE_MULTI_CUBE);
 	
 	public Left_Cross_MultiScaleAuto() {
-		addSequential(liftWrist.setStateCommand(LiftWrist.State.SWITCH_AUTO, true));
+		addSequential(new SetLiftWrist(LiftWrist.Preset.SWITCH_AUTO, false));
 		addSequential(new WaitForFMSInfo());
 		/*
 		 * if its a left scale, score in left scale
@@ -31,7 +33,7 @@ public class Left_Cross_MultiScaleAuto extends CommandGroup implements AutoDescr
 		addSequential(new ConditionalCommand(scoreLeftScaleMulti, scoreAcrossToRightScaleMulti) {
 			@Override
 			protected boolean condition() {
-				String positions = DriverStation.getInstance().getGameSpecificMessage();
+				String positions = Robot.getGameData();
 				return positions.charAt(1) == 'L';
 			}
 		});

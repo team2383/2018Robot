@@ -1,11 +1,14 @@
 package com.team2383.robot.subsystems;
 
+import java.util.function.DoubleUnaryOperator;
+
 import com.ctre.phoenix.ParamEnum;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.team2383.ninjaLib.Values;
 import com.team2383.ninjaLib.WPILambdas;
 import com.team2383.robot.Constants;
 
@@ -29,25 +32,38 @@ public class Wrist extends Subsystem {
 		 * max speed deg/s at motor = 74,000 deg/s
 		 */
 
-		private static final double MAX_WRIST_TRAVEL_DEGREES = 190;
+		private static final double MAX_WRIST_TRAVEL_DEGREES = 245;
 		private static final double MAX_WRIST_TRAVEL_TICKS = ticks(MAX_WRIST_TRAVEL_DEGREES);
 
+
+		private static final DoubleUnaryOperator forwardLimiter = Values.limiter(0.0, Preset.UP.wristPosition);
+		private static final DoubleUnaryOperator forwardRange = forwardLimiter.andThen(Values.mapRange(0, Preset.UP.wristPosition).toRange(Constants.kWrist_GravityCompensationMin, Constants.kWrist_GravityCompensationMax));
+		private static final DoubleUnaryOperator reverseRange = Values.mapRange(Preset.REVERSE_GRAVITY.wristPosition, MAX_WRIST_TRAVEL_DEGREES).toRange(Constants.kWrist_GravityCompensationMin, Constants.kWrist_GravityCompensationMax);
+		
+		
 		private TalonSRX wrist;
 		
 		public static enum Preset {
 			INTAKE(0),
-			FORWARD_MID(45),
-			FORWARD_HIGH(65),
+			
+			PORTAL(9),
+			
+			FORWARD_LOW(13),
+			FORWARD_MID(60),
+			FORWARD_HIGH(85),
+
 			UP(90),
 	
 			TRANSIT(120),
 			STARTING(142),
+
 			FORWARD_GRAVITY(142),
 			REVERSE_GRAVITY(156),
 
 			BACKWARDS(175),
 			BACKWARDS_UP(160),
-			BACKWARDS_DOWN(188);
+			BACKWARDS_DOWN(188),
+			BACKWARDS_DUNK(245);
 
 			public double wristPosition;
 			
@@ -79,6 +95,7 @@ public class Wrist extends Subsystem {
 			wrist.configSelectedFeedbackCoefficient(1.0, 0, timeout);
 			wrist.configSetParameter(ParamEnum.eClearPositionOnLimitR, 1, 0, 0, timeout);
 			wrist.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, timeout);
+			wrist.configAllowableClosedloopError(0, ticks(1), timeout);
 
 			wrist.configMotionAcceleration(Constants.kWrist_Accel, timeout);
 			wrist.configMotionCruiseVelocity(Constants.kWrist_Cruise_Velocity, timeout);
@@ -147,17 +164,19 @@ public class Wrist extends Subsystem {
 		void setPosition(double position) {
 			double gravityComp;
 			
-			if(getCurrentPosition() < Preset.FORWARD_GRAVITY.wristPosition) {
-				gravityComp = Constants.kWrist_GravityCompensation;
+			if(getCurrentPosition() < Preset.FORWARD_GRAVITY.wristPosition && getCurrentPosition() > 1) {
+				gravityComp = forwardRange.applyAsDouble(getCurrentPosition());
 			} else if (getCurrentPosition() > Preset.REVERSE_GRAVITY.wristPosition){
-				gravityComp = -Constants.kWrist_GravityCompensation;
+				gravityComp = -reverseRange.applyAsDouble(getCurrentPosition());
 			} else {
 				gravityComp = 0;
 			}
 			
-			if (wrist.getSensorCollection().isRevLimitSwitchClosed()) {
+			if (wrist.getSensorCollection().isRevLimitSwitchClosed() || getCurrentPosition() < 5) {
 				gravityComp = 0;
 			}
+			
+			SmartDashboard.putNumber("wrist gravity comp", gravityComp);
 			
 			wrist.set(ControlMode.MotionMagic, ticks(position), DemandType.ArbitraryFeedForward, gravityComp);
 		}
@@ -188,8 +207,13 @@ public class Wrist extends Subsystem {
 				SmartDashboard.putBoolean("wrist at target?: ", atTarget());
 				SmartDashboard.putNumber("wrist error: ", degrees(wrist.getClosedLoopError(0)));
 			}
+			SmartDashboard.putNumber("wrist output: ", wrist.getMotorOutputPercent());
 			SmartDashboard.putNumber("wrist actual Position: ", getCurrentPosition());
 		}
+		
+		public void setZero() {
+			wrist.setSelectedSensorPosition(0, 0, 10);
+		}		
 		
 		@Override
 		protected void initDefaultCommand() {

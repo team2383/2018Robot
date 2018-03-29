@@ -34,6 +34,8 @@ import com.team2383.robot.auto.Right_NoAcross_MultiScaleAuto;
 import com.team2383.robot.auto.Right_NoAcross_ScaleToSwitchAuto;
 import com.team2383.robot.auto.Test_DriveMotionMagic;
 import com.team2383.robot.auto.Test_MotionProfile;
+import com.team2383.robot.auto.Test_TestBoxLift;
+import com.team2383.robot.auto.Test_TestDriveByRight;
 import com.team2383.robot.auto.paths.RightPath_ScoreAcrossToLeftScale;
 import com.team2383.robot.auto.paths.RightPath_RightScale;
 import com.team2383.robot.commands.ProfiledTurn;
@@ -80,7 +82,7 @@ public class Robot extends TimedRobot {
 		autoChooser = new SendableChooser<Command>();
 
 		autoChooser.addDefault("Nothing", new InstantCommand("Nothing"));
-		autoChooser.addObject("Baseline Auto", new All_BaselineAuto());
+		autoChooser.addObject("Baseline Auto forwards", new All_BaselineAuto(false));
 
 		autoChooser.addObject("Center Switch Auto", new Center_SwitchAuto());
 		
@@ -96,10 +98,12 @@ public class Robot extends TimedRobot {
 		autoChooser.addObject("Right - No go across ScaleToSwitch", new Right_NoAcross_ScaleToSwitchAuto());
 		autoChooser.addObject("Right - No go across MultiScale", new Right_NoAcross_MultiScaleAuto());
 
-		autoChooser.addObject("Test Motion Profiled 90 right turn", new ProfiledTurn(-90));
-		autoChooser.addObject("Test Drive Motion Magic", new Test_DriveMotionMagic());
-		autoChooser.addObject("Test Motion Profiling Auto", new Test_MotionProfile());
-		autoChooser.addObject("Calc Trackwidth", new Test_CalculateTrackWidthAuto());
+		autoChooser.addObject("Test - Starting Position Go Up", new Test_TestBoxLift());
+		autoChooser.addObject("Test - Drive By Right", new Test_TestDriveByRight());
+		autoChooser.addObject("Test - Motion Profiled 90 right turn", new ProfiledTurn(-90));
+		autoChooser.addObject("Test - Drive Motion Magic", new Test_DriveMotionMagic());
+		autoChooser.addObject("Test - Motion Profiling Auto", new Test_MotionProfile());
+		autoChooser.addObject("Test - Calc Trackwidth", new Test_CalculateTrackWidthAuto());
 
 		SmartDashboard.putData("Auto Chooser", autoChooser);
 		
@@ -113,6 +117,9 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void disabledInit() {
+		if (DriverStation.getInstance().getMatchType() == MatchType.None) {
+			HAL.drive.setBrake(false);
+		}
 	}
 
 	@Override
@@ -137,6 +144,7 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousInit() {
+		HAL.drive.setBrake(true);
 		autoCommand = autoChooser.getSelected();
 		autoCommand = (Command) autoChooser.getSelected();
 		if (autoCommand != null) {
@@ -154,6 +162,7 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void teleopInit() {
+		HAL.drive.setBrake(true);
 		// This makes sure that the autonomous stops running when
 		// teleop starts running. If you want the autonomous to
 		// continue until interrupted by another command, remove
@@ -176,5 +185,10 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void testPeriodic() {
+	}
+
+	public static String getGameData() {
+		//return "LLL";
+		return DriverStation.getInstance().getGameSpecificMessage();
 	}
 }
