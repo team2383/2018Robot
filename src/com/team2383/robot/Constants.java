@@ -51,6 +51,8 @@ public class Constants extends ConstantsBase {
 	public static double kLift_MaxRate = 20;
 	public static double kLift_MaxLiftOpenLoop = 7;
 	
+	public static double kLift_NudgeAmount = 2;
+	
 	public static double kLift_P = 0.3;
 	public static double kLift_I = 0;
 	public static double kLift_D = 0.7;
@@ -77,6 +79,8 @@ public class Constants extends ConstantsBase {
 
 	public static double kWrist_MaxRate = 120; //degrees/s
 	public static double kWrist_MaxWristOpenLoop = 0.5; //%
+	
+	public static double kWrist_NudgeAmount = 10;
 	
 	public static double kWrist_P = 0.6;
 	public static double kWrist_I = 0;

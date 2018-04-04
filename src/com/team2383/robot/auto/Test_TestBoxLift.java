@@ -24,7 +24,5 @@ public class Test_TestBoxLift extends CommandGroup {
 
     public Test_TestBoxLift() {
     	addSequential(new SetLiftWrist(LiftWrist.Preset.SWITCH_AUTO, false));
-		addSequential(new WaitCommand(1.0));
-		addSequential(new SetLiftWrist(LiftWrist.Preset.SCALE_MID_BACK_LEVEL));
     }
 }

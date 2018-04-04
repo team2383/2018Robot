@@ -30,7 +30,7 @@ public class LiftWrist extends Subsystem {
 		
 		PORTAL(Lift.Preset.PORTAL, Wrist.Preset.PORTAL),
 
-		SWITCH_AUTO(Lift.Preset.BOTTOM, Wrist.Preset.STARTING),
+		SWITCH_AUTO(Lift.Preset.BOTTOM, Wrist.Preset.TRANSIT),
 		SWITCH(Lift.Preset.SWITCH, Wrist.Preset.INTAKE),
 		SWITCH_DRIVE_BY(Lift.Preset.BOTTOM, Wrist.Preset.UP),
 		
@@ -41,7 +41,10 @@ public class LiftWrist extends Subsystem {
 		SCALE_MIDHIGH_FWD(Lift.Preset.SCALE_MIDHIGH, Wrist.Preset.FORWARD_HIGH),
 		SCALE_HIGH_FWD(Lift.Preset.SCALE_HIGH, Wrist.Preset.FORWARD_HIGH),
 		
-		SCALE_MID_BACK_DUNK(Lift.Preset.SCALE_HIGH, Wrist.Preset.BACKWARDS_DUNK),
+		SCALE_MID_BACK_DUNK(Lift.Preset.SCALE_HIGH, Wrist.Preset.BACKWARDS_DUNK_DOWN),
+		SCALE_MID_BACK_DUNK_15(Lift.Preset.SCALE_HIGH, Wrist.Preset.BACKWARDS_DUNK_15),
+		SCALE_MID_BACK_DUNK_30(Lift.Preset.SCALE_HIGH, Wrist.Preset.BACKWARDS_DUNK_30),
+
 		SCALE_MID_BACK_DOWN(Lift.Preset.SCALE_MID, Wrist.Preset.BACKWARDS_DOWN),
 		SCALE_MID_BACK_LEVEL(Lift.Preset.SCALE_MID, Wrist.Preset.BACKWARDS),
 		SCALE_MID_BACK_UP(Lift.Preset.SCALE_MID, Wrist.Preset.BACKWARDS_UP),	
@@ -91,6 +94,14 @@ public class LiftWrist extends Subsystem {
 		setState(State.MOTION_MAGIC);
 		desiredLiftPos = preset.liftP.liftPosition;
 		desiredWristPos = preset.wristP.wristPosition;
+	}
+	
+	public void adjustLift(double liftPosAdj) {
+		wantsLift(desiredLiftPos += liftPosAdj);
+	}
+	
+	public void adjustWrist(double wristPosAdj) {
+		wantsWrist(desiredWristPos += wristPosAdj);
 	}
 	
 	public void wantsLift(double liftPos) {

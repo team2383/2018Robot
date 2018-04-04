@@ -32,19 +32,21 @@ public class RightPath_ScoreAcrossToLeftScale extends CommandGroup {
 
 	Waypoint[] secondCubePoints = new Waypoint[] {
 			new Waypoint(24.3, 19.8, Pathfinder.d2r(180)),
-			new Waypoint(19.41, 19.5, Pathfinder.d2r(180 + 5))
+			new Waypoint(19.41, 19.4, Pathfinder.d2r(180 + 5))
 			};
 	
+	/*
 	Waypoint[] secondCubeAcrossPoints = new Waypoint[] {
 			new Waypoint(24.3, 19.8, Pathfinder.d2r(180)),
 			new Waypoint(20.3, 16.5, Pathfinder.d2r(267)),
 			new Waypoint(19.9, 10, Pathfinder.d2r(267)),
 			new Waypoint(18.5, 8, Pathfinder.d2r(180))
 			};
+			*/
 	
 	Waypoint[] backToScalePoints = new Waypoint[] {
 			new Waypoint(19.41, 19.5, Pathfinder.d2r(0)),
-			new Waypoint(24.3, 18.5, Pathfinder.d2r(-18)),
+			new Waypoint(24.3, 18.5, Pathfinder.d2r(-22)),
 			};
 	
 	Waypoint[] switchForwardPoints = new Waypoint[] {
@@ -78,7 +80,7 @@ public class RightPath_ScoreAcrossToLeftScale extends CommandGroup {
 	
 	Trajectory toScaleTrajectory = PathLoader.get(toScalePoints, config_across);
 	Trajectory secondCubeTrajectory = PathLoader.get(secondCubePoints, config);
-	Trajectory secondCubeAcrossTrajectory = PathLoader.get(secondCubeAcrossPoints, config_across);
+	//Trajectory secondCubeAcrossTrajectory = PathLoader.get(secondCubeAcrossPoints, config_across);
 	Trajectory backToScaleTrajectory = PathLoader.get(backToScalePoints, config);
 	Trajectory switchForwardTrajectory = PathLoader.get(switchForwardPoints, config_forward);
 	
@@ -89,21 +91,22 @@ public class RightPath_ScoreAcrossToLeftScale extends CommandGroup {
 		addSequential(new WaitForChildren());
 		addSequential(intake.setStateCommand(Intake.State.UNFEED_SLOW, Intake.State.STOP, 0.3));
 		
+		addParallel(intakeArms.setStateCommand(IntakeArms.State.OPEN, true));
 		addParallel(new SetLiftWrist(LiftWrist.Preset.INTAKE));
 		addParallel(new IntakeOpenArm());
 		addSequential(new WaitCommand(1.4)); //wait time before starting second cube trajectory
-		addSequential(new FollowTrajectory(secondCubeTrajectory, Pathfinder.d2r(180+5)));
+		addSequential(new FollowTrajectory(secondCubeTrajectory, Pathfinder.d2r(180)));
 		addSequential(new PrintCommand("Waiting for secondCubeTrajectory"));
 		addSequential(new WaitForChildren());
 		
 		switch(style) {
 			case SCALE_MULTI_CUBE:
-				addParallel(new WaitThenCommand(0.9, new SetLiftWrist(LiftWrist.Preset.SCALE_MID_BACK_DOWN)));
-	
+				addParallel(new WaitThenCommand(0.9, new SetLiftWrist(LiftWrist.Preset.SCALE_HIGH_BACK_DOWN)));
 				addSequential(new FollowTrajectory(backToScaleTrajectory, true));
 	
 				addSequential(new PrintCommand("Waiting for LiftWrist"));
-				addSequential(new WaitForChildren());
+				
+				addSequential(new SetLiftWrist(LiftWrist.Preset.SCALE_MID_BACK_DUNK_30));
 				
 				addParallel(intakeArms.setStateCommand(IntakeArms.State.OPEN, IntakeArms.State.CLOSED, 0.5));
 				addSequential(intake.setStateCommand(Intake.State.UNFEED_SLOW, Intake.State.STOP, 0.5));

@@ -240,6 +240,7 @@ public class OI {
 		Button presetSwitch = new JoystickButton(buttonboardA, 5);
 		
 		presetIntake.whenPressed(new SetLiftWrist(LiftWrist.Preset.INTAKE, false));
+		presetIntake_Vertical.whenPressed(new SetLiftWrist(LiftWrist.Preset.SWITCH_AUTO, false));
 		presetIntake_2.whenPressed(new SetLiftWrist(LiftWrist.Preset.INTAKE_2, false));
 		presetPortal.whenPressed(new SetLiftWrist(LiftWrist.Preset.PORTAL, false));
 		presetSwitch.whenPressed(new SetLiftWrist(LiftWrist.Preset.SWITCH, false));
@@ -258,14 +259,13 @@ public class OI {
 		presetScaleHighFwd.whenPressed(new SetLiftWrist(LiftWrist.Preset.SCALE_HIGH_FWD, false));
 		
 
-		Button presetScaleMidBackDown = new JoystickButton(buttonboardB, 6);
-		Button presetScaleMidBackLevel = new JoystickButton(buttonboardB, 7);
-		Button presetScaleMidBackUp = new JoystickButton(buttonboardB, 8);
+		Button presetScaleMidBackDunk = new JoystickButton(buttonboardB, 6);
+		Button presetScaleMidBackDunk15 = new JoystickButton(buttonboardB, 7);
+		Button presetScaleMidBackDunk30 = new JoystickButton(buttonboardB, 8);
 		
-		presetScaleMidBackLevel.whenPressed(new SetLiftWrist(LiftWrist.Preset.SCALE_MID_BACK_LEVEL, false));
-		presetScaleMidBackDown.whenPressed(new SetLiftWrist(LiftWrist.Preset.SCALE_MID_BACK_DUNK, false));
-		presetScaleMidBackUp.whenPressed(new SetLiftWrist(LiftWrist.Preset.SCALE_MID_BACK_UP, false));
-
+		presetScaleMidBackDunk.whenPressed(new SetLiftWrist(LiftWrist.Preset.SCALE_MID_BACK_DUNK, false));
+		presetScaleMidBackDunk15.whenPressed(new SetLiftWrist(LiftWrist.Preset.SCALE_MID_BACK_DUNK_15, false));
+		presetScaleMidBackDunk30.whenPressed(new SetLiftWrist(LiftWrist.Preset.SCALE_MID_BACK_DUNK_30, false));
 
 		Button presetScaleBackHighBackDown = new JoystickButton(buttonboardB, 9);
 		Button presetScaleBackHighBackLevel = new JoystickButton(buttonboardB, 10);
@@ -274,5 +274,23 @@ public class OI {
 		presetScaleBackHighBackLevel.whenPressed(new SetLiftWrist(LiftWrist.Preset.SCALE_HIGH_BACK_LEVEL, false));
 		presetScaleBackHighBackDown.whenPressed(new SetLiftWrist(LiftWrist.Preset.SCALE_HIGH_BACK_DOWN, false));
 		presetScaleBackHighBackUp.whenPressed(new SetLiftWrist(LiftWrist.Preset.SCALE_HIGH_BACK_UP, false));
+		
+		Button adjustLiftDown = buttonboardB.getJoystick(ButtonBoard.Direction.DOWN);
+		Button adjustLiftUp = buttonboardB.getJoystick(ButtonBoard.Direction.UP);
+		Button adjustWristDown = buttonboardB.getJoystick(ButtonBoard.Direction.LEFT);
+		Button adjustWristUp = buttonboardB.getJoystick(ButtonBoard.Direction.RIGHT);
+		
+		adjustLiftDown.whenPressed(WPILambdas.runOnceCommand(() -> {
+			liftWrist.adjustLift(-Constants.kLift_NudgeAmount);
+		}, true));
+		adjustLiftUp.whenPressed(WPILambdas.runOnceCommand(() -> {
+			liftWrist.adjustLift(Constants.kLift_NudgeAmount);
+		}, true));
+		adjustWristDown.whenPressed(WPILambdas.runOnceCommand(() -> {
+			liftWrist.adjustWrist(-Constants.kWrist_NudgeAmount);
+		}, true));
+		adjustWristUp.whenPressed(WPILambdas.runOnceCommand(() -> {
+			liftWrist.adjustWrist(Constants.kWrist_NudgeAmount);
+		}, true));
 	}
 }

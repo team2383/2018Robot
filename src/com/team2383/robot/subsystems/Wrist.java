@@ -32,7 +32,7 @@ public class Wrist extends Subsystem {
 		 * max speed deg/s at motor = 74,000 deg/s
 		 */
 
-		private static final double MAX_WRIST_TRAVEL_DEGREES = 245;
+		private static final double MAX_WRIST_TRAVEL_DEGREES = 255;
 		private static final double MAX_WRIST_TRAVEL_TICKS = ticks(MAX_WRIST_TRAVEL_DEGREES);
 
 
@@ -49,21 +49,23 @@ public class Wrist extends Subsystem {
 			PORTAL(9),
 			
 			FORWARD_LOW(13),
-			FORWARD_MID(60),
+			FORWARD_MID(69),
 			FORWARD_HIGH(85),
 
 			UP(90),
 	
 			TRANSIT(120),
-			STARTING(142),
 
 			FORWARD_GRAVITY(142),
 			REVERSE_GRAVITY(156),
 
 			BACKWARDS(175),
 			BACKWARDS_UP(160),
-			BACKWARDS_DOWN(188),
-			BACKWARDS_DUNK(245);
+			BACKWARDS_DOWN(200),
+			
+			BACKWARDS_DUNK_30(220),
+			BACKWARDS_DUNK_15(235),
+			BACKWARDS_DUNK_DOWN(250);
 
 			public double wristPosition;
 			

@@ -16,6 +16,8 @@ public class SetLiftWrist extends Command {
 
 	public SetLiftWrist(Preset preset) {
 		super(0);
+		requires(liftWrist);
+		this.setInterruptible(true);
 		this.desiredLiftPos = preset.liftP.liftPosition;
 		this.desiredWristPos = preset.wristP.wristPosition;
 		this.waitForGoal = true;
@@ -23,6 +25,8 @@ public class SetLiftWrist extends Command {
 	
 	public SetLiftWrist(Preset preset, boolean waitForGoal) {
 		super(0);
+		requires(liftWrist);
+		this.setInterruptible(true);
 		this.desiredLiftPos = preset.liftP.liftPosition;
 		this.desiredWristPos = preset.wristP.wristPosition;
 		this.waitForGoal = waitForGoal;
@@ -30,6 +34,8 @@ public class SetLiftWrist extends Command {
 	
 	public SetLiftWrist(double liftPos, double wristPos) {
 		super(0);
+		requires(liftWrist);
+		this.setInterruptible(true);
 		this.desiredLiftPos = liftPos;
 		this.desiredWristPos = wristPos;
 		this.waitForGoal = false;
@@ -37,6 +43,8 @@ public class SetLiftWrist extends Command {
 	
 	public SetLiftWrist(double liftPos, double wristPos, boolean waitForGoal) {
 		super(0);
+		requires(liftWrist);
+		this.setInterruptible(true);
 		this.desiredLiftPos = liftPos;
 		this.desiredWristPos = wristPos;
 		this.waitForGoal = waitForGoal;
@@ -46,6 +54,7 @@ public class SetLiftWrist extends Command {
     protected void initialize() {
     	timeAtSetpoint = 0;
     	lastCheck = 0;
+    	System.out.println("Now Wants lift:" +desiredLiftPos+"Wants Wrist:"+desiredWristPos);
     }
 
     // Called repeatedly when this Command is scheduled to run

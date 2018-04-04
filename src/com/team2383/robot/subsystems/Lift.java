@@ -42,10 +42,11 @@ public class Lift extends Subsystem {
 
 		private TalonSRX masterLift;
 		private BaseMotorController followerLift;
+		private boolean isPracticeBot;
 		
 		public static enum Preset {
 			BOTTOM(0),
-			INTAKE_2(12),
+			INTAKE_2(5),
 			TRAVEL(2),
 
 			SWITCH(15),
@@ -68,6 +69,7 @@ public class Lift extends Subsystem {
 		}
 
 		Lift(boolean isPracticeBot) {
+			this.isPracticeBot = isPracticeBot;
 			masterLift = new TalonSRX(Constants.kLift_Master_ID);
 			
 			if (isPracticeBot) {
@@ -76,7 +78,7 @@ public class Lift extends Subsystem {
 				followerLift = new TalonSRX(Constants.kLift_Follower_ID);
 			} else {
 				followerLift = new VictorSPX(Constants.kLift_Follower_ID);
-				SPROCKET_CIRCUMFERENCE_IN = 1.432 * Math.PI;
+				SPROCKET_CIRCUMFERENCE_IN = 1.538 * Math.PI;
 				MAX_LIFT_TRAVEL_TICKS = liftTicks(MAX_LIFT_TRAVEL_IN);
 			}
 			
@@ -115,7 +117,10 @@ public class Lift extends Subsystem {
 			masterLift.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 10, timeout);
 			masterLift.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, timeout);
 			
-			masterLift.setSensorPhase(false);
+			//false on practice bot, true on real bot
+			masterLift.setSensorPhase(!isPracticeBot);
+			
+			
 			masterLift.setInverted(Constants.kLift_InvertMaster);
 			followerLift.setInverted(Constants.kLift_InvertFollower);
 			followerLift.follow(masterLift);
