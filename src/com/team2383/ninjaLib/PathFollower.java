@@ -116,7 +116,7 @@ public class PathFollower {
             
             double calculated_value =
                     kp * error +                                    // Proportional
-                    kd * ((error - last_error) / seg.dt) +          // Derivative
+                    kd * ((error - last_error) / seg.dt - seg.velocity) +          // Derivative
                     (kv * seg.velocity + ka * seg.acceleration);    // V and A Terms
             last_error = error;
             heading = seg.heading;
@@ -133,6 +133,13 @@ public class PathFollower {
         return heading;
     }
 
+    /**
+     * @return the last error of the PID loop
+     */
+    public double getError() {
+    	return last_error;
+    }
+    
     /**
      * @return the current segment being operated on
      */

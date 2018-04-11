@@ -2,7 +2,10 @@ package com.team2383.robot.subsystems;
 
 import static com.team2383.robot.HAL.liftWrist;
 
+import java.util.function.DoubleUnaryOperator;
+
 import com.team2383.ninjaLib.StatefulSubsystem;
+import com.team2383.ninjaLib.Values;
 import com.team2383.ninjaLib.WPILambdas;
 import com.team2383.robot.Constants;
 import com.team2383.robot.OI;
@@ -24,34 +27,45 @@ public class LiftWrist extends Subsystem {
 	private double desiredLiftPos;
 	private double desiredWristPos;
 	
+	private static final DoubleUnaryOperator liftLimiter = Values.limiter(0, Lift.Preset.TOP.liftPosition);
+	private static final DoubleUnaryOperator wristLimiter = Values.limiter(0, Wrist.Preset.FULL_BACK.wristPosition);
+	
 	public static enum Preset {
 		INTAKE(Lift.Preset.BOTTOM, Wrist.Preset.INTAKE),
 		INTAKE_2(Lift.Preset.INTAKE_2, Wrist.Preset.INTAKE),
 		
+
+		INTAKE_VERTICAL_RELEASE(Lift.Preset.INTAKE_VERTICAL_RELEASE, Wrist.Preset.INTAKE),
+		INTAKE_VERTICAL_PRESS(Lift.Preset.INTAKE_VERTICAL_HOLD, Wrist.Preset.INTAKE),
+		
 		PORTAL(Lift.Preset.PORTAL, Wrist.Preset.PORTAL),
 
 		SWITCH_AUTO(Lift.Preset.BOTTOM, Wrist.Preset.TRANSIT),
+		HOME(Lift.Preset.BOTTOM, Wrist.Preset.TRANSIT),
+		
 		SWITCH(Lift.Preset.SWITCH, Wrist.Preset.INTAKE),
 		SWITCH_DRIVE_BY(Lift.Preset.BOTTOM, Wrist.Preset.UP),
-		
 
-		SCALE_LOW_FWD(Lift.Preset.SCALE_LOW, Wrist.Preset.FORWARD_LOW),
-		SCALE_LOWMID_FWD(Lift.Preset.SCALE_LOWMID, Wrist.Preset.FORWARD_LOW),
-		SCALE_MID_FWD(Lift.Preset.SCALE_HIGH, Wrist.Preset.FORWARD_LOW),
-		SCALE_MIDHIGH_FWD(Lift.Preset.SCALE_MIDHIGH, Wrist.Preset.FORWARD_HIGH),
-		SCALE_HIGH_FWD(Lift.Preset.SCALE_HIGH, Wrist.Preset.FORWARD_HIGH),
+		SCALE_AUTOSHOT(Lift.Preset.SCALE_HIGH, Wrist.Preset.TRANSIT),
 		
-		SCALE_MID_BACK_DUNK(Lift.Preset.SCALE_HIGH, Wrist.Preset.BACKWARDS_DUNK_DOWN),
-		SCALE_MID_BACK_DUNK_15(Lift.Preset.SCALE_HIGH, Wrist.Preset.BACKWARDS_DUNK_15),
-		SCALE_MID_BACK_DUNK_30(Lift.Preset.SCALE_HIGH, Wrist.Preset.BACKWARDS_DUNK_30),
-
-		SCALE_MID_BACK_DOWN(Lift.Preset.SCALE_MID, Wrist.Preset.BACKWARDS_DOWN),
-		SCALE_MID_BACK_LEVEL(Lift.Preset.SCALE_MID, Wrist.Preset.BACKWARDS),
-		SCALE_MID_BACK_UP(Lift.Preset.SCALE_MID, Wrist.Preset.BACKWARDS_UP),	
+		SCALE_LOW_FWD(Lift.Preset.SCALE_LOW, Wrist.Preset.FORWARD_HORIZONTAL),
+		SCALE_LOWMID_FWD(Lift.Preset.SCALE_LOWMID, Wrist.Preset.FORWARD_HORIZONTAL),
+		SCALE_MID_FWD(Lift.Preset.SCALE_HIGH, Wrist.Preset.FORWARD_HORIZONTAL),
+		
+		SCALE_VERTICAL_FWD(Lift.Preset.SCALE_MIDHIGH, Wrist.Preset.FORWARD_VERTICAL),
+		
+		SCALE_DUNK_BACK_0(Lift.Preset.SCALE_HIGH, Wrist.Preset.BACKWARDS_DUNK_0),
+		SCALE_DUNK_BACK_15(Lift.Preset.SCALE_HIGH, Wrist.Preset.BACKWARDS_DUNK_15),
+		SCALE_DUNK_BACK_30(Lift.Preset.SCALE_HIGH, Wrist.Preset.BACKWARDS_DUNK_30),
 
 		SCALE_HIGH_BACK_DOWN(Lift.Preset.SCALE_HIGH, Wrist.Preset.BACKWARDS_DOWN),
-		SCALE_HIGH_BACK_LEVEL(Lift.Preset.SCALE_HIGH, Wrist.Preset.BACKWARDS),
-		SCALE_HIGH_BACK_UP(Lift.Preset.SCALE_HIGH, Wrist.Preset.BACKWARDS_UP);
+		SCALE_HIGH_BACK_LEVEL(Lift.Preset.SCALE_HIGH, Wrist.Preset.BACKWARDS_LEVEL),
+		SCALE_HIGH_BACK_UP(Lift.Preset.SCALE_HIGH, Wrist.Preset.BACKWARDS_UP),
+		
+		//old ones kept for auto
+		SCALE_MID_BACK_DOWN(Lift.Preset.SCALE_MID, Wrist.Preset.BACKWARDS_DOWN),
+		SCALE_MID_BACK_LEVEL(Lift.Preset.SCALE_MID, Wrist.Preset.BACKWARDS_LEVEL),
+		SCALE_MID_BACK_UP(Lift.Preset.SCALE_MID, Wrist.Preset.BACKWARDS_UP);
 		
 		public Lift.Preset liftP;
 		public Wrist.Preset wristP;
@@ -106,12 +120,12 @@ public class LiftWrist extends Subsystem {
 	
 	public void wantsLift(double liftPos) {
 		setState(State.MOTION_MAGIC);
-		desiredLiftPos = liftPos;
+		desiredLiftPos = liftLimiter.applyAsDouble(liftPos);
 	}
 	
 	public void wantsWrist(double wristPos) {
 		setState(State.MOTION_MAGIC);
-		desiredWristPos = wristPos;
+		desiredWristPos = wristLimiter.applyAsDouble(wristPos);
 	}
 	
 	public void setManualLift() {

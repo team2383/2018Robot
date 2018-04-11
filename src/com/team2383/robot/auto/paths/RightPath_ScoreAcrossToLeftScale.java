@@ -106,7 +106,7 @@ public class RightPath_ScoreAcrossToLeftScale extends CommandGroup {
 	
 				addSequential(new PrintCommand("Waiting for LiftWrist"));
 				
-				addSequential(new SetLiftWrist(LiftWrist.Preset.SCALE_MID_BACK_DUNK_30));
+				addSequential(new SetLiftWrist(LiftWrist.Preset.SCALE_DUNK_BACK_30));
 				
 				addParallel(intakeArms.setStateCommand(IntakeArms.State.OPEN, IntakeArms.State.CLOSED, 0.5));
 				addSequential(intake.setStateCommand(Intake.State.UNFEED_SLOW, Intake.State.STOP, 0.5));

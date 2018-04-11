@@ -4,7 +4,6 @@ import static com.team2383.robot.HAL.drive;
 import static com.team2383.robot.HAL.navX;
 
 import com.team2383.robot.Constants;
-import com.team2383.robot.subsystems.Drive.Motion;
 
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -44,10 +43,8 @@ public class ProfiledTurn extends Command {
     	SmartDashboard.putNumber("ERROR", Math.abs(goalAngle - -navX.getAngle()));
     	SmartDashboard.putNumber("Current Angle", currentAngle);
     	SmartDashboard.putNumber("Distance", distance);
-    	
-    	Motion m = drive.getMotion();
-    	
-    	drive.position((-distance) + m.leftPosition, (distance) + m.rightPosition);
+   
+    	drive.position((-distance) + drive.getLeftPosition(), (distance) + drive.getRightPosition());
     }
 
     // Make this return true when this Command no longer needs to run execute()

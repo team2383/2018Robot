@@ -16,13 +16,13 @@ import jaci.pathfinder.modifiers.TankModifier;
 import static com.team2383.robot.HAL.drive;
 import static com.team2383.robot.HAL.navX;
 
-import com.team2383.ninjaLib.PathFollower;
+import com.team2383.ninjaLib.PathFollowerTalon;
 import com.team2383.ninjaLib.ReflectingCSVWriter;
 import com.team2383.robot.Constants;
 
-public class FollowTrajectory extends Command implements Sendable  {
-	PathFollower leftFollower;
-	PathFollower rightFollower;
+public class FollowTrajectoryTalon extends Command implements Sendable  {
+	PathFollowerTalon leftFollower;
+	PathFollowerTalon rightFollower;
 	Supplier<Trajectory> trajectorySupplier;
 	Trajectory trajectory;
 	TankModifier modifier;
@@ -30,8 +30,10 @@ public class FollowTrajectory extends Command implements Sendable  {
 	boolean backwards;
 	double startingAngle;
 	
-	double leftOutput;
-	double rightOutput;
+	double leftSetpoint;
+	double rightSetpoint;
+	double leftFeedforward;
+	double rightFeedforward;
 	
 	double followerLoopTime;
 	double followerdt;
@@ -45,7 +47,7 @@ public class FollowTrajectory extends Command implements Sendable  {
 		//public double leftVelocity;
 		public double leftPositionError;
 		public double leftVelocityError;
-		public double leftOutput;
+		public double leftSetpoint;
 		public double leftTargetVelocity;
 		public double leftTargetAcceleration;
 		
@@ -53,7 +55,7 @@ public class FollowTrajectory extends Command implements Sendable  {
 		//public double rightVelocity;
 		public double rightPositionError;
 		public double rightVelocityError;
-		public double rightOutput;
+		public double rightSetpoint;
 		public double rightTargetVelocity;
 		public double rightTargetAcceleration;
 		
@@ -64,27 +66,27 @@ public class FollowTrajectory extends Command implements Sendable  {
 	private ReflectingCSVWriter<DebugInfo> writer;
 	private DebugInfo debugInfo;
 	
-	public FollowTrajectory(Supplier<Trajectory> trajectorySupplier) {
+	public FollowTrajectoryTalon(Supplier<Trajectory> trajectorySupplier) {
 		this(trajectorySupplier, false, 0);
 	}
 	
-	public FollowTrajectory(Trajectory trajectory) {
+	public FollowTrajectoryTalon(Trajectory trajectory) {
 		this(() -> trajectory, false, 0);
 	}
 	
-	public FollowTrajectory(Trajectory trajectory, boolean backwards) {
+	public FollowTrajectoryTalon(Trajectory trajectory, boolean backwards) {
 		this(() -> trajectory, backwards, 0);
 	}
 	
-	public FollowTrajectory(Supplier<Trajectory> trajectorySupplier, double startingAngle) {
+	public FollowTrajectoryTalon(Supplier<Trajectory> trajectorySupplier, double startingAngle) {
 		this(trajectorySupplier, false, startingAngle);
 	}
 	
-	public FollowTrajectory(Trajectory trajectory, double startingAngle) {
+	public FollowTrajectoryTalon(Trajectory trajectory, double startingAngle) {
 		this(() -> trajectory, false, startingAngle);
 	}
 	
-	public FollowTrajectory(Trajectory trajectory, boolean backwards, double startingAngle) {
+	public FollowTrajectoryTalon(Trajectory trajectory, boolean backwards, double startingAngle) {
 		this(() -> trajectory, backwards, startingAngle);
 	}
 	 
@@ -94,7 +96,7 @@ public class FollowTrajectory extends Command implements Sendable  {
 	 * @param backwards
 	 * @param startingAngle RADIANS!
 	 */
-	public FollowTrajectory(Supplier<Trajectory> trajectorySupplier, boolean backwards, double startingAngle) {
+	public FollowTrajectoryTalon(Supplier<Trajectory> trajectorySupplier, boolean backwards, double startingAngle) {
 		super("Follow Trajectory");
 
 		this.trajectorySupplier = trajectorySupplier;
@@ -112,28 +114,16 @@ public class FollowTrajectory extends Command implements Sendable  {
 		this.modifier = new TankModifier(trajectory).modify(Constants.kDrive_Motion_trackwidth);
 		modifier.modify(Constants.kDrive_Motion_trackwidth);
 		
-		leftFollower = new PathFollower(modifier.getLeftTrajectory());
-		rightFollower = new PathFollower(modifier.getRightTrajectory());
-		
-		leftFollower.configurePIDVA(Constants.kDrive_Motion_P,
-				0.0,
-				Constants.kDrive_Motion_D,
-				Constants.kDrive_Motion_V,
-				Constants.kDrive_Motion_A);
-
-		rightFollower.configurePIDVA(Constants.kDrive_Motion_P,
-				0.0,
-				Constants.kDrive_Motion_D,
-				Constants.kDrive_Motion_V,
-				Constants.kDrive_Motion_A);
+		leftFollower = new PathFollowerTalon(modifier.getLeftTrajectory());
+		rightFollower = new PathFollowerTalon(modifier.getRightTrajectory());
 
 		leftFollower.reset();
 		rightFollower.reset();
 		drive.resetEncoders();
     	navX.zeroYaw();
     	
-    	leftOutput = 0;
-    	rightOutput = 0;
+    	leftSetpoint = 0;
+    	rightSetpoint = 0;
     	lastTime = Timer.getFPGATimestamp();
     	
     	followerLoopTime = 0;
@@ -146,17 +136,9 @@ public class FollowTrajectory extends Command implements Sendable  {
 	}
 	
 	@Override
-	protected void execute() {		
-		SmartDashboard.putNumber("MP Left Position Error (ft)", leftFollower.getError());
-		SmartDashboard.putNumber("MP Right Position Error (ft)", rightFollower.getError());
-		
-		if(!backwards) {
-			SmartDashboard.putNumber("MP Left Output (%)", leftOutput);
-			SmartDashboard.putNumber("MP Right Output (%)", rightOutput);
-		} else {
-			SmartDashboard.putNumber("MP Left Output (%)", -rightOutput);
-			SmartDashboard.putNumber("MP Right Output (%)", -leftOutput);
-		}
+	protected void execute() {
+		SmartDashboard.putNumber("MPT Left Setpoint", leftSetpoint);
+		SmartDashboard.putNumber("MPT Right Setpoint", rightSetpoint);
 		
 		SmartDashboard.putNumber("MP Target Vel (ft-s)", leftFollower.getSegment().velocity);
 		SmartDashboard.putNumber("MP Target Accel (ft-ss)", leftFollower.getSegment().acceleration);
@@ -174,13 +156,13 @@ public class FollowTrajectory extends Command implements Sendable  {
 		
 		debugInfo.leftPositionError = leftFollower.getError();
 		debugInfo.leftVelocityError = drive.getLeftVelocity() - leftFollower.getSegment().velocity;
-		debugInfo.leftOutput = leftOutput;
+		debugInfo.leftSetpoint = leftSetpoint;
 		debugInfo.leftTargetVelocity = leftFollower.getSegment().velocity;
 		debugInfo.leftTargetAcceleration = leftFollower.getSegment().acceleration;
 		
 		debugInfo.rightPositionError = rightFollower.getError();
 		debugInfo.rightVelocityError = drive.getRightVelocity() - rightFollower.getSegment().velocity;
-		debugInfo.rightOutput = rightOutput;
+		debugInfo.rightSetpoint = rightSetpoint;
 		debugInfo.rightTargetVelocity = rightFollower.getSegment().velocity;
 		debugInfo.rightTargetAcceleration = rightFollower.getSegment().acceleration;
 		
@@ -188,18 +170,6 @@ public class FollowTrajectory extends Command implements Sendable  {
 		debugInfo.loopTime = followerLoopTime;
 		
 		writer.add(debugInfo);
-
-		//forwards
-		if (!backwards) {
-			leftOutput = leftFollower.calculate(drive.getLeftPosition());
-			rightOutput = rightFollower.calculate(drive.getRightPosition());
-		} else {
-			//backwards
-			leftOutput = leftFollower.calculate(-drive.getRightPosition()); //left = -right
-			rightOutput = rightFollower.calculate(-drive.getLeftPosition()); //right = -left
-		}
-		
-		followerLoopTime = (Timer.getFPGATimestamp() - time);
 		
 		double gyro_heading = -navX.getAngle(); //axis is the same
 		
@@ -208,23 +178,21 @@ public class FollowTrajectory extends Command implements Sendable  {
 		angleDifference = Pathfinder.boundHalfDegrees(desired_heading - gyro_heading);
 		
 		double turn = Constants.kDrive_Motion_turnP * angleDifference;
-	
-			//forwards
-		if (!backwards) {
-			drive.tank(leftOutput - turn, rightOutput + turn);
+		
+		leftFeedforward = leftFollower.getSegment().velocity * Constants.kDrive_Motion_V;
+		rightFeedforward = rightFollower.getSegment().velocity * Constants.kDrive_Motion_V;
+
+		leftSetpoint = leftFollower.calculate();
+		rightSetpoint = rightFollower.calculate();
+		
+		followerLoopTime = (Timer.getFPGATimestamp() - time);
+		
+		if(!backwards) {
+			drive.positionPDauxF(leftSetpoint, leftFeedforward - turn, rightSetpoint, rightFeedforward + turn);
 		} else {
-			//backwards
-			/*.tank is forwards, so (fwd_left, fwd_right)
-			 * back_left = -fwd_right
-			 * 	so fwd_right = -back_left
-			 * back_right = -fwd_left
-			 * 	so fwd_left = -back_right
-			 * 
-			 * turn input is relative to true (fwd) drivetrain output, not the actual direction
-			 * so fwd_left(back_right) has to be less negative (going slower) then fwd_right(back_left), when turning right (negative turn)
-			 */
-			drive.tank(-rightOutput - turn, -leftOutput + turn);
+			drive.positionPDauxF(-rightSetpoint, leftFeedforward - turn, -leftSetpoint, rightFeedforward + turn);
 		}
+		
 	}
 
 	@Override
@@ -237,8 +205,8 @@ public class FollowTrajectory extends Command implements Sendable  {
 		System.out.println("pathDone");
 		drive.tank(0, 0);
     	
-    	leftOutput = 0;
-    	rightOutput = 0;
+    	leftSetpoint = 0;
+    	rightSetpoint = 0;
 		
 		leftFollower.reset();
 		rightFollower.reset();

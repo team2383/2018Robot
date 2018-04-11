@@ -1,6 +1,7 @@
 package com.team2383.robot.auto;
 
 import com.team2383.robot.commands.FollowTrajectory;
+import com.team2383.robot.commands.FollowTrajectoryTalon;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.WaitCommand;
@@ -9,7 +10,7 @@ import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Waypoint;
 import jaci.pathfinder.modifiers.TankModifier;
 
-public class Test_MotionProfile extends CommandGroup {
+public class Test_MeanMotionProfile extends CommandGroup {
 	Waypoint[] points = new Waypoint[] {
 			new Waypoint(0,0,0),
 			new Waypoint(15,0,0)
@@ -39,7 +40,7 @@ public class Test_MotionProfile extends CommandGroup {
 	Trajectory trajectory = Pathfinder.generate(points, config);
 	Trajectory trajectory2 = Pathfinder.generate(points2, config);
 
-	public Test_MotionProfile() {
-		addSequential(new FollowTrajectory(trajectory, false));
+	public Test_MeanMotionProfile() {
+		addSequential(new FollowTrajectoryTalon(trajectory, false));
 	}
 }

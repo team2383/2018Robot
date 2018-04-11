@@ -155,6 +155,9 @@ public class OI {
 		
 		liftManualOutput.whenPressed(WPILambdas.runOnceCommand(liftWrist::setManualLift, true));
 		wristManualOutput.whenPressed(WPILambdas.runOnceCommand(liftWrist::setManualWrist, true));
+
+		liftManualOutput.whenReleased(WPILambdas.runOnceCommand(liftWrist::stop, true));
+		wristManualOutput.whenReleased(WPILambdas.runOnceCommand(liftWrist::stop, true));
 		
 		liftManualZero.whenPressed(WPILambdas.runOnceCommand(liftWrist::setLiftZero, true));
 		wristManualZero.whenPressed(WPILambdas.runOnceCommand(liftWrist::setWristZero, true));
@@ -193,7 +196,7 @@ public class OI {
 		presetHighBack_TiltUp.whenPressed(new SetLiftWrist(LiftWrist.Preset.SCALE_HIGH_BACK_UP, false));
 		presetHighBack_TiltDown.whenPressed(new SetLiftWrist(LiftWrist.Preset.SCALE_HIGH_BACK_DOWN, false));
 		
-		presetScaleHighFwd.whenPressed(new SetLiftWrist(LiftWrist.Preset.SCALE_HIGH_FWD, false));
+		presetScaleHighFwd.whenPressed(new SetLiftWrist(LiftWrist.Preset.SCALE_VERTICAL_FWD, false));
 		presetScaleHighBack.whenPressed(new SetLiftWrist(LiftWrist.Preset.SCALE_HIGH_BACK_LEVEL, false));
 		
 		presetScaleMidFwd.whenPressed(new SetLiftWrist(LiftWrist.Preset.SCALE_MID_FWD, false));
@@ -206,16 +209,15 @@ public class OI {
 	}
 	
 	private void setupButtonBoard() {
-		ButtonBoard buttonboardA = new ButtonBoard(1);
-		ButtonBoard buttonboardB = new ButtonBoard(2);
+		ButtonBoard buttonboardA = new ButtonBoard(1, false);
+		ButtonBoard buttonboardB = new ButtonBoard(2, true);
 
 		//stuff on A
-		Button place = new JoystickButton(buttonboardA, 6);
-		Button slow = new JoystickButton(buttonboardA, 7);
-		Button mid = new JoystickButton(buttonboardA, 8);
-		Button fast = new JoystickButton(buttonboardA, 9);
-		
-		feed.whileHeld(intake.setStateCommand(Intake.State.FEED, Intake.State.STOP, false));
+		Button slow = new JoystickButton(buttonboardA, 1);
+		Button mid = new JoystickButton(buttonboardA, 2);
+		Button fast = new JoystickButton(buttonboardA, 3);
+		Button place = new JoystickButton(buttonboardA, 4);
+
 		place.whileHeld(intake.setStateCommand(Intake.State.UNFEED_PLACE, Intake.State.STOP, false));
 		place.whileHeld(intakeArms.setStateCommand(IntakeArms.State.OPEN, IntakeArms.State.CLOSED, false));
 		
@@ -233,15 +235,21 @@ public class OI {
 		leftArms.whileHeld(intakeArms.setStateCommand(IntakeArms.State.LEFT));
 		rightArms.whileHeld(intakeArms.setStateCommand(IntakeArms.State.RIGHT));
 		
-		Button presetIntake = new JoystickButton(buttonboardA, 1);
-		Button presetIntake_Vertical = new JoystickButton(buttonboardA, 2);
-		Button presetIntake_2 = new JoystickButton(buttonboardA, 3);
-		Button presetPortal = new JoystickButton(buttonboardA, 4);
-		Button presetSwitch = new JoystickButton(buttonboardA, 5);
+		Button presetHome = new JoystickButton(buttonboardA, 5);
+		Button presetPortal = new JoystickButton(buttonboardA, 6);
+		Button presetSwitch = new JoystickButton(buttonboardA, 7);
+		Button presetIntake_Vertical = new JoystickButton(buttonboardA, 8);
+		Button presetIntake_2 = new JoystickButton(buttonboardA, 9);
+		Button presetIntake = new JoystickButton(buttonboardA, 10);
 		
 		presetIntake.whenPressed(new SetLiftWrist(LiftWrist.Preset.INTAKE, false));
-		presetIntake_Vertical.whenPressed(new SetLiftWrist(LiftWrist.Preset.SWITCH_AUTO, false));
 		presetIntake_2.whenPressed(new SetLiftWrist(LiftWrist.Preset.INTAKE_2, false));
+
+		presetIntake_Vertical.whenPressed(new SetLiftWrist(LiftWrist.Preset.INTAKE_VERTICAL_PRESS, false));
+		presetIntake_Vertical.whenReleased(new SetLiftWrist(LiftWrist.Preset.INTAKE_VERTICAL_RELEASE, false));
+		
+		presetHome.whenPressed(new SetLiftWrist(LiftWrist.Preset.HOME));
+		
 		presetPortal.whenPressed(new SetLiftWrist(LiftWrist.Preset.PORTAL, false));
 		presetSwitch.whenPressed(new SetLiftWrist(LiftWrist.Preset.SWITCH, false));
 		
@@ -249,31 +257,26 @@ public class OI {
 		Button presetScaleLowFwd = new JoystickButton(buttonboardB, 1);
 		Button presetScaleLowMidFwd = new JoystickButton(buttonboardB, 2);
 		Button presetScaleMidFwd = new JoystickButton(buttonboardB, 3);
-		Button presetScaleMidHighFwd = new JoystickButton(buttonboardB, 4);
-		Button presetScaleHighFwd = new JoystickButton(buttonboardB, 5);
+		Button presetScaleVerticalFwd = new JoystickButton(buttonboardB, 4);
 		
 		presetScaleLowFwd.whenPressed(new SetLiftWrist(LiftWrist.Preset.SCALE_LOW_FWD, false));
 		presetScaleLowMidFwd.whenPressed(new SetLiftWrist(LiftWrist.Preset.SCALE_LOWMID_FWD, false));
 		presetScaleMidFwd.whenPressed(new SetLiftWrist(LiftWrist.Preset.SCALE_MID_FWD, false));
-		presetScaleMidHighFwd.whenPressed(new SetLiftWrist(LiftWrist.Preset.SCALE_MIDHIGH_FWD, false));
-		presetScaleHighFwd.whenPressed(new SetLiftWrist(LiftWrist.Preset.SCALE_HIGH_FWD, false));
+		presetScaleVerticalFwd.whenPressed(new SetLiftWrist(LiftWrist.Preset.SCALE_VERTICAL_FWD, false));
 		
-
-		Button presetScaleMidBackDunk = new JoystickButton(buttonboardB, 6);
-		Button presetScaleMidBackDunk15 = new JoystickButton(buttonboardB, 7);
+		Button presetScaleBackHighBackUp = new JoystickButton(buttonboardB, 5);
+		Button presetScaleBackHighBackLevel = new JoystickButton(buttonboardB, 6);
+		Button presetScaleBackHighBackDown = new JoystickButton(buttonboardB, 7);
 		Button presetScaleMidBackDunk30 = new JoystickButton(buttonboardB, 8);
-		
-		presetScaleMidBackDunk.whenPressed(new SetLiftWrist(LiftWrist.Preset.SCALE_MID_BACK_DUNK, false));
-		presetScaleMidBackDunk15.whenPressed(new SetLiftWrist(LiftWrist.Preset.SCALE_MID_BACK_DUNK_15, false));
-		presetScaleMidBackDunk30.whenPressed(new SetLiftWrist(LiftWrist.Preset.SCALE_MID_BACK_DUNK_30, false));
+		Button presetScaleMidBackDunk15 = new JoystickButton(buttonboardB, 9);
+		Button presetScaleMidBackDunk = new JoystickButton(buttonboardB, 10);
 
-		Button presetScaleBackHighBackDown = new JoystickButton(buttonboardB, 9);
-		Button presetScaleBackHighBackLevel = new JoystickButton(buttonboardB, 10);
-		Button presetScaleBackHighBackUp = new JoystickButton(buttonboardB, 11);
-		
+		presetScaleBackHighBackUp.whenPressed(new SetLiftWrist(LiftWrist.Preset.SCALE_HIGH_BACK_UP, false));
 		presetScaleBackHighBackLevel.whenPressed(new SetLiftWrist(LiftWrist.Preset.SCALE_HIGH_BACK_LEVEL, false));
 		presetScaleBackHighBackDown.whenPressed(new SetLiftWrist(LiftWrist.Preset.SCALE_HIGH_BACK_DOWN, false));
-		presetScaleBackHighBackUp.whenPressed(new SetLiftWrist(LiftWrist.Preset.SCALE_HIGH_BACK_UP, false));
+		presetScaleMidBackDunk30.whenPressed(new SetLiftWrist(LiftWrist.Preset.SCALE_DUNK_BACK_30, false));
+		presetScaleMidBackDunk15.whenPressed(new SetLiftWrist(LiftWrist.Preset.SCALE_DUNK_BACK_15, false));
+		presetScaleMidBackDunk.whenPressed(new SetLiftWrist(LiftWrist.Preset.SCALE_DUNK_BACK_0, false));
 		
 		Button adjustLiftDown = buttonboardB.getJoystick(ButtonBoard.Direction.DOWN);
 		Button adjustLiftUp = buttonboardB.getJoystick(ButtonBoard.Direction.UP);

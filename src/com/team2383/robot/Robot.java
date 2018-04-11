@@ -38,6 +38,7 @@ import com.team2383.robot.auto.Test_TestBoxLift;
 import com.team2383.robot.auto.Test_TestDriveByRight;
 import com.team2383.robot.auto.paths.RightPath_ScoreAcrossToLeftScale;
 import com.team2383.robot.auto.paths.RightPath_RightScale;
+import com.team2383.robot.commands.NotifierTest;
 import com.team2383.robot.commands.ProfiledTurn;
 
 import java.lang.reflect.Field;
@@ -77,7 +78,7 @@ public class Robot extends TimedRobot {
 			}
 		}
 		
-		CameraServer.getInstance().startAutomaticCapture();
+		//CameraServer.getInstance().startAutomaticCapture();
 
 		autoChooser = new SendableChooser<Command>();
 
@@ -104,6 +105,7 @@ public class Robot extends TimedRobot {
 		autoChooser.addObject("Test - Drive Motion Magic", new Test_DriveMotionMagic());
 		autoChooser.addObject("Test - Motion Profiling Auto", new Test_MotionProfile());
 		autoChooser.addObject("Test - Calc Trackwidth", new Test_CalculateTrackWidthAuto());
+		autoChooser.addObject("Test - notifier dt test", new NotifierTest());
 
 		SmartDashboard.putData("Auto Chooser", autoChooser);
 		
@@ -117,7 +119,7 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void disabledInit() {
-		if (DriverStation.getInstance().getMatchType() == MatchType.None) {
+		if (DriverStation.getInstance().getMatchType() == MatchType.None && Math.abs(HAL.drive.getLeftVelocity()) < 1) {
 			HAL.drive.setBrake(false);
 		}
 	}
@@ -128,6 +130,10 @@ public class Robot extends TimedRobot {
 		Command c = autoChooser.getSelected();
 		if (c instanceof AutoDescription) {
 			SmartDashboard.putString("Auto Description", ((AutoDescription) c).getDescription());
+		}
+		
+		if (DriverStation.getInstance().getMatchType() == MatchType.None && Math.abs(HAL.drive.getLeftVelocity()) < 1) {
+			HAL.drive.setBrake(false);
 		}
 	}
 

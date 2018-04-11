@@ -61,12 +61,19 @@ public class Constants extends ConstantsBase {
 
 	public static double kLift_UpAccelMinError = 25;
 
+	
+	public static int kLift_Cruise_Velocity = 7000;
+	public static int kLift_Accel = 7000;
+	
 	public static int kLift_Up_Cruise_Velocity = 9000;
 	public static int kLift_Up_Accel = 9000;
 	
 	public static int kLift_Down_Cruise_Velocity = 6000;
 	public static int kLift_Down_Accel = 4000;
 
+	public static double kLift_AccelErrorThreshold = 7;
+	public static double kLift_AccelFeedforward = 0.1;
+	
 	public static double kLift_Tolerance = 2.0;
 	public static boolean kLift_InvertMaster = false;
 	public static boolean kLift_InvertFollower = false;
@@ -86,9 +93,16 @@ public class Constants extends ConstantsBase {
 	public static double kWrist_I = 0;
 	public static double kWrist_D = 1.5;
 	public static double kWrist_F = 0.647; //for 400:1 is 1.214  //for 160:1 is 0.647;
-	public static double kWrist_GravityCompensationMax = 0.25;
-	public static double kWrist_GravityCompensationMin = 0.16;
 	public static int kWrist_IZone = 0;
+	
+	public static double kWrist_ForwardSpringMinTo = -0.15;
+	public static double kWrist_ForwardSpringMaxTo = -0.01;
+	
+	public static double kWrist_ForwardGravityMinTo = 0.03;
+	public static double kWrist_ForwardGravityMaxTo = 0.10;
+	
+	public static double kWrist_ReverseGravityMinTo = -0.01;
+	public static double kWrist_ReverseGravityMaxTo = -0.20;
 
 	public static int kWrist_Cruise_Velocity = 1800; //deg/s
 	public static int kWrist_Accel = 3000; //deg/s

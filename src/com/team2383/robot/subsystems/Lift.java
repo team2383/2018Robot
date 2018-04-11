@@ -2,6 +2,7 @@ package com.team2383.robot.subsystems;
 
 import com.ctre.phoenix.ParamEnum;
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
@@ -47,14 +48,18 @@ public class Lift extends Subsystem {
 		public static enum Preset {
 			BOTTOM(0),
 			INTAKE_2(5),
+			
+			INTAKE_VERTICAL_RELEASE(2),
+			INTAKE_VERTICAL_HOLD(5),
+			
 			TRAVEL(2),
 
 			SWITCH(15),
 			
-			PORTAL(9),
+			PORTAL(6),
 			
 			SCALE_LOW(31),
-			SCALE_LOWMID(34),
+			SCALE_LOWMID(35),
 			SCALE_MID(MAX_LIFT_TRAVEL_IN-3.5),
 			SCALE_MIDHIGH(MAX_LIFT_TRAVEL_IN-2),
 			SCALE_HIGH(MAX_LIFT_TRAVEL_IN),
@@ -107,19 +112,17 @@ public class Lift extends Subsystem {
 			
 			masterLift.configAllowableClosedloopError(0, liftTicks(0.1), timeout);
 
-			masterLift.configMotionAcceleration(Constants.kLift_Down_Accel, timeout);
-			masterLift.configMotionCruiseVelocity(Constants.kLift_Down_Cruise_Velocity, timeout);
+			masterLift.configMotionAcceleration(Constants.kLift_Accel, timeout);
+			masterLift.configMotionCruiseVelocity(Constants.kLift_Cruise_Velocity, timeout);
 
 			masterLift.setNeutralMode(NeutralMode.Brake);
 			followerLift.setNeutralMode(NeutralMode.Brake);
 
-			masterLift.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 40, timeout);
-			masterLift.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 10, timeout);
-			masterLift.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, timeout);
+			masterLift.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 10, timeout);
+			masterLift.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 10, timeout);
 			
 			//false on practice bot, true on real bot
 			masterLift.setSensorPhase(!isPracticeBot);
-			
 			
 			masterLift.setInverted(Constants.kLift_InvertMaster);
 			followerLift.setInverted(Constants.kLift_InvertFollower);
@@ -181,26 +184,35 @@ public class Lift extends Subsystem {
 		 * @param position the desired position in the elevator in inches
 		 */
 		void setPosition(double position) {
-			//really slow below 10in
-			//full if farther than 20in from setpoint
-			//slow down when close to setpoint
-			if(position <= 10) {
-				masterLift.configMotionAcceleration(Constants.kLift_Down_Accel, 0);
-				masterLift.configMotionCruiseVelocity(Constants.kLift_Down_Cruise_Velocity, 0);
-			} else if (getPositiveError() > Constants.kLift_UpAccelMinError) {
-				masterLift.configMotionAcceleration(Constants.kLift_Up_Accel, 0);
-				masterLift.configMotionCruiseVelocity(Constants.kLift_Up_Cruise_Velocity, 0);
+			double accelFeedForward = 0;
+			
+			//dont go so fast when coming down
+			if(position < 10) {
+				masterLift.configMotionAcceleration(9000, 0);
+				masterLift.configMotionCruiseVelocity(11000, 0);
 			} else {
-				masterLift.configMotionAcceleration(Constants.kLift_Down_Accel, 0);
-				masterLift.configMotionCruiseVelocity(Constants.kLift_Down_Cruise_Velocity, 0);
-			} 
+				masterLift.configMotionAcceleration(Constants.kLift_Accel, 0);
+				masterLift.configMotionCruiseVelocity(Constants.kLift_Cruise_Velocity, 0);
+			}
 			
 			
-			//cushion on the bottom
+			//if we are less than accelErrorThreshold away, but more than an inch away add some slowdown decel feedforward in
+			if(getPositiveError() < Constants.kLift_AccelErrorThreshold && getPositiveError() > 2.0) {
+				
+				//if target is above our position, we need negative
+				if(getClosedLoopTargetPosition() > getCurrentPosition()) {
+					accelFeedForward = -Constants.kLift_AccelFeedforward;
+				} else {
+					accelFeedForward = Constants.kLift_AccelFeedforward;
+				}
+				SmartDashboard.putBoolean("LiftIsDecel", true);
+			} else {
+				SmartDashboard.putBoolean("LiftIsDecel", false);
+			}
 			
+			SmartDashboard.putNumber("LiftDecelVal", accelFeedForward);
 			
-			
-			masterLift.set(ControlMode.MotionMagic, liftTicks(position));
+			masterLift.set(ControlMode.MotionMagic, liftTicks(position), DemandType.ArbitraryFeedForward, accelFeedForward);
 		}
 		
 		boolean atTarget() {

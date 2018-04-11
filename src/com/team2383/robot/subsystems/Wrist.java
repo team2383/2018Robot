@@ -36,36 +36,55 @@ public class Wrist extends Subsystem {
 		private static final double MAX_WRIST_TRAVEL_TICKS = ticks(MAX_WRIST_TRAVEL_DEGREES);
 
 
-		private static final DoubleUnaryOperator forwardLimiter = Values.limiter(0.0, Preset.UP.wristPosition);
-		private static final DoubleUnaryOperator forwardRange = forwardLimiter.andThen(Values.mapRange(0, Preset.UP.wristPosition).toRange(Constants.kWrist_GravityCompensationMin, Constants.kWrist_GravityCompensationMax));
-		private static final DoubleUnaryOperator reverseRange = Values.mapRange(Preset.REVERSE_GRAVITY.wristPosition, MAX_WRIST_TRAVEL_DEGREES).toRange(Constants.kWrist_GravityCompensationMin, Constants.kWrist_GravityCompensationMax);
+		private static final DoubleUnaryOperator rangeLimiter = Values.limiter(0.0, MAX_WRIST_TRAVEL_DEGREES);
+		private static final DoubleUnaryOperator springRange = Values.mapRange(0, Preset.FORWARD_SPRING_MAX.wristPosition).toRange(Constants.kWrist_ForwardSpringMinTo, Constants.kWrist_ForwardSpringMaxTo);
+		private static final DoubleUnaryOperator forwardRange = Values.mapRange(Preset.FORWARD_SPRING_MAX.wristPosition, Preset.FORWARD_GRAVITY_MAX.wristPosition).toRange(Constants.kWrist_ForwardGravityMinTo, Constants.kWrist_ForwardGravityMaxTo);
+		private static final DoubleUnaryOperator reverseRange = Values.mapRange(Preset.REVERSE_GRAVITY_MIN.wristPosition, MAX_WRIST_TRAVEL_DEGREES).toRange(Constants.kWrist_ReverseGravityMinTo, Constants.kWrist_ReverseGravityMaxTo);
 		
+		private static final DoubleUnaryOperator gravity = (d) -> {
+			double degrees = rangeLimiter.applyAsDouble(d);
+			
+			if (degrees >= 0 && degrees <= Preset.FORWARD_SPRING_MAX.wristPosition) {
+				return springRange.applyAsDouble(degrees);
+			}
+			
+			if (degrees >= Preset.FORWARD_SPRING_MAX.wristPosition && degrees <= Preset.FORWARD_GRAVITY_MAX.wristPosition) {
+				return forwardRange.applyAsDouble(degrees);
+			}
+			
+			if (degrees >= Preset.REVERSE_GRAVITY_MIN.wristPosition && degrees <= MAX_WRIST_TRAVEL_DEGREES){
+				return reverseRange.applyAsDouble(degrees);
+			}
+			
+			return 0;
+		};
 		
 		private TalonSRX wrist;
 		
 		public static enum Preset {
 			INTAKE(0),
 			
-			PORTAL(9),
+			PORTAL(38),
 			
-			FORWARD_LOW(13),
-			FORWARD_MID(69),
-			FORWARD_HIGH(85),
+			FORWARD_HORIZONTAL(13),
+			FORWARD_VERTICAL(75),
 
 			UP(90),
 	
 			TRANSIT(120),
 
-			FORWARD_GRAVITY(142),
-			REVERSE_GRAVITY(156),
+			FORWARD_SPRING_MAX(40),
+			FORWARD_GRAVITY_MAX(130),
+			REVERSE_GRAVITY_MIN(135),
 
-			BACKWARDS(175),
-			BACKWARDS_UP(160),
+			BACKWARDS_UP(156),
+			BACKWARDS_LEVEL(162),
 			BACKWARDS_DOWN(200),
 			
-			BACKWARDS_DUNK_30(220),
+			BACKWARDS_DUNK_30(215),
 			BACKWARDS_DUNK_15(235),
-			BACKWARDS_DUNK_DOWN(250);
+			BACKWARDS_DUNK_0(250),
+			FULL_BACK(MAX_WRIST_TRAVEL_DEGREES);
 
 			public double wristPosition;
 			
@@ -92,7 +111,7 @@ public class Wrist extends Subsystem {
 			wrist.config_IntegralZone(0, Constants.kWrist_IZone, timeout);
 
 			wrist.configForwardSoftLimitEnable(true, timeout);
-			setSoftLimit(Wrist.Preset.BACKWARDS.wristPosition);
+			setSoftLimit(Wrist.Preset.BACKWARDS_LEVEL.wristPosition);
 			
 			wrist.configSelectedFeedbackCoefficient(1.0, 0, timeout);
 			wrist.configSetParameter(ParamEnum.eClearPositionOnLimitR, 1, 0, 0, timeout);
@@ -163,20 +182,8 @@ public class Wrist extends Subsystem {
 		 * Set the position of the elevator
 		 * @param position the desired position in the elevator in inches
 		 */
-		void setPosition(double position) {
-			double gravityComp;
-			
-			if(getCurrentPosition() < Preset.FORWARD_GRAVITY.wristPosition && getCurrentPosition() > 1) {
-				gravityComp = forwardRange.applyAsDouble(getCurrentPosition());
-			} else if (getCurrentPosition() > Preset.REVERSE_GRAVITY.wristPosition){
-				gravityComp = -reverseRange.applyAsDouble(getCurrentPosition());
-			} else {
-				gravityComp = 0;
-			}
-			
-			if (wrist.getSensorCollection().isRevLimitSwitchClosed() || getCurrentPosition() < 5) {
-				gravityComp = 0;
-			}
+		void setPosition(double position) {		
+			double gravityComp = gravity.applyAsDouble(position);
 			
 			SmartDashboard.putNumber("wrist gravity comp", gravityComp);
 			

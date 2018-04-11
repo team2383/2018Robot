@@ -9,6 +9,7 @@ import com.team2383.robot.OI;
 import com.team2383.robot.commands.TeleopDrive;
 import com.ctre.phoenix.ParamEnum;
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
@@ -40,101 +41,6 @@ public class Drive extends Subsystem {
 	public final BaseMotorController rightFollowerC;
 	
 	private final DifferentialDrive drive;
-	
-	/**
-	 * The Motion class holds info about the current motion state of the drivetrain, like the
-	 * position, velocity, and heading.
-	 * 
-	 * class members are named of the form
-	 * 		sideType_Units
-	 *	
-	 *	Units can be omitted for the commonly used units, eg feet, degrees, etc that we use most often
-	 *	ticks and rotations are kept available as some WPILib and Phoenix functions want them to be called 
-	 *
-	 *	Native means the native units of the input sensor, which for the usual drive encoders we use (SRX Mag encoder)
-	 *  is in encoder ticks, of which there are 4096 per rotation
-	 *  
-	 *  The constructor for the function takes in native units, and fills out the rest of the units using the calculations necessary.
-	 */
-	public class Motion {
-		public final double leftPosition_Native;
-		public final double leftPosition_Rotations;
-		public final double leftPosition;				// ft
-		
-		public final double rightPosition_Native;
-		public final double rightPosition_Rotations;
-		public final double rightPosition;				// ft
-		
-		public final double leftVelocity_Native;
-		public final double leftVelocity_RPM;
-		public final double leftVelocity_RPS;
-		public final double leftVelocity;				// ft/s
-		
-		public final double rightVelocity_Native;
-		public final double rightVelocity_RPM;
-		public final double rightVelocity_RPS;
-		public final double rightVelocity;				// ft/s
-		
-		public final double position_Native;
-		public final double position_Rotations;
-		public final double position;					// ft
-		
-		public final double velocity_Native;
-		public final double velocity_RPM;
-		public final double velocity_RPS;
-		public final double velocity;					// ft/s
-		
-		public final double heading;
-		public final double accumHeading;
-		
-		public Motion() {
-			double kEncoderRatio = Constants.kDrive_EncoderRatio;
-			double kEncoderTicks = Constants.kDrive_EncoderTicks;
-			double kWheelCircumference = Constants.getWheelCircumference();
-			
-			leftPosition_Native = leftMaster.getSelectedSensorPosition(0) * kEncoderRatio;
-			leftPosition_Rotations = MotionUtils.ticksToRotations(leftPosition_Native, kEncoderTicks, kEncoderRatio);
-			leftPosition = MotionUtils.rotationsToDistance(leftPosition_Rotations, kWheelCircumference);
-			
-			rightPosition_Native = -rightMaster.getSelectedSensorPosition(0) * kEncoderRatio;
-			rightPosition_Rotations = MotionUtils.ticksToRotations(rightPosition_Native, kEncoderTicks, kEncoderRatio);
-			rightPosition = MotionUtils.rotationsToDistance(rightPosition_Rotations, kWheelCircumference);
-			
-			leftVelocity_Native = leftMaster.getSelectedSensorVelocity(0) * kEncoderRatio;
-			leftVelocity_RPM = MotionUtils.ticksToRPM(leftVelocity_Native, kEncoderTicks, 0.1, kEncoderRatio);
-			leftVelocity_RPS = MotionUtils.ticksToRPS(leftVelocity_Native, kEncoderTicks, 0.1, kEncoderRatio);
-			leftVelocity = MotionUtils.rotationsToDistance(leftVelocity_RPS, kWheelCircumference);
-			
-			rightVelocity_Native = -rightMaster.getSelectedSensorVelocity(0) * kEncoderRatio;
-			rightVelocity_RPM = MotionUtils.ticksToRPM(rightVelocity_Native, kEncoderTicks, 0.1, kEncoderRatio);
-			rightVelocity_RPS = MotionUtils.ticksToRPS(rightVelocity_Native, kEncoderTicks, 0.1, kEncoderRatio);
-			rightVelocity = MotionUtils.rotationsToDistance(rightVelocity_RPS, kWheelCircumference);
-			
-			position_Native = (leftPosition_Native + rightPosition_Native) / 2.0;
-			position_Rotations = (leftPosition_Rotations + rightPosition_Rotations) / 2.0;
-			position = (leftPosition + rightPosition) / 2.0;
-			
-			velocity_Native = (leftVelocity_Native + rightVelocity_Native) / 2.0;
-			velocity_RPM = (leftVelocity_RPM + rightVelocity_RPM) / 2.0;
-			velocity_RPS = (leftVelocity_RPS + rightVelocity_RPS) / 2.0;
-			velocity = (leftVelocity + rightVelocity) / 2.0;
-
-			heading = navX.getYaw();
-			accumHeading = navX.getAngle();
-
-			SmartDashboard.putNumber("Drive Bounded Heading (degrees)", accumHeading);
-			
-			SmartDashboard.putNumber("Drive Left Position (ft)", leftPosition);
-			SmartDashboard.putNumber("Drive Left Velocity (ft-s)", leftVelocity);
-			
-			SmartDashboard.putNumber("Drive Right Position (ft)", rightPosition);
-			SmartDashboard.putNumber("Drive Right Velocity (ft-s)", rightVelocity);
-			
-			SmartDashboard.putNumber("Drive Avg Position (rotations)", position_Rotations);
-			SmartDashboard.putNumber("Drive Avg Position (ft)", position);
-			SmartDashboard.putNumber("Drive Avg Velocity (ft-s)", velocity);
-		}
-	}
 
 	public Drive(boolean isPracticeBot) {
 		super("Drivetrain");
@@ -167,10 +73,14 @@ public class Drive extends Subsystem {
 		//Left settings
 		leftMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
 		leftMaster.setNeutralMode(NeutralMode.Brake);
+		leftMaster.enableVoltageCompensation(true);
+		leftMaster.configVoltageCompSaturation(12, 10);
 
 		//clear options
 		leftMaster.configForwardSoftLimitEnable(false, 10);
 		leftMaster.configReverseSoftLimitEnable(false, 10);
+		
+		leftMaster.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 5, 10);
 
 		leftMaster.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_20Ms, 10);
 		
@@ -202,10 +112,15 @@ public class Drive extends Subsystem {
 		//Right settings
 		rightMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
 		rightMaster.setNeutralMode(NeutralMode.Brake);
+		rightMaster.enableVoltageCompensation(true);
+		rightMaster.configVoltageCompSaturation(12, 10);
 		
 		//clear options
 		rightMaster.configForwardSoftLimitEnable(false, 10);
 		rightMaster.configReverseSoftLimitEnable(false, 10);
+		
+		rightMaster.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 5, 10);
+		
 		rightMaster.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_20Ms, 10);
 		
 		configMotorControllers(10);
@@ -260,7 +175,8 @@ public class Drive extends Subsystem {
 		rightFollowerC.setInverted(false);
 		*/
 		
-		rightMaster.setSensorPhase(Constants.kDrive_InvertRightMaster);
+		//IF F***ED AT COMP Remove !
+		rightMaster.setSensorPhase(!Constants.kDrive_InvertRightMaster);
 		rightMaster.setInverted(Constants.kDrive_InvertRightMaster);
 		rightFollowerA.setInverted(Constants.kDrive_InvertRightA);
 		rightFollowerB.setInverted(Constants.kDrive_InvertRightB);
@@ -304,10 +220,6 @@ public class Drive extends Subsystem {
 		rightMaster.configMotionCruiseVelocity(nativeVelocity, timeout);
 		rightMaster.configMotionAcceleration(nativeAcceleration, timeout);
 	}
-	
-	public Motion getMotion() {
-		return new Motion();
-	}
 
 	/**
 	 * Updates the smart dashboard values
@@ -315,7 +227,12 @@ public class Drive extends Subsystem {
 	 */
 	@Override
 	public void periodic() {
-		new Motion();
+		SmartDashboard.putNumber("Drive Left Position", getLeftPosition());
+		SmartDashboard.putNumber("Drive Right Position", getRightPosition());
+		SmartDashboard.putNumber("Drive Left Velocity", getLeftVelocity());
+		SmartDashboard.putNumber("Drive Right Velocity", getRightVelocity());
+		SmartDashboard.putNumber("Drive Left kV", leftMaster.getMotorOutputPercent()/getLeftVelocity());
+		SmartDashboard.putNumber("Drive Right kV", rightMaster.getMotorOutputPercent()/getRightVelocity());
 	}
 	
 	public void setBrake(boolean brake) {
@@ -357,8 +274,29 @@ public class Drive extends Subsystem {
 		this.setDefaultCommand(new TeleopDrive(OI.throttle, OI.turn));
 	}
 	
+	public double getLeftPosition() {
+		return MotionUtils.rotationsToDistance(MotionUtils.ticksToRotations(leftMaster.getSelectedSensorPosition(0), 4096, 1), Constants.getWheelCircumference());
+	}
+	
+	public double getRightPosition() {
+		return MotionUtils.rotationsToDistance(MotionUtils.ticksToRotations(rightMaster.getSelectedSensorPosition(0), 4096, 1), Constants.getWheelCircumference());
+	}
+	
 	public void position(double leftPos, double rightPos) {
 		leftMaster.set(ControlMode.MotionMagic, MotionUtils.distanceToRotations(leftPos, Constants.getWheelCircumference()) * 4096);
-		rightMaster.set(ControlMode.MotionMagic, MotionUtils.distanceToRotations(-rightPos, Constants.getWheelCircumference()) * 4096);
+		rightMaster.set(ControlMode.MotionMagic, MotionUtils.distanceToRotations(rightPos, Constants.getWheelCircumference()) * 4096);
+	}
+	
+	public void positionPDauxF(double leftPos, double leftFF, double rightPos, double rightFF) {
+		leftMaster.set(ControlMode.Position, MotionUtils.distanceToRotations(leftPos, Constants.getWheelCircumference()) * 4096, DemandType.ArbitraryFeedForward, leftFF);
+		rightMaster.set(ControlMode.Position, MotionUtils.distanceToRotations(rightPos, Constants.getWheelCircumference()) * 4096, DemandType.ArbitraryFeedForward, rightFF);
+	}
+
+	public double getLeftVelocity() {
+		return leftMaster.getSelectedSensorVelocity(0) / 4096.0 * 10.0 * Constants.getWheelCircumference();
+	}
+	
+	public double getRightVelocity() {
+		return rightMaster.getSelectedSensorVelocity(0) / 4096.0 * 10.0 * Constants.getWheelCircumference();
 	}
 }
