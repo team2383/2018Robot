@@ -33,7 +33,7 @@ public class RightPath_LeftScale extends CommandGroup {
 	Trajectory.Config config_across = new Trajectory.Config(
 			Trajectory.FitMethod.HERMITE_QUINTIC,
 			Trajectory.Config.SAMPLES_HIGH,
-			0.02, // delta time
+			0.01, // delta time
 			8, // max velocity in ft/s for the motion profile
 			8, // max acceleration in ft/s/s for the motion profile
 			600.0); // max jerk in ft/s/s/s for the motion profile

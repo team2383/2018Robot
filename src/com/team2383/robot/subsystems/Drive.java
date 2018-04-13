@@ -8,6 +8,7 @@ import com.team2383.robot.Constants;
 import com.team2383.robot.OI;
 import com.team2383.robot.commands.TeleopDrive;
 import com.ctre.phoenix.ParamEnum;
+import com.ctre.phoenix.motorcontrol.ControlFrame;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -80,6 +81,7 @@ public class Drive extends Subsystem {
 		leftMaster.configForwardSoftLimitEnable(false, 10);
 		leftMaster.configReverseSoftLimitEnable(false, 10);
 		
+		leftMaster.setControlFramePeriod(ControlFrame.Control_3_General, 5);
 		leftMaster.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 5, 10);
 
 		leftMaster.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_20Ms, 10);
@@ -119,6 +121,7 @@ public class Drive extends Subsystem {
 		rightMaster.configForwardSoftLimitEnable(false, 10);
 		rightMaster.configReverseSoftLimitEnable(false, 10);
 		
+		rightMaster.setControlFramePeriod(ControlFrame.Control_3_General, 5);
 		rightMaster.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 5, 10);
 		
 		rightMaster.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_20Ms, 10);
@@ -192,17 +195,29 @@ public class Drive extends Subsystem {
 		rightMaster.configOpenloopRamp(0.0, timeout);
 		
 		//PID
-		rightMaster.config_kP(0, (Constants.kDrive_Motion_talonP * (1023.0/1.0) * (1.0/(kWheelCircumference)) * (1.0/4096.0)), 10);
-		rightMaster.config_kI(0, Constants.kDrive_Motion_talonI, 10);
-		rightMaster.config_kD(0, (Constants.kDrive_Motion_talonD * (1023.0/1.0) * (1.0/(1.0/kWheelCircumference)) * (1.0/4096.0) * (10.0)), 10);
-		rightMaster.config_kF(0, (Constants.kDrive_Motion_V * (1023.0/1.0) * (1.0/(1.0/kWheelCircumference)) * (1.0/4096.0) * (10.0)),  10);
+		rightMaster.config_kP(0, -(Constants.kDrive_Motion_talonP * (1023.0/1.0) * (1.0/(kWheelCircumference)) * (1.0/4096.0)), 10);
+		rightMaster.config_kI(0, -Constants.kDrive_Motion_talonI, 10);
+		rightMaster.config_kD(0, -(Constants.kDrive_Motion_talonD * (1023.0/1.0) * (1.0/(1.0/kWheelCircumference)) * (1.0/4096.0) * (10.0)), 10);
+		rightMaster.config_kF(0, -(Constants.kDrive_Motion_V * (1023.0/1.0) * (1.0/(1.0/kWheelCircumference)) * (1.0/4096.0) * (10.0)),  10);
 		rightMaster.config_IntegralZone(0, 50, 10);
+
+		rightMaster.config_kP(1, -(Constants.kDrive_Motion_talonP * (1023.0/1.0) * (1.0/(kWheelCircumference)) * (1.0/4096.0)), 10);
+		rightMaster.config_kI(1, -Constants.kDrive_Motion_talonI, 10);
+		rightMaster.config_kD(1, -(Constants.kDrive_Motion_talonD * (1023.0/1.0) * (1.0/(1.0/kWheelCircumference)) * (1.0/4096.0) * (10.0)), 10);
+		rightMaster.config_kF(1, 0,  10);
+		rightMaster.config_IntegralZone(1, 50, 10);
 
 		leftMaster.config_kP(0, (Constants.kDrive_Motion_talonP * (1023.0/1.0) * (1.0/(kWheelCircumference)) * (1.0/4096.0)), 10);
 		leftMaster.config_kI(0, Constants.kDrive_Motion_talonI, 10);
 		leftMaster.config_kD(0, (Constants.kDrive_Motion_talonD * (1023.0/1.0) * (1.0/(1.0/kWheelCircumference)) * (1.0/4096.0) * (10.0)), 10);
 		leftMaster.config_kF(0, (Constants.kDrive_Motion_V * (1023.0/1.0) * (1.0/(1.0/kWheelCircumference)) * (1.0/4096.0) * (10.0)),  10);
 		leftMaster.config_IntegralZone(0, 50, 10);
+		
+		leftMaster.config_kP(1, (Constants.kDrive_Motion_talonP * (1023.0/1.0) * (1.0/(kWheelCircumference)) * (1.0/4096.0)), 10);
+		leftMaster.config_kI(1, Constants.kDrive_Motion_talonI, 10);
+		leftMaster.config_kD(1, (Constants.kDrive_Motion_talonD * (1023.0/1.0) * (1.0/(1.0/kWheelCircumference)) * (1.0/4096.0) * (10.0)), 10);
+		leftMaster.config_kF(1, 0,  10);
+		leftMaster.config_IntegralZone(1, 50, 10);
 		
 		/*
 		 * ft/s -> ticks per 100ms
@@ -274,6 +289,10 @@ public class Drive extends Subsystem {
 		this.setDefaultCommand(new TeleopDrive(OI.throttle, OI.turn));
 	}
 	
+	public double inches(int ticks) {
+		return MotionUtils.rotationsToDistance(MotionUtils.ticksToRotations(ticks, 4096, 1), Constants.getWheelCircumference());
+	}
+	
 	public double getLeftPosition() {
 		return MotionUtils.rotationsToDistance(MotionUtils.ticksToRotations(leftMaster.getSelectedSensorPosition(0), 4096, 1), Constants.getWheelCircumference());
 	}
@@ -283,13 +302,19 @@ public class Drive extends Subsystem {
 	}
 	
 	public void position(double leftPos, double rightPos) {
+		leftMaster.selectProfileSlot(0, 0);
+		rightMaster.selectProfileSlot(0, 0);
+
 		leftMaster.set(ControlMode.MotionMagic, MotionUtils.distanceToRotations(leftPos, Constants.getWheelCircumference()) * 4096);
 		rightMaster.set(ControlMode.MotionMagic, MotionUtils.distanceToRotations(rightPos, Constants.getWheelCircumference()) * 4096);
 	}
 	
 	public void positionPDauxF(double leftPos, double leftFF, double rightPos, double rightFF) {
+		leftMaster.selectProfileSlot(1, 0);
+		rightMaster.selectProfileSlot(1, 0);
+
 		leftMaster.set(ControlMode.Position, MotionUtils.distanceToRotations(leftPos, Constants.getWheelCircumference()) * 4096, DemandType.ArbitraryFeedForward, leftFF);
-		rightMaster.set(ControlMode.Position, MotionUtils.distanceToRotations(rightPos, Constants.getWheelCircumference()) * 4096, DemandType.ArbitraryFeedForward, rightFF);
+		rightMaster.set(ControlMode.Position, MotionUtils.distanceToRotations(rightPos, Constants.getWheelCircumference()) * 4096, DemandType.ArbitraryFeedForward, -rightFF);
 	}
 
 	public double getLeftVelocity() {
@@ -298,5 +323,9 @@ public class Drive extends Subsystem {
 	
 	public double getRightVelocity() {
 		return rightMaster.getSelectedSensorVelocity(0) / 4096.0 * 10.0 * Constants.getWheelCircumference();
+	}
+	
+	public boolean atTarget() {
+		return Math.abs(inches(leftMaster.getClosedLoopError(0))) < Constants.kDrive_Motion_Tolerance && Math.abs(inches(leftMaster.getClosedLoopError(0))) < Constants.kDrive_Motion_Tolerance;
 	}
 }

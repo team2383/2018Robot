@@ -23,16 +23,16 @@ import jaci.pathfinder.Waypoint;
 
 public class RightPath_ScoreAcrossToLeftScale extends CommandGroup {
 	Waypoint[] toScalePoints = new Waypoint[] {
-			new Waypoint(3.25, 3.7, 0),
-			new Waypoint(15.4, 3.7, 0),
-			new Waypoint(19.9, 10, Pathfinder.d2r(87)),
-			new Waypoint(20.3, 16.5, Pathfinder.d2r(87)),
-			new Waypoint(24.3, 19.8, Pathfinder.d2r(0)),
+			new Waypoint(3.21, 3, 0),
+			new Waypoint(15.4, 3, 0),
+			new Waypoint(20, 8, Pathfinder.d2r(80)),
+			new Waypoint(20.8, 17, Pathfinder.d2r(85)),
+			new Waypoint(24.3, 19.8, Pathfinder.d2r(-10)),
 			};
 
 	Waypoint[] secondCubePoints = new Waypoint[] {
-			new Waypoint(24.3, 19.8, Pathfinder.d2r(180)),
-			new Waypoint(19.41, 19.4, Pathfinder.d2r(180 + 5))
+			new Waypoint(24.3, 19.8, Pathfinder.d2r(180-10)),
+			new Waypoint(19.25, 19.2, Pathfinder.d2r(180+15))
 			};
 	
 	/*
@@ -45,8 +45,8 @@ public class RightPath_ScoreAcrossToLeftScale extends CommandGroup {
 			*/
 	
 	Waypoint[] backToScalePoints = new Waypoint[] {
-			new Waypoint(19.41, 19.5, Pathfinder.d2r(0)),
-			new Waypoint(24.3, 18.5, Pathfinder.d2r(-22)),
+			new Waypoint(19.25, 19.2, Pathfinder.d2r(15)),
+			new Waypoint(24, 19.6, Pathfinder.d2r(0)),
 			};
 	
 	Waypoint[] switchForwardPoints = new Waypoint[] {
@@ -57,23 +57,23 @@ public class RightPath_ScoreAcrossToLeftScale extends CommandGroup {
 	Trajectory.Config config_across = new Trajectory.Config(
 			Trajectory.FitMethod.HERMITE_QUINTIC,
 			Trajectory.Config.SAMPLES_HIGH,
-			0.02, // delta time
-			8, // max velocity in ft/s for the motion profile
+			0.01, // delta time
+			8.5, // max velocity in ft/s for the motion profile
 			8, // max acceleration in ft/s/s for the motion profile
 			600.0); // max jerk in ft/s/s/s for the motion profile
 	
 	Trajectory.Config config = new Trajectory.Config(
 			Trajectory.FitMethod.HERMITE_QUINTIC,
 			Trajectory.Config.SAMPLES_HIGH,
-			0.02, // delta time
-			12, // max velocity in ft/s for the motion profile
-			10, // max acceleration in ft/s/s for the motion profile
+			0.01, // delta time
+			8, // max velocity in ft/s for the motion profile
+			8, // max acceleration in ft/s/s for the motion profile
 			600.0); // max jerk in ft/s/s/s for the motion profile
 	
 	Trajectory.Config config_forward = new Trajectory.Config(
 			Trajectory.FitMethod.HERMITE_QUINTIC,
 			Trajectory.Config.SAMPLES_HIGH,
-			0.02, // delta time
+			0.01, // delta time
 			4, // max velocity in ft/s for the motion profile
 			4, // max acceleration in ft/s/s for the motion profile
 			600.0); // max jerk in ft/s/s/s for the motion profile
@@ -86,29 +86,28 @@ public class RightPath_ScoreAcrossToLeftScale extends CommandGroup {
 	
 
 	public RightPath_ScoreAcrossToLeftScale(PathStyle style) {
-		addParallel(new WaitThenCommand(5.0, new SetLiftWrist(LiftWrist.Preset.SCALE_HIGH_BACK_DOWN)));
+		addParallel(new WaitThenCommand(5.3, new SetLiftWrist(LiftWrist.Preset.SCALE_AUTOSHOT)));
 		addSequential(new FollowTrajectory(toScaleTrajectory, true));
 		addSequential(new WaitForChildren());
-		addSequential(intake.setStateCommand(Intake.State.UNFEED_SLOW, Intake.State.STOP, 0.3));
+		addSequential(intake.setStateCommand(Intake.State.UNFEED_FAST, Intake.State.STOP, 0.3));
 		
 		addParallel(intakeArms.setStateCommand(IntakeArms.State.OPEN, true));
 		addParallel(new SetLiftWrist(LiftWrist.Preset.INTAKE));
 		addParallel(new IntakeOpenArm());
 		addSequential(new WaitCommand(1.4)); //wait time before starting second cube trajectory
-		addSequential(new FollowTrajectory(secondCubeTrajectory, Pathfinder.d2r(180)));
+		addSequential(new FollowTrajectory(secondCubeTrajectory, Pathfinder.d2r(180-10)));
 		addSequential(new PrintCommand("Waiting for secondCubeTrajectory"));
 		addSequential(new WaitForChildren());
 		
 		switch(style) {
 			case SCALE_MULTI_CUBE:
-				addParallel(new WaitThenCommand(0.9, new SetLiftWrist(LiftWrist.Preset.SCALE_HIGH_BACK_DOWN)));
-				addSequential(new FollowTrajectory(backToScaleTrajectory, true));
+				addParallel(new WaitThenCommand(1.1, new SetLiftWrist(LiftWrist.Preset.SCALE_AUTOSHOT)));
+				addSequential(new FollowTrajectory(backToScaleTrajectory, true, Pathfinder.d2r(15)));
 	
 				addSequential(new PrintCommand("Waiting for LiftWrist"));
 				
-				addSequential(new SetLiftWrist(LiftWrist.Preset.SCALE_DUNK_BACK_30));
-				
-				addParallel(intakeArms.setStateCommand(IntakeArms.State.OPEN, IntakeArms.State.CLOSED, 0.5));
+				addSequential(new SetLiftWrist(LiftWrist.Preset.SCALE_AUTOSHOT));
+
 				addSequential(intake.setStateCommand(Intake.State.UNFEED_SLOW, Intake.State.STOP, 0.5));
 
 				addSequential(new SetLiftWrist(LiftWrist.Preset.INTAKE));
@@ -124,9 +123,9 @@ public class RightPath_ScoreAcrossToLeftScale extends CommandGroup {
 	private class IntakeOpenArm extends CommandGroup {
 		public IntakeOpenArm() {
 			addSequential(WPILambdas.createCommand(liftWrist::atTarget));
-			addParallel(intake.setStateCommand(Intake.State.FEED, Intake.State.STOP, 1.3));
-			addParallel(intakeArms.setStateCommand(IntakeArms.State.OPEN, IntakeArms.State.CLOSED, 0.7));
-			addSequential(new WaitCommand(1.0));//must be same as the intake timeout
+			addParallel(intake.setStateCommand(Intake.State.FEED, Intake.State.STOP, 1.8));
+			addParallel(intakeArms.setStateCommand(IntakeArms.State.OPEN, IntakeArms.State.CLOSED, 1.5));
+			addSequential(new WaitCommand(1.8));//must be same as the intake timeout
 		}
 	}
 }

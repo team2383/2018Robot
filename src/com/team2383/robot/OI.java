@@ -237,7 +237,7 @@ public class OI {
 		
 		Button presetHome = new JoystickButton(buttonboardA, 5);
 		Button presetPortal = new JoystickButton(buttonboardA, 6);
-		Button presetSwitch = new JoystickButton(buttonboardA, 7);
+		Button presetAutoShot = new JoystickButton(buttonboardA, 7);
 		Button presetIntake_Vertical = new JoystickButton(buttonboardA, 8);
 		Button presetIntake_2 = new JoystickButton(buttonboardA, 9);
 		Button presetIntake = new JoystickButton(buttonboardA, 10);
@@ -251,7 +251,7 @@ public class OI {
 		presetHome.whenPressed(new SetLiftWrist(LiftWrist.Preset.HOME));
 		
 		presetPortal.whenPressed(new SetLiftWrist(LiftWrist.Preset.PORTAL, false));
-		presetSwitch.whenPressed(new SetLiftWrist(LiftWrist.Preset.SWITCH, false));
+		presetAutoShot.whenPressed(new SetLiftWrist(LiftWrist.Preset.SCALE_AUTOSHOT, false));
 		
 		//stuff on B
 		Button presetScaleLowFwd = new JoystickButton(buttonboardB, 1);

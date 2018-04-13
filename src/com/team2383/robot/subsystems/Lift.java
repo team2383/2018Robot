@@ -58,6 +58,7 @@ public class Lift extends Subsystem {
 			
 			PORTAL(6),
 			
+			SCALE_AUTOSHOT(34.1),
 			SCALE_LOW(31),
 			SCALE_LOWMID(35),
 			SCALE_MID(MAX_LIFT_TRAVEL_IN-3.5),

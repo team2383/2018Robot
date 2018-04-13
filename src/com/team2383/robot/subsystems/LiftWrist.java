@@ -46,7 +46,7 @@ public class LiftWrist extends Subsystem {
 		SWITCH(Lift.Preset.SWITCH, Wrist.Preset.INTAKE),
 		SWITCH_DRIVE_BY(Lift.Preset.BOTTOM, Wrist.Preset.UP),
 
-		SCALE_AUTOSHOT(Lift.Preset.SCALE_HIGH, Wrist.Preset.TRANSIT),
+		SCALE_AUTOSHOT(Lift.Preset.SCALE_AUTOSHOT, Wrist.Preset.AUTOSHOT),
 		
 		SCALE_LOW_FWD(Lift.Preset.SCALE_LOW, Wrist.Preset.FORWARD_HORIZONTAL),
 		SCALE_LOWMID_FWD(Lift.Preset.SCALE_LOWMID, Wrist.Preset.FORWARD_HORIZONTAL),
@@ -160,30 +160,59 @@ public class LiftWrist extends Subsystem {
 
 	public void handleMotionMagicLogic() {
 		//does the wrist want to go past clearance angle?
-		if(desiredWristPos > Constants.kLiftWrist_WristClearanceAngle) {	
-			SmartDashboard.putBoolean("L desiredWristPastClearance", true);
-			//can the wrist go past lift at desired lift height?
-			if(desiredLiftPos < Constants.kLiftWrist_LiftClearanceHeight) {
-				SmartDashboard.putBoolean("L desiredLiftWasOverride", true);
-				//the wrist wants to go back, but the desired lift height isn't high enough to allow.
-				//so update desired lift height to the clearance height
-				desiredLiftPos = Constants.kLiftWrist_LiftClearanceHeight;
-				
-				return; //don't do any more checks, desired state was invalid for this iteration so the next one will execute the fixed one.
-			} else {
-				//the wrist wants to go back, and the desired lift height is high enough.
-				
-				//desired lift height is high enough for wrist clearance, so we are safe to move to it
-				lift.setPosition(desiredLiftPos);
-				
-				//make sure the wrist clears the lift before moving wrist to past clearance angle
-				if (lift.getCurrentPosition() < Constants.kLiftWrist_LiftClearanceHeight) {
-					SmartDashboard.putBoolean("L wrist In transit", true);
-					//lift is currently below clearance height, so hold wrist in transit position
-					wrist.setPreset(Wrist.Preset.TRANSIT);
+		if(desiredWristPos > Constants.kLiftWrist_WristBackClearanceAngle) {
+			//we want to dunk
+			if(desiredWristPos > Constants.kLiftWrist_WristDunkClearanceAngle) {
+				SmartDashboard.putBoolean("L desiredWristPastClearance", true);
+				//can the wrist go past lift at desired lift height?
+				if(desiredLiftPos < Constants.kLiftWrist_LiftDunkClearanceHeight) {
+					SmartDashboard.putBoolean("L desiredLiftWasOverride", true);
+					//the wrist wants to go back, but the desired lift height isn't high enough to allow.
+					//so update desired lift height to the clearance height
+					desiredLiftPos = Constants.kLiftWrist_LiftDunkClearanceHeight+0.3;
+					
+					return; //don't do any more checks, desired state was invalid for this iteration so the next one will execute the fixed one.
 				} else {
-					SmartDashboard.putBoolean("L wrist In transit", false);
-					wrist.setPosition(desiredWristPos);
+					//the wrist wants to go back, and the desired lift height is high enough.
+					
+					//desired lift height is high enough for wrist clearance, so we are safe to move to it
+					lift.setPosition(desiredLiftPos);
+					
+					//make sure the wrist clears the lift before moving wrist to past clearance angle
+					if (lift.getCurrentPosition() < Constants.kLiftWrist_LiftDunkClearanceHeight) {
+						SmartDashboard.putBoolean("L wrist In transit", true);
+						//lift is currently below clearance height, so hold wrist in transit position
+						wrist.setPreset(Wrist.Preset.TRANSIT);
+					} else {
+						SmartDashboard.putBoolean("L wrist In transit", false);
+						wrist.setPosition(desiredWristPos);
+					}
+				}
+			} else { //we want to go back but not dunk
+				SmartDashboard.putBoolean("L desiredWristPastClearance", true);
+				//can the wrist go past lift at desired lift height?
+				if(desiredLiftPos < Constants.kLiftWrist_LiftBackClearanceHeight) {
+					SmartDashboard.putBoolean("L desiredLiftWasOverride", true);
+					//the wrist wants to go back, but the desired lift height isn't high enough to allow.
+					//so update desired lift height to the clearance height
+					desiredLiftPos = Constants.kLiftWrist_LiftBackClearanceHeight;
+					
+					return; //don't do any more checks, desired state was invalid for this iteration so the next one will execute the fixed one.
+				} else {
+					//the wrist wants to go back, and the desired lift height is high enough.
+					
+					//desired lift height is high enough for wrist clearance, so we are safe to move to it
+					lift.setPosition(desiredLiftPos);
+					
+					//make sure the wrist clears the lift before moving wrist to past clearance angle
+					if (lift.getCurrentPosition() < Constants.kLiftWrist_LiftBackClearanceHeight) {
+						SmartDashboard.putBoolean("L wrist In transit", true);
+						//lift is currently below clearance height, so hold wrist in transit position
+						wrist.setPreset(Wrist.Preset.TRANSIT);
+					} else {
+						SmartDashboard.putBoolean("L wrist In transit", false);
+						wrist.setPosition(desiredWristPos);
+					}
 				}
 			}
 		} else {
@@ -194,10 +223,10 @@ public class LiftWrist extends Subsystem {
 		}
 		
 		//does the lift want to go below clearance height?
-		if(desiredLiftPos < Constants.kLiftWrist_LiftClearanceHeight) {
+		if(desiredLiftPos < Constants.kLiftWrist_LiftBackClearanceHeight) {
 			SmartDashboard.putBoolean("L desired lift below clearanceheight", true);
 			//can the wrist clear the lift at desired lift height?
-			if(desiredWristPos > Constants.kLiftWrist_WristClearanceAngle) {
+			if(desiredWristPos > Constants.kLiftWrist_WristBackClearanceAngle) {
 				SmartDashboard.putBoolean("L invalid wrist was ovverode", true);
 				//the lift wants to go down, but the desired wrist angle will cause a collision
 				//so update desired wrist angle to the transit angle
@@ -211,10 +240,10 @@ public class LiftWrist extends Subsystem {
 				wrist.setPosition(desiredWristPos);
 				
 				//make sure the wrist clears the lift before moving lift below clearance height
-				if (wrist.getCurrentPosition() > Constants.kLiftWrist_WristClearanceAngle) {
+				if (wrist.getCurrentPosition() > Constants.kLiftWrist_WristBackClearanceAngle) {
 					SmartDashboard.putBoolean("L lift waiting for wrist", true);
 					//wrist is currently past clearance angle, so move lift to clearance height while we wait for it to come past
-					lift.setPosition(Constants.kLiftWrist_LiftClearanceHeight);
+					lift.setPosition(Constants.kLiftWrist_LiftBackClearanceHeight);
 				} else {
 					SmartDashboard.putBoolean("L lift waiting for wrist", false);
 					lift.setPosition(desiredLiftPos);

@@ -103,11 +103,12 @@ public class FollowTrajectory extends Command implements Sendable  {
 		
 		requires(drive);
 		
-		notifier = new Notifier(this::notifierExecute);
+		
 	}
 
 	@Override
 	protected void initialize() {
+		notifier = new Notifier(this::notifierExecute);
 		this.trajectory = trajectorySupplier.get();
 		this.modifier = new TankModifier(trajectory).modify(Constants.kDrive_Motion_trackwidth);
 		modifier.modify(Constants.kDrive_Motion_trackwidth);
@@ -188,18 +189,6 @@ public class FollowTrajectory extends Command implements Sendable  {
 		debugInfo.loopTime = followerLoopTime;
 		
 		writer.add(debugInfo);
-
-		//forwards
-		if (!backwards) {
-			leftOutput = leftFollower.calculate(drive.getLeftPosition());
-			rightOutput = rightFollower.calculate(drive.getRightPosition());
-		} else {
-			//backwards
-			leftOutput = leftFollower.calculate(-drive.getRightPosition()); //left = -right
-			rightOutput = rightFollower.calculate(-drive.getLeftPosition()); //right = -left
-		}
-		
-		followerLoopTime = (Timer.getFPGATimestamp() - time);
 		
 		double gyro_heading = -navX.getAngle(); //axis is the same
 		
@@ -208,23 +197,36 @@ public class FollowTrajectory extends Command implements Sendable  {
 		angleDifference = Pathfinder.boundHalfDegrees(desired_heading - gyro_heading);
 		
 		double turn = Constants.kDrive_Motion_turnP * angleDifference;
-	
+
+		if (!this.isFinished()) {
+			
 			//forwards
-		if (!backwards) {
-			drive.tank(leftOutput - turn, rightOutput + turn);
-		} else {
-			//backwards
-			/*.tank is forwards, so (fwd_left, fwd_right)
-			 * back_left = -fwd_right
-			 * 	so fwd_right = -back_left
-			 * back_right = -fwd_left
-			 * 	so fwd_left = -back_right
-			 * 
-			 * turn input is relative to true (fwd) drivetrain output, not the actual direction
-			 * so fwd_left(back_right) has to be less negative (going slower) then fwd_right(back_left), when turning right (negative turn)
-			 */
-			drive.tank(-rightOutput - turn, -leftOutput + turn);
+			if (!backwards) {
+				leftOutput = leftFollower.calculate(drive.getLeftPosition());
+				rightOutput = rightFollower.calculate(drive.getRightPosition());
+			} else {
+				//backwards
+				leftOutput = leftFollower.calculate(-drive.getRightPosition()); //left = -right
+				rightOutput = rightFollower.calculate(-drive.getLeftPosition()); //right = -left
+			}
+			
+			if (!backwards) {
+				drive.tank(leftOutput - turn, rightOutput + turn);
+			} else {
+				//backwards
+				/*.tank is forwards, so (fwd_left, fwd_right)
+				 * back_left = -fwd_right
+				 * 	so fwd_right = -back_left
+				 * back_right = -fwd_left
+				 * 	so fwd_left = -back_right
+				 * 
+				 * turn input is relative to true (fwd) drivetrain output, not the actual direction
+				 * so fwd_left(back_right) has to be less negative (going slower) then fwd_right(back_left), when turning right (negative turn)
+				 */
+				drive.tank(-rightOutput - turn, -leftOutput + turn);
+			}
 		}
+		followerLoopTime = (Timer.getFPGATimestamp() - time);
 	}
 
 	@Override
@@ -235,15 +237,19 @@ public class FollowTrajectory extends Command implements Sendable  {
 	@Override
 	protected void end() {
 		System.out.println("pathDone");
+		notifier.stop();
+		
 		drive.tank(0, 0);
     	
     	leftOutput = 0;
     	rightOutput = 0;
 		
+    	
 		leftFollower.reset();
 		rightFollower.reset();
     	navX.zeroYaw();
-    	
+    	drive.resetEncoders();
+
     	notifier.stop();
 	}
 

@@ -38,9 +38,13 @@ public class Constants extends ConstantsBase {
 
 	public static double kLiftWrist_SetpointWait = 0.1;
 	
-	public static double kLiftWrist_WristClearanceAngle = 145;
+	public static double kLiftWrist_WristDunkClearanceAngle = 190;
+	public static double kLiftWrist_WristBackClearanceAngle = 145;
+
 	
-	public static double kLiftWrist_LiftClearanceHeight = 38.7;
+	public static double kLiftWrist_LiftBackClearanceHeight = 34;
+	
+	public static double kLiftWrist_LiftDunkClearanceHeight = 38.7;
 	
 	/*
 	 * Lift Constants

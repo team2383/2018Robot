@@ -33,6 +33,7 @@ import com.team2383.robot.auto.Right_Cross_ScaleToSwitchAuto;
 import com.team2383.robot.auto.Right_NoAcross_MultiScaleAuto;
 import com.team2383.robot.auto.Right_NoAcross_ScaleToSwitchAuto;
 import com.team2383.robot.auto.Test_DriveMotionMagic;
+import com.team2383.robot.auto.Test_MeanMotionProfile;
 import com.team2383.robot.auto.Test_MotionProfile;
 import com.team2383.robot.auto.Test_TestBoxLift;
 import com.team2383.robot.auto.Test_TestDriveByRight;
@@ -104,6 +105,7 @@ public class Robot extends TimedRobot {
 		autoChooser.addObject("Test - Motion Profiled 90 right turn", new ProfiledTurn(-90));
 		autoChooser.addObject("Test - Drive Motion Magic", new Test_DriveMotionMagic());
 		autoChooser.addObject("Test - Motion Profiling Auto", new Test_MotionProfile());
+		autoChooser.addObject("Test - Mean Motion Profiling Auto", new Test_MeanMotionProfile());
 		autoChooser.addObject("Test - Calc Trackwidth", new Test_CalculateTrackWidthAuto());
 		autoChooser.addObject("Test - notifier dt test", new NotifierTest());
 

@@ -36,11 +36,16 @@ public class Intake extends StatefulSubsystem<Intake.State> {
 		leftIntake.setInverted(Constants.kIntake_InvertLeft);
 		rightIntake.setInverted(Constants.kIntake_InvertRight);
 		
-		leftIntake.configPeakOutputForward(1.0, 0);
-		leftIntake.configPeakOutputReverse(-1.0, 0);
+		leftIntake.configPeakOutputForward(1.0, 10);
+		leftIntake.configPeakOutputReverse(-1.0, 10);
 		
-		rightIntake.configPeakOutputForward(1.0, 0);
-		rightIntake.configPeakOutputReverse(-1.0, 0);
+		rightIntake.configPeakOutputForward(1.0, 10);
+		rightIntake.configPeakOutputReverse(-1.0, 10);
+		
+		leftIntake.enableVoltageCompensation(true);
+		leftIntake.configVoltageCompSaturation(12, 10);
+		rightIntake.enableVoltageCompensation(true);
+		rightIntake.configVoltageCompSaturation(12, 10);
 		
 		instanceSupplier = () -> intake;
 	}
@@ -52,6 +57,7 @@ public class Intake extends StatefulSubsystem<Intake.State> {
 		UNFEED_SLOW,
 		UNFEED_MID,
 		UNFEED_FAST,
+		UNFEED_FULL,
 		
 		UNFEED_AUTO_STARTING,
 		
@@ -92,6 +98,11 @@ public class Intake extends StatefulSubsystem<Intake.State> {
 			case UNFEED_FAST:
 				leftIntake.set(ControlMode.PercentOutput, -Constants.kIntake_UnfeedFastSpeed);
 				rightIntake.set(ControlMode.PercentOutput, -Constants.kIntake_UnfeedFastSpeed);
+				break;
+
+			case UNFEED_FULL:
+				leftIntake.set(ControlMode.PercentOutput, -1.0);
+				rightIntake.set(ControlMode.PercentOutput, -1.0);
 				break;
 				
 			case UNFEED_DRIVEBY_LEFT:

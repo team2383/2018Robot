@@ -72,6 +72,8 @@ public class Wrist extends Subsystem {
 			UP(90),
 	
 			TRANSIT(120),
+			
+			AUTOSHOT(170),
 
 			FORWARD_SPRING_MAX(40),
 			FORWARD_GRAVITY_MAX(130),

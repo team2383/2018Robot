@@ -1,5 +1,6 @@
 package com.team2383.robot.auto;
 
+import com.team2383.ninjaLib.PathLoader;
 import com.team2383.robot.commands.FollowTrajectory;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
@@ -36,8 +37,8 @@ public class Test_MotionProfile extends CommandGroup {
 			7, // max acceleration in ft/s/s for the motion profile
 			600.0); // max jerk in ft/s/s/s for the motion profile
 
-	Trajectory trajectory = Pathfinder.generate(points, config);
-	Trajectory trajectory2 = Pathfinder.generate(points2, config);
+	Trajectory trajectory = PathLoader.get(points, config);
+	Trajectory trajectory2 = PathLoader.get(points2, config);
 
 	public Test_MotionProfile() {
 		addSequential(new FollowTrajectory(trajectory, false));

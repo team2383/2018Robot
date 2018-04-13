@@ -187,17 +187,18 @@ public class FollowTrajectoryTalon extends Command implements Sendable  {
 		
 		followerLoopTime = (Timer.getFPGATimestamp() - time);
 		
-		if(!backwards) {
-			drive.positionPDauxF(leftSetpoint, leftFeedforward - turn, rightSetpoint, rightFeedforward + turn);
-		} else {
-			drive.positionPDauxF(-rightSetpoint, leftFeedforward - turn, -leftSetpoint, rightFeedforward + turn);
+		if(!this.isFinished()) {
+			if(!backwards) {
+				drive.positionPDauxF(leftSetpoint, leftFeedforward - turn, rightSetpoint, rightFeedforward + turn);
+			} else {
+				drive.positionPDauxF(-rightSetpoint, leftFeedforward - turn, -leftSetpoint, rightFeedforward + turn);
+			}
 		}
-		
 	}
 
 	@Override
 	protected boolean isFinished() {
-		return leftFollower.isFinished() && rightFollower.isFinished();
+		return leftFollower.isFinished() && rightFollower.isFinished() && drive.atTarget();
 	}
 
 	@Override
