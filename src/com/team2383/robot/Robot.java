@@ -61,6 +61,7 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void robotInit() {
+		
 		@SuppressWarnings("unused")
 		HAL hal = new HAL();
 		@SuppressWarnings("unused")
@@ -175,9 +176,7 @@ public class Robot extends TimedRobot {
 		// teleop starts running. If you want the autonomous to
 		// continue until interrupted by another command, remove
 		// this line or comment it out.
-		if (autoCommand != null) {
-			autoCommand.cancel();
-		}
+		cancelAuto();
 	}
 
 	/**
@@ -198,5 +197,14 @@ public class Robot extends TimedRobot {
 	public static String getGameData() {
 		//return "LLL";
 		return DriverStation.getInstance().getGameSpecificMessage();
+	}
+	
+	/*
+	 * cancels the currently running auto.
+	 */
+	public void cancelAuto() {
+		if (autoCommand != null) {
+			autoCommand.cancel();
+		}
 	}
 }

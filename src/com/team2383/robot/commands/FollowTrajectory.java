@@ -19,6 +19,7 @@ import static com.team2383.robot.HAL.navX;
 import com.team2383.ninjaLib.PathFollower;
 import com.team2383.ninjaLib.ReflectingCSVWriter;
 import com.team2383.robot.Constants;
+import com.team2383.robot.Robot;
 
 public class FollowTrajectory extends Command implements Sendable  {
 	PathFollower leftFollower;
@@ -198,6 +199,17 @@ public class FollowTrajectory extends Command implements Sendable  {
 		
 		double turn = Constants.kDrive_Motion_turnP * angleDifference;
 
+		/*
+		 * untested safety code. test on practice field b
+		if (Math.abs(angleDifference) >= Constants.kAutoSafety_MaxGyroError ||
+			Math.abs(leftFollower.getError()) >= Constants.kAutoSafety_MaxEncoderError ||
+			Math.abs(rightFollower.getError()) >= Constants.kAutoSafety_MaxEncoderError) {
+			System.out.println("!!!!!!!! AUTO FAILED !!!!!!!!");
+		}
+		
+		*/
+		
+		
 		if (!this.isFinished()) {
 			
 			//forwards
