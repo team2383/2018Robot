@@ -23,16 +23,26 @@ import jaci.pathfinder.Waypoint;
 
 public class RightPath_ScoreAcrossToLeftScale extends CommandGroup {
 	Waypoint[] toScalePoints = new Waypoint[] {
-			new Waypoint(3.21, 3, 0),
+			new Waypoint(2.7, 3, 0),
 			new Waypoint(15.4, 3, 0),
-			new Waypoint(20, 8, Pathfinder.d2r(80)),
-			new Waypoint(20.8, 17, Pathfinder.d2r(85)),
-			new Waypoint(24.3, 19.8, Pathfinder.d2r(-10)),
+			new Waypoint(20.4, 8, Pathfinder.d2r(80)),
+			new Waypoint(21.0, 17, Pathfinder.d2r(85)),
+			new Waypoint(25.5, 19.8, Pathfinder.d2r(-5)),
 			};
 
 	Waypoint[] secondCubePoints = new Waypoint[] {
-			new Waypoint(24.3, 19.8, Pathfinder.d2r(180-10)),
-			new Waypoint(19.25, 19.2, Pathfinder.d2r(180+15))
+			new Waypoint(25.5, 19.8, Pathfinder.d2r(180-5)),
+			new Waypoint(20, 19.4, Pathfinder.d2r(180+15))
+			};
+	
+	Waypoint[] backToScalePoints = new Waypoint[] {
+			new Waypoint(20, 19.4, Pathfinder.d2r(15)),
+			new Waypoint(25.5, 19.6, Pathfinder.d2r(-5)),
+			};
+	
+	Waypoint[] thirdCubePoints = new Waypoint[] {
+			new Waypoint(25.5, 19.6, Pathfinder.d2r(180 - 5)),
+			new Waypoint(20, 17, Pathfinder.d2r(180 + 70))
 			};
 	
 	/*
@@ -44,11 +54,6 @@ public class RightPath_ScoreAcrossToLeftScale extends CommandGroup {
 			};
 			*/
 	
-	Waypoint[] backToScalePoints = new Waypoint[] {
-			new Waypoint(19.25, 19.2, Pathfinder.d2r(15)),
-			new Waypoint(24, 19.6, Pathfinder.d2r(0)),
-			};
-	
 	Waypoint[] switchForwardPoints = new Waypoint[] {
 			new Waypoint(0, 0, 0),
 			new Waypoint(1.0, 0, 0)
@@ -58,16 +63,16 @@ public class RightPath_ScoreAcrossToLeftScale extends CommandGroup {
 			Trajectory.FitMethod.HERMITE_QUINTIC,
 			Trajectory.Config.SAMPLES_HIGH,
 			0.01, // delta time
-			8.5, // max velocity in ft/s for the motion profile
-			8, // max acceleration in ft/s/s for the motion profile
+			8, // max velocity in ft/s for the motion profile
+			7.7, // max acceleration in ft/s/s for the motion profile
 			600.0); // max jerk in ft/s/s/s for the motion profile
 	
 	Trajectory.Config config = new Trajectory.Config(
 			Trajectory.FitMethod.HERMITE_QUINTIC,
 			Trajectory.Config.SAMPLES_HIGH,
 			0.01, // delta time
-			8, // max velocity in ft/s for the motion profile
-			8, // max acceleration in ft/s/s for the motion profile
+			7, // max velocity in ft/s for the motion profile
+			7, // max acceleration in ft/s/s for the motion profile
 			600.0); // max jerk in ft/s/s/s for the motion profile
 	
 	Trajectory.Config config_forward = new Trajectory.Config(
@@ -80,13 +85,14 @@ public class RightPath_ScoreAcrossToLeftScale extends CommandGroup {
 	
 	Trajectory toScaleTrajectory = PathLoader.get(toScalePoints, config_across);
 	Trajectory secondCubeTrajectory = PathLoader.get(secondCubePoints, config);
+	Trajectory thirdCubeTrajectory = PathLoader.get(thirdCubePoints, config_forward);
 	//Trajectory secondCubeAcrossTrajectory = PathLoader.get(secondCubeAcrossPoints, config_across);
 	Trajectory backToScaleTrajectory = PathLoader.get(backToScalePoints, config);
 	Trajectory switchForwardTrajectory = PathLoader.get(switchForwardPoints, config_forward);
 	
 
 	public RightPath_ScoreAcrossToLeftScale(PathStyle style) {
-		addParallel(new WaitThenCommand(5.3, new SetLiftWrist(LiftWrist.Preset.SCALE_AUTOSHOT)));
+		addParallel(new WaitThenCommand(4.5, new SetLiftWrist(LiftWrist.Preset.SCALE_AUTOSHOT)));
 		addSequential(new FollowTrajectory(toScaleTrajectory, true));
 		addSequential(new WaitForChildren());
 		addSequential(intake.setStateCommand(Intake.State.UNFEED_FAST, Intake.State.STOP, 0.3));
@@ -94,8 +100,8 @@ public class RightPath_ScoreAcrossToLeftScale extends CommandGroup {
 		addParallel(intakeArms.setStateCommand(IntakeArms.State.OPEN, true));
 		addParallel(new SetLiftWrist(LiftWrist.Preset.INTAKE));
 		addParallel(new IntakeOpenArm());
-		addSequential(new WaitCommand(1.4)); //wait time before starting second cube trajectory
-		addSequential(new FollowTrajectory(secondCubeTrajectory, Pathfinder.d2r(180-10)));
+		addSequential(new WaitCommand(0.9)); //wait time before starting second cube trajectory
+		addSequential(new FollowTrajectory(secondCubeTrajectory, Pathfinder.d2r(180-5)));
 		addSequential(new PrintCommand("Waiting for secondCubeTrajectory"));
 		addSequential(new WaitForChildren());
 		
@@ -111,6 +117,9 @@ public class RightPath_ScoreAcrossToLeftScale extends CommandGroup {
 				addSequential(intake.setStateCommand(Intake.State.UNFEED_SLOW, Intake.State.STOP, 0.5));
 
 				addSequential(new SetLiftWrist(LiftWrist.Preset.INTAKE));
+				
+				addParallel(new IntakeOpenArm());
+				addSequential(new FollowTrajectory(thirdCubeTrajectory, Pathfinder.d2r(180-5)));
 				break;
 			case SCALE_TO_SWITCH:
 				addSequential(new SetLiftWrist(LiftWrist.Preset.SWITCH));
@@ -123,9 +132,9 @@ public class RightPath_ScoreAcrossToLeftScale extends CommandGroup {
 	private class IntakeOpenArm extends CommandGroup {
 		public IntakeOpenArm() {
 			addSequential(WPILambdas.createCommand(liftWrist::atTarget));
-			addParallel(intake.setStateCommand(Intake.State.FEED, Intake.State.STOP, 1.8));
-			addParallel(intakeArms.setStateCommand(IntakeArms.State.OPEN, IntakeArms.State.CLOSED, 1.5));
-			addSequential(new WaitCommand(1.8));//must be same as the intake timeout
+			addParallel(intake.setStateCommand(Intake.State.FEED, Intake.State.STOP, 1.5));
+			addParallel(intakeArms.setStateCommand(IntakeArms.State.OPEN, IntakeArms.State.CLOSED, 1.3));
+			addSequential(new WaitCommand(1.5));//must be same as the intake timeout
 		}
 	}
 }

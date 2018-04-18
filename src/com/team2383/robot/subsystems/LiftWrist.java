@@ -58,9 +58,9 @@ public class LiftWrist extends Subsystem {
 		SCALE_DUNK_BACK_15(Lift.Preset.SCALE_HIGH, Wrist.Preset.BACKWARDS_DUNK_15),
 		SCALE_DUNK_BACK_30(Lift.Preset.SCALE_HIGH, Wrist.Preset.BACKWARDS_DUNK_30),
 
-		SCALE_HIGH_BACK_DOWN(Lift.Preset.SCALE_HIGH, Wrist.Preset.BACKWARDS_DOWN),
-		SCALE_HIGH_BACK_LEVEL(Lift.Preset.SCALE_HIGH, Wrist.Preset.BACKWARDS_LEVEL),
-		SCALE_HIGH_BACK_UP(Lift.Preset.SCALE_HIGH, Wrist.Preset.BACKWARDS_UP),
+		SCALE_HIGH_BACK_DOWN(Lift.Preset.SCALE_MID, Wrist.Preset.BACKWARDS_DOWN),
+		SCALE_HIGH_BACK_LEVEL(Lift.Preset.SCALE_MID, Wrist.Preset.BACKWARDS_LEVEL),
+		SCALE_HIGH_BACK_UP(Lift.Preset.SCALE_MID, Wrist.Preset.BACKWARDS_UP),
 		
 		//old ones kept for auto
 		SCALE_MID_BACK_DOWN(Lift.Preset.SCALE_MID, Wrist.Preset.BACKWARDS_DOWN),

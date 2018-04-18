@@ -50,7 +50,7 @@ public class Lift extends Subsystem {
 			INTAKE_2(5),
 			
 			INTAKE_VERTICAL_RELEASE(2),
-			INTAKE_VERTICAL_HOLD(5),
+			INTAKE_VERTICAL_HOLD(6),
 			
 			TRAVEL(2),
 
@@ -61,7 +61,7 @@ public class Lift extends Subsystem {
 			SCALE_AUTOSHOT(34.1),
 			SCALE_LOW(31),
 			SCALE_LOWMID(35),
-			SCALE_MID(MAX_LIFT_TRAVEL_IN-3.5),
+			SCALE_MID(35.5),
 			SCALE_MIDHIGH(MAX_LIFT_TRAVEL_IN-2),
 			SCALE_HIGH(MAX_LIFT_TRAVEL_IN),
 
