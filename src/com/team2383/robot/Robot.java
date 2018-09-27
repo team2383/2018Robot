@@ -39,6 +39,7 @@ import com.team2383.robot.auto.Test_TestBoxLift;
 import com.team2383.robot.auto.Test_TestDriveByRight;
 import com.team2383.robot.auto.paths.RightPath_ScoreAcrossToLeftScale;
 import com.team2383.robot.auto.paths.RightPath_RightScale;
+import com.team2383.robot.commands.DeployOutrigger;
 import com.team2383.robot.commands.NotifierTest;
 import com.team2383.robot.commands.ProfiledTurn;
 
@@ -53,6 +54,7 @@ import java.lang.reflect.Field;
  */
 public class Robot extends TimedRobot {
 	Command autoCommand;
+	Command deployOutrigger = new DeployOutrigger();
 	SendableChooser<Command> autoChooser = new SendableChooser<>();
 	
 	/**
@@ -80,7 +82,7 @@ public class Robot extends TimedRobot {
 			}
 		}
 		
-		//CameraServer.getInstance().startAutomaticCapture();
+		CameraServer.getInstance().startAutomaticCapture();
 
 		autoChooser = new SendableChooser<Command>();
 
@@ -156,9 +158,11 @@ public class Robot extends TimedRobot {
 		HAL.drive.setBrake(true);
 		autoCommand = autoChooser.getSelected();
 		autoCommand = (Command) autoChooser.getSelected();
+		
 		if (autoCommand != null) {
 			autoCommand.start();
 		}
+		deployOutrigger.start();
 	}
 
 	/**
@@ -172,6 +176,7 @@ public class Robot extends TimedRobot {
 	@Override
 	public void teleopInit() {
 		HAL.drive.setBrake(true);
+		deployOutrigger.start();
 		// This makes sure that the autonomous stops running when
 		// teleop starts running. If you want the autonomous to
 		// continue until interrupted by another command, remove

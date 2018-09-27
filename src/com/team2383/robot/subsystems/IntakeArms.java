@@ -25,7 +25,7 @@ public class IntakeArms extends StatefulSubsystem<IntakeArms.State> {
 			leftArm = new Solenoid(1, 0);
 			rightArm = new Solenoid(1, 1);
 		} else {
-			leftArm = new Solenoid(1, 0);
+			leftArm = new Solenoid(1, 3);
 			rightArm = new Solenoid(1, 1);
 		}
 
@@ -39,6 +39,7 @@ public class IntakeArms extends StatefulSubsystem<IntakeArms.State> {
 
 	@Override
 	public void setState(State state) {
+		System.out.println("ARMS! + " + state.toString());
 		switch (state) {
 			case RIGHT:
 				leftArm.set(false);

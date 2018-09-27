@@ -89,6 +89,7 @@ public class OI {
 	public static Button liftManualZero = new JoystickButton(operatorStick, 11);
 	public static Button wristManualZero  = new JoystickButton(operatorStick, 12);
 	
+	public static Button saveConstants = new NetworkButton("SmartDashboard", "Save Changed Constants");
 	public static Button updateMotorControllers = new NetworkButton("SmartDashboard", "Update Motor Controllers");
 	
 	public enum Driver_ControlScheme {
@@ -104,6 +105,7 @@ public class OI {
 	public OI() {
 		//init the button
 		SmartDashboard.putBoolean("Update Motor Controllers", false);
+		SmartDashboard.putBoolean("Save Changed Constants", false);
 
 		Driver_ControlScheme d_cs = Driver_ControlScheme.values()[Constants.driverControlScheme];
 		
@@ -166,6 +168,10 @@ public class OI {
 			liftWrist.configMotorControllers(10);
 			drive.configMotorControllers(10);
 			}, true));
+		
+		saveConstants.whenReleased(WPILambdas.runOnceCommand(() -> {
+			HAL.constants.saveChangesToFile();
+		}, true));
 	}
 	
 	private void setupTwoJoy() {
@@ -237,7 +243,7 @@ public class OI {
 		
 		Button presetHome = new JoystickButton(buttonboardA, 5);
 		Button presetPortal = new JoystickButton(buttonboardA, 6);
-		Button presetAutoShot = new JoystickButton(buttonboardA, 7);
+		Button presetSwitch = new JoystickButton(buttonboardA, 7);
 		Button presetIntake_Vertical = new JoystickButton(buttonboardA, 8);
 		Button presetIntake_2 = new JoystickButton(buttonboardA, 9);
 		Button presetIntake = new JoystickButton(buttonboardA, 10);
@@ -251,7 +257,7 @@ public class OI {
 		presetHome.whenPressed(new SetLiftWrist(LiftWrist.Preset.HOME));
 		
 		presetPortal.whenPressed(new SetLiftWrist(LiftWrist.Preset.PORTAL, false));
-		presetAutoShot.whenPressed(new SetLiftWrist(LiftWrist.Preset.SCALE_AUTOSHOT, false));
+		presetSwitch.whenPressed(new SetLiftWrist(LiftWrist.Preset.SWITCH, false));
 		
 		//stuff on B
 		Button presetScaleLowFwd = new JoystickButton(buttonboardB, 1);

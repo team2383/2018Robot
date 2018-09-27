@@ -37,7 +37,7 @@ public class Lift extends Subsystem {
 		 */
 	
 
-		private static final double MAX_LIFT_TRAVEL_IN = 39.5;
+		private static final double MAX_LIFT_TRAVEL_IN = 39;
 		private static double SPROCKET_CIRCUMFERENCE_IN;
 		private static double MAX_LIFT_TRAVEL_TICKS;
 
@@ -58,7 +58,7 @@ public class Lift extends Subsystem {
 			
 			PORTAL(6),
 			
-			SCALE_AUTOSHOT(34.1),
+			SCALE_AUTOSHOT(34.3),
 			SCALE_LOW(31),
 			SCALE_LOWMID(35),
 			SCALE_MID(35.5),
@@ -190,7 +190,7 @@ public class Lift extends Subsystem {
 			//dont go so fast when coming down
 			if(position < 10) {
 				masterLift.configMotionAcceleration(9000, 0);
-				masterLift.configMotionCruiseVelocity(11000, 0);
+				masterLift.configMotionCruiseVelocity(11500, 0);
 			} else {
 				masterLift.configMotionAcceleration(Constants.kLift_Accel, 0);
 				masterLift.configMotionCruiseVelocity(Constants.kLift_Cruise_Velocity, 0);
@@ -213,7 +213,7 @@ public class Lift extends Subsystem {
 			
 			SmartDashboard.putNumber("LiftDecelVal", accelFeedForward);
 			
-			masterLift.set(ControlMode.MotionMagic, liftTicks(position), DemandType.ArbitraryFeedForward, accelFeedForward);
+			masterLift.set(ControlMode.MotionMagic, liftTicks(position), DemandType.ArbitraryFeedForward, accelFeedForward + Constants.kLift_Gravity);
 		}
 		
 		boolean atTarget() {

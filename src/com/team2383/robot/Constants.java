@@ -26,7 +26,7 @@ public class Constants extends ConstantsBase {
 	public static double kIntake_UnfeedPlaceSpeed = 0.3;
 	public static double kIntake_UnfeedSlowSpeed = 0.4;
 	public static double kIntake_UnfeedMidSpeed = 0.5;
-	public static double kIntake_UnfeedFastSpeed = 0.68;
+	public static double kIntake_UnfeedFastSpeed = 0.62;
 
 
 	public static double kIntake_UnfeedDrivebyOpen = 0.4;
@@ -38,7 +38,7 @@ public class Constants extends ConstantsBase {
 
 	public static double kLiftWrist_SetpointWait = 0.1;
 	
-	public static double kLiftWrist_WristDunkClearanceAngle = 190;
+	public static double kLiftWrist_WristDunkClearanceAngle = 210;
 	public static double kLiftWrist_WristBackClearanceAngle = 145;
 
 	
@@ -57,26 +57,22 @@ public class Constants extends ConstantsBase {
 	
 	public static double kLift_NudgeAmount = 2;
 	
-	public static double kLift_P = 0.3;
+	public static double kLift_P = 0.5;
 	public static double kLift_I = 0;
-	public static double kLift_D = 0.7;
-	public static double kLift_F = 0.14;
+	public static double kLift_D = 0.75;
+	
+	public static double kLift_F = 0.12;
 	public static int kLift_IZone = 0;
 
 	public static double kLift_UpAccelMinError = 25;
 
-	
-	public static int kLift_Cruise_Velocity = 7000;
-	public static int kLift_Accel = 7000;
-	
-	public static int kLift_Up_Cruise_Velocity = 9000;
-	public static int kLift_Up_Accel = 9000;
-	
-	public static int kLift_Down_Cruise_Velocity = 6000;
-	public static int kLift_Down_Accel = 4000;
+	public static int kLift_Cruise_Velocity = 12000;
+	public static int kLift_Accel = 16000;
 
-	public static double kLift_AccelErrorThreshold = 7;
-	public static double kLift_AccelFeedforward = 0.1;
+	public static double kLift_Gravity = 0.08;
+	
+	public static double kLift_AccelErrorThreshold = 12;
+	public static double kLift_AccelFeedforward = 0.25;
 	
 	public static double kLift_Tolerance = 2.0;
 	public static boolean kLift_InvertMaster = false;
@@ -94,25 +90,24 @@ public class Constants extends ConstantsBase {
 	public static double kWrist_NudgeAmount = 10;
 	
 	public static double kWrist_P = 0.6;
-	public static double kWrist_I = 0;
+	public static double kWrist_I = 0.0;
 	public static double kWrist_D = 1.5;
 	public static double kWrist_F = 0.647; //for 400:1 is 1.214  //for 160:1 is 0.647;
 	public static int kWrist_IZone = 0;
 	
-	public static double kWrist_ForwardSpringMinTo = -0.15;
+	public static double kWrist_ForwardSpringMinTo = -0.13;
 	public static double kWrist_ForwardSpringMaxTo = -0.01;
 	
 	public static double kWrist_ForwardGravityMinTo = 0.03;
-	public static double kWrist_ForwardGravityMaxTo = 0.10;
+	public static double kWrist_ForwardGravityMaxTo = 0.11;
 	
-	public static double kWrist_ReverseGravityMinTo = -0.01;
-	public static double kWrist_ReverseGravityMaxTo = -0.20;
+	public static double kWrist_ReverseGravityMinTo = -0.1;
+	public static double kWrist_ReverseGravityMaxTo = -0.28;
 
 	public static int kWrist_Cruise_Velocity = 1800; //deg/s
 	public static int kWrist_Accel = 3000; //deg/s
 
-	public static double kWrist_FullTravelTolerance = 0.5;
-	public static double kWrist_Tolerance = 5.0; //degrees
+	public static double kWrist_Tolerance = 7.0; //degrees
 	public static boolean kWrist_Invert = false;
 	
 	/*
@@ -152,7 +147,7 @@ public class Constants extends ConstantsBase {
 	public static int kDrive_PeakCurrentLimit = 80;
 	public static int kDrive_PeakCurrentTime_ms = 100;
 
-	public static double kDrive_WheelDiameterInch = 3.85;
+	public static double kDrive_WheelDiameterInch = 3.875;
 	public static double getWheelCircumference() { return (kDrive_WheelDiameterInch*Math.PI)/12.0; };
 	public static double kDrive_EncoderRatio = 1.0/1.0;
 	
@@ -162,7 +157,7 @@ public class Constants extends ConstantsBase {
 		 * s = seconds
 		 */
 															// units
-	public static double kDrive_Motion_P = 1.05;				// %/ft
+	public static double kDrive_Motion_P = 1.4;				// %/ft
 	public static double kDrive_Motion_D = 0.0;				// %/(ft/s)
 
 	public static double kDrive_Motion_talonP = 0.7;			// %/ft
@@ -173,12 +168,11 @@ public class Constants extends ConstantsBase {
 	public static double kDrive_Motion_Velocity = 6.0;		// for turn
 	public static double kDrive_Motion_Acceleration = 13.0; // for turn
 
-	public static double kDrive_Motion_V = 0.072;			// %/(ft/s) max turn speed
-	public static double kDrive_Motion_A = 0.035;				// %/(ft/s/s) max acceleration
+	public static double kDrive_Motion_V = 0.058;			// %/(ft/s) max turn speed
+	public static double kDrive_Motion_A = 0.0;				// %/(ft/s/s) max acceleration
 
 	public static double kDrive_Motion_Tolerance = 0.05;// ft
-	public static double kDrive_Motion_turnP = 0.02;
-	public static double kDrive_Motion_turnD = 0.0025;
+	public static double kDrive_Motion_turnP = 0.0175;
 	public static double kDrive_Motion_trackwidth = 2.72;
 	
 	public static double kDrive_Turn_Tolerance = 1.0;		// degrees

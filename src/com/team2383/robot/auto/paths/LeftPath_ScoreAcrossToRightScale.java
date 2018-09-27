@@ -23,25 +23,25 @@ import jaci.pathfinder.Waypoint;
 
 public class LeftPath_ScoreAcrossToRightScale extends CommandGroup {
 	Waypoint[] toScalePoints = new Waypoint[] {
-			new Waypoint(2.7, 27 - 3, 0),
-			new Waypoint(15.4, 27 - 3, 0),
-			new Waypoint(20.4, 27 - 8, Pathfinder.d2r(-80)),
-			new Waypoint(21.0, 27 - 17, Pathfinder.d2r(-85)),
-			new Waypoint(25.5, 27 - 19.8, Pathfinder.d2r(5)),
+			new Waypoint(2.7, 27 - 3.5, 0),
+			new Waypoint(15.4, 27 - 3.5, 0),
+			new Waypoint(19.8, 27 - 8, Pathfinder.d2r(-80)),
+			new Waypoint(20.5, 27 - 17, Pathfinder.d2r(-85)),
+			new Waypoint(24.5, 27 - 19.8, Pathfinder.d2r(5)),
 			};
 
 	Waypoint[] secondCubePoints = new Waypoint[] {
-			new Waypoint(25.5, 27 - 19.8, Pathfinder.d2r(180+5)),
+			new Waypoint(24.5, 27 - 19.8, Pathfinder.d2r(180+5)),
 			new Waypoint(20, 27 - 19.4, Pathfinder.d2r(180-15))
 			};
 	
 	Waypoint[] backToScalePoints = new Waypoint[] {
 			new Waypoint(20, 27 - 19.4, Pathfinder.d2r(-15)),
-			new Waypoint(25.5, 27 - 19.6, Pathfinder.d2r(5)),
+			new Waypoint(24.5, 27 - 19.6, Pathfinder.d2r(5)),
 			};
 	
 	Waypoint[] thirdCubePoints = new Waypoint[] {
-			new Waypoint(25.5, 27 - 19.6, Pathfinder.d2r(180 + 5)),
+			new Waypoint(24.5, 27 - 19.6, Pathfinder.d2r(180 + 5)),
 			new Waypoint(20, 27 - 17, Pathfinder.d2r(180 - 70))
 			};
 	
@@ -64,7 +64,7 @@ public class LeftPath_ScoreAcrossToRightScale extends CommandGroup {
 			Trajectory.Config.SAMPLES_HIGH,
 			0.01, // delta time
 			8, // max velocity in ft/s for the motion profile
-			7.7, // max acceleration in ft/s/s for the motion profile
+			7, // max acceleration in ft/s/s for the motion profile
 			600.0); // max jerk in ft/s/s/s for the motion profile
 	
 	Trajectory.Config config = new Trajectory.Config(
@@ -117,9 +117,10 @@ public class LeftPath_ScoreAcrossToRightScale extends CommandGroup {
 				addSequential(intake.setStateCommand(Intake.State.UNFEED_SLOW, Intake.State.STOP, 0.5));
 
 				addSequential(new SetLiftWrist(LiftWrist.Preset.INTAKE));
-				
+				/*
 				addParallel(new IntakeOpenArm());
 				addSequential(new FollowTrajectory(thirdCubeTrajectory, Pathfinder.d2r(180+5)));
+				*/
 				break;
 			case SCALE_TO_SWITCH:
 				addSequential(new SetLiftWrist(LiftWrist.Preset.SWITCH));

@@ -181,8 +181,15 @@ public class LiftWrist extends Subsystem {
 					//make sure the wrist clears the lift before moving wrist to past clearance angle
 					if (lift.getCurrentPosition() < Constants.kLiftWrist_LiftDunkClearanceHeight) {
 						SmartDashboard.putBoolean("L wrist In transit", true);
-						//lift is currently below clearance height, so hold wrist in transit position
-						wrist.setPreset(Wrist.Preset.TRANSIT);
+
+						//lift is currently below dunk clearance height
+						if (lift.getCurrentPosition() >= Constants.kLiftWrist_LiftBackClearanceHeight) {
+							//but we are above the back clearance height, so hold it to max backwards as we wait to dunk
+							wrist.setPreset(Wrist.Preset.BACKWARDS_LEVEL);
+						} else {
+							//and we are below the back clearance height, so just hold wrist at transit
+							wrist.setPreset(Wrist.Preset.TRANSIT);
+						}
 					} else {
 						SmartDashboard.putBoolean("L wrist In transit", false);
 						wrist.setPosition(desiredWristPos);

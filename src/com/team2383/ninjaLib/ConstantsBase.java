@@ -54,7 +54,7 @@ public abstract class ConstantsBase {
 				switch (type) {
 					case kBoolean: 
 						setConstant(key, entry.getBoolean(false));
-						saveChangesToFile();
+						//saveChangesToFile();
 						break;
 					case kDouble: 
 						Double d = entry.getDouble(0);
@@ -63,7 +63,7 @@ public abstract class ConstantsBase {
 						} else {
 							setConstant(key, d);
 						}
-						saveChangesToFile();
+						//saveChangesToFile();
 						break;
 				}
 				
@@ -260,8 +260,8 @@ public abstract class ConstantsBase {
         File file = getFile();
     	try {
             boolean wasCreated = file.createNewFile();
-            System.out.println("ff " + wasCreated + " L: " + file.length());
             if (wasCreated || file.length() == 0) {
+                System.out.println("!NEW!!!!!!ff " + wasCreated + " L: " + file.length());
             	JSONObject json = getJSONObjectFromFile();
                 FileWriter writer = new FileWriter(file);
                 Field[] declaredFields = this.getClass().getDeclaredFields();
